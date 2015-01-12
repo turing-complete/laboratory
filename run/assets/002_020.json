@@ -11,9 +11,9 @@
 		"varThreshold": 0.95
 	},
 
-	"workers": 0,
+	"target": "temperature-profile",
 
-	"analysis": {
+	"tempAnalysis": {
 		"floorplan": "assets/002.flp",
 		"hotspot": {
 			"config": "assets/hotspot.config",
@@ -23,6 +23,7 @@
 		"ambientTemp": 318.15
 	},
 
+	"workers": 0,
 	"interpolation": {
 		"minLevel": 1,
 		"maxLevel": 9,

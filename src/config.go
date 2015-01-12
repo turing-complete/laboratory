@@ -25,15 +25,21 @@ type Config struct {
 		Marginal string
 		// The strength of correlations between tasks.
 		CorrLength float64 // > 0
-		// The portion of the variance to be preserved when reducing the number of
-		// stochastic dimensions.
+		// The portion of the variance to be preserved when reducing the number
+		// of stochastic dimensions.
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The number of workers.
+	// The quantity of interest. Available targes are “end-to-end-delay” and
+	// “temperature-profile.”
+	Target string
+
+	// The configuration of the algorithm for temperature analysis. Specific to
+	// the temperature-profile target.
+	TempAnalysis expint.Config
+
+	// The number of workers evaluating of the quantity of interest.
 	Workers uint8
-	// The configuration of the algorithm for temperature analysis.
-	Analysis expint.Config
 	// The configuration of the algorithm for interpolation.
 	Interpolation adhier.Config
 
@@ -74,7 +80,7 @@ func (c *Config) validate() error {
 		return errors.New("the variance-reduction threshold is invalid")
 	}
 
-	if c.Analysis.TimeStep <= 0 {
+	if c.TempAnalysis.TimeStep <= 0 {
 		return errors.New("the time step is invalid")
 	}
 

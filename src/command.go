@@ -12,7 +12,20 @@ import (
 	"github.com/ready-steady/stats/assess"
 )
 
-func Show(p *problem, f *mat.File, _ *mat.File) error {
+func findCommand(name string) func(*problem, *mat.File, *mat.File) error {
+	switch name {
+	case "show":
+		return show
+	case "solve":
+		return solve
+	case "check":
+		return check
+	default:
+		return nil
+	}
+}
+
+func show(p *problem, f *mat.File, _ *mat.File) error {
 	fmt.Println(p)
 
 	if f == nil {
@@ -29,7 +42,7 @@ func Show(p *problem, f *mat.File, _ *mat.File) error {
 	return nil
 }
 
-func Solve(p *problem, _ *mat.File, f *mat.File) error {
+func solve(p *problem, _ *mat.File, f *mat.File) error {
 	fmt.Println(p)
 
 	var s *adhier.Surrogate
@@ -51,7 +64,7 @@ func Solve(p *problem, _ *mat.File, f *mat.File) error {
 	return nil
 }
 
-func Check(p *problem, fi *mat.File, fo *mat.File) error {
+func check(p *problem, fi *mat.File, fo *mat.File) error {
 	s := new(adhier.Surrogate)
 	if fi == nil {
 		return errors.New("an input file is required")

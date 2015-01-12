@@ -77,19 +77,6 @@ func main() {
 	}
 }
 
-func findCommand(name string) func(*problem, *mat.File, *mat.File) error {
-	switch name {
-	case "show":
-		return Show
-	case "solve":
-		return Solve
-	case "check":
-		return Check
-	default:
-		return nil
-	}
-}
-
 func printUsage() {
 	fmt.Printf("Usage: %s <command> [options]", os.Args[0])
 	fmt.Printf(`

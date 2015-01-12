@@ -27,14 +27,6 @@ type problem struct {
 	cc uint32 // cores
 	tc uint32 // tasks
 
-	time   *time.List
-	power  *power.Self
-	tempan *expint.Self
-
-	sc uint32 // steps
-
-	sched *time.Schedule
-
 	uc uint32 // dependent variables
 	zc uint32 // independent variables
 
@@ -42,17 +34,26 @@ type problem struct {
 	gaussian  prob.Distribution
 	trans     []float64
 
+	time  *time.List
+	sched *time.Schedule
+
+	sc uint32 // steps
+
+	power  *power.Self
+	tempan *expint.Self
+
 	ic uint32 // inputs
 	oc uint32 // outputs
 
+	serve  func(p *problem, jobs <-chan job)
 	interp *adhier.Self
 
 	cache *cache
 }
 
 func (p *problem) String() string {
-	return fmt.Sprintf("Problem{cores: %d, tasks: %d, steps: %d, dvars: %d, ivars: %d, inputs: %d, outputs: %d}",
-		p.cc, p.tc, p.sc, p.uc, p.zc, p.ic, p.oc)
+	return fmt.Sprintf("Problem{cores: %d, tasks: %d, dvars: %d, ivars: %d, inputs: %d, outputs: %d}",
+		p.cc, p.tc, p.uc, p.zc, p.ic, p.oc)
 }
 
 func newProblem(config Config) (*problem, error) {
@@ -83,15 +84,7 @@ func newProblem(config Config) (*problem, error) {
 	}
 
 	p.time = time.NewList(plat, app)
-	p.power = power.New(plat, app, c.Analysis.TimeStep)
-	p.tempan, err = expint.New(expint.Config(c.Analysis))
-	if err != nil {
-		return nil, err
-	}
-
 	p.sched = p.time.Compute(system.NewProfile(plat, app).Mobility)
-
-	p.sc = uint32(p.sched.Span / c.Analysis.TimeStep)
 
 	p.uc = uint32(len(c.TaskIndex))
 
@@ -113,8 +106,30 @@ func newProblem(config Config) (*problem, error) {
 
 	p.gaussian = gaussian.New(0, 1)
 
-	p.ic = p.zc + 1 // +1 for time
-	p.oc = uint32(len(c.CoreIndex))
+	switch c.Target {
+	case "end-to-end-delay":
+		p.ic = p.zc
+		p.oc = 1
+
+		p.serve = serveEndToEndDelay
+
+	case "temperature-profile":
+		p.sc = uint32(p.sched.Span / c.TempAnalysis.TimeStep)
+
+		p.power = power.New(plat, app, c.TempAnalysis.TimeStep)
+		p.tempan, err = expint.New(expint.Config(c.TempAnalysis))
+		if err != nil {
+			return nil, err
+		}
+
+		p.ic = 1 + p.zc // +1 for time
+		p.oc = uint32(len(c.CoreIndex))
+
+		p.serve = serveTemperatureProfile
+
+	default:
+		return nil, errors.New("the target is unknown")
+	}
 
 	p.interp = adhier.New(newcot.NewOpen(uint16(p.ic)), linhat.NewOpen(uint16(p.ic)),
 		adhier.Config(c.Interpolation), uint16(p.oc))
@@ -244,7 +259,7 @@ func (p *problem) spawnWorkers() chan job {
 
 	jobs := make(chan job)
 	for i := 0; i < wc; i++ {
-		go serve(p, jobs)
+		go p.serve(p, jobs)
 	}
 
 	return jobs

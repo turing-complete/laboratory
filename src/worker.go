@@ -22,7 +22,42 @@ type result struct {
 	data []float64
 }
 
-func serve(p *problem, jobs <-chan job) {
+func serveEndToEndDelay(p *problem, jobs <-chan job) {
+	uc, zc := p.uc, p.zc
+
+	g, m := p.gaussian, p.marginals
+
+	z := make([]float64, zc)
+	u := make([]float64, uc)
+	d := make([]float64, p.tc)
+
+	for job := range jobs {
+		span := job.data
+
+		if span == nil {
+			span = make([]float64, 1)
+
+			// Independent uniform to independent Gaussian
+			for i := uint32(0); i < zc; i++ {
+				z[i] = g.InvCDF(job.node[i])
+			}
+
+			// Independent Gaussian to dependent Gaussian
+			matrix.Multiply(p.trans, z, u, uc, zc, 1)
+
+			// Dependent Gaussian to dependent uniform to dependent target
+			for i, tid := range p.config.TaskIndex {
+				d[tid] = m[i].InvCDF(g.CDF(u[i]))
+			}
+
+			span[0] = p.time.Recompute(p.sched, d).Span
+		}
+
+		job.done <- result{job.key, span}
+	}
+}
+
+func serveTemperatureProfile(p *problem, jobs <-chan job) {
 	cc, sc, uc, zc, oc := p.cc, p.sc, p.uc, p.zc, p.oc
 	coreIndex := p.config.CoreIndex
 
