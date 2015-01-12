@@ -78,8 +78,7 @@ func serveTemperatureProfile(p *problem, jobs <-chan job) {
 
 			// Independent uniform to independent Gaussian
 			for i := uint32(0); i < zc; i++ {
-				// NOTE: +1 for time
-				z[i] = g.InvCDF(job.node[1+i])
+				z[i] = g.InvCDF(job.node[1+i]) // +1 for time
 			}
 
 			// Independent Gaussian to dependent Gaussian

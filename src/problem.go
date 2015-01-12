@@ -140,7 +140,7 @@ func newProblem(config Config) (*problem, error) {
 }
 
 func (p *problem) solve() *adhier.Surrogate {
-	ic, oc := p.ic, p.oc
+	ic, oc, Δ := p.ic, p.oc, p.ic-p.zc // Δ for time
 	cache := p.cache
 
 	jobs := p.spawnWorkers()
@@ -164,7 +164,7 @@ func (p *problem) solve() *adhier.Surrogate {
 		values := make([]float64, oc*nc)
 
 		for i := uint32(0); i < nc; i++ {
-			key := cache.key(index[i*ic+1:])
+			key := cache.key(index[Δ+i*ic:])
 
 			data := cache.get(key)
 			if data == nil {
