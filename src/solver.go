@@ -44,10 +44,10 @@ func (s *solver) hasFakeInputs() bool {
 
 func (s *solver) construct() *adhier.Surrogate {
 	if s.hasFakeInputs() {
-		return s.constructDirect()
-	} else {
 		// NOTE: Caching only make sense when there are fake inputs.
 		return s.constructCached()
+	} else {
+		return s.constructDirect()
 	}
 }
 
