@@ -66,14 +66,3 @@ func TestNewProblemProbModel(t *testing.T) {
 		0.0038, 0.0010, 0.0068, 0.0070, 0.0078, 0.0044, 0.0004, 0.0058, 0.0056, 0.0040,
 	}, t)
 }
-
-func BenchmarkSolve(b *testing.B) {
-	config, _ := loadConfig("fixtures/002_020.json")
-
-	for i := 0; i < b.N; i++ {
-		problem, _ := newProblem(config)
-		target, _ := newTarget(problem)
-		solver := newSolver(problem, target)
-		solver.construct()
-	}
-}
