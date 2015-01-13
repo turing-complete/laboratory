@@ -17,7 +17,7 @@ type solver struct {
 	oc uint32 // outputs
 	fc uint32 // fake inputs like time
 
-	interpolator *adhier.Self
+	interpolator *adhier.Interpolator
 }
 
 func newSolver(problem *problem, target target) *solver {
