@@ -20,15 +20,15 @@ type tempTarget struct {
 	oc uint32 // outputs
 	sc uint32 // steps
 
-	power  *power.Self
-	expint *expint.Self
+	power       *power.Distributer
+	temperature *expint.Solver
 }
 
 func newTempTarget(p *problem) (target, error) {
 	c := &p.config
 
 	power := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
-	expint, err := expint.New(expint.Config(c.TempAnalysis))
+	temperature, err := expint.New(expint.Config(c.TempAnalysis))
 	if err != nil {
 		return nil, err
 	}
@@ -40,8 +40,8 @@ func newTempTarget(p *problem) (target, error) {
 		oc: uint32(len(c.CoreIndex)),
 		sc: uint32(p.schedule.Span / c.TempAnalysis.TimeStep),
 
-		power:  power,
-		expint: expint,
+		power:       power,
+		temperature: temperature,
 	}
 
 	return target, nil
@@ -66,7 +66,7 @@ func (t *tempTarget) Serve(jobs <-chan job) {
 	m := p.marginals
 
 	P := make([]float64, cc*sc)
-	S := make([]float64, t.expint.Nodes*sc)
+	S := make([]float64, t.temperature.Nodes*sc)
 
 	z := make([]float64, zc)
 	u := make([]float64, uc)
@@ -95,7 +95,7 @@ func (t *tempTarget) Serve(jobs <-chan job) {
 			C.memset(unsafe.Pointer(&P[0]), 0, C.size_t(8*cc*sc))
 
 			t.power.Compute(p.time.Recompute(p.schedule, d), P, sc)
-			t.expint.ComputeTransient(P, Q, S, sc)
+			t.temperature.ComputeTransient(P, Q, S, sc)
 		}
 
 		sid := uint32(job.node[0] * float64(sc-1))
