@@ -23,7 +23,7 @@ func (s *solver) constructDirect() *adhier.Surrogate {
 		NC += nc
 
 		if c.Verbose {
-			fmt.Printf("%12d %12d", nc, NC)
+			fmt.Printf("%12d %12d\n", nc, NC)
 		}
 
 		done := make(chan result, nc)
