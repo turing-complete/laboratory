@@ -25,74 +25,89 @@ func findCommand(name string) func(*problem, *mat.File, *mat.File) error {
 	}
 }
 
-func show(p *problem, f *mat.File, _ *mat.File) error {
-	fmt.Println(p)
+func show(problem *problem, f *mat.File, _ *mat.File) error {
+	fmt.Println(problem)
 
 	if f == nil {
 		return nil
 	}
 
-	s := new(adhier.Surrogate)
-	if err := f.Get("surrogate", s); err != nil {
+	surrogate := new(adhier.Surrogate)
+	if err := f.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
-	fmt.Println(s)
+	fmt.Println(surrogate)
 
 	return nil
 }
 
-func solve(p *problem, _ *mat.File, f *mat.File) error {
-	fmt.Println(p)
+func solve(problem *problem, _ *mat.File, f *mat.File) error {
+	target, err := newTarget(problem)
+	if err != nil {
+		return err
+	}
+	solver := newSolver(problem, target)
 
-	var s *adhier.Surrogate
+	fmt.Println(problem)
+	fmt.Println(target)
+
+	var surrogate *adhier.Surrogate
 	track("Constructing a surrogate...", true, func() {
-		s = p.solve()
+		surrogate = solver.construct()
 	})
 
-	fmt.Println(s)
-	fmt.Println(p.cache)
+	fmt.Println(surrogate)
 
 	if f == nil {
 		return nil
 	}
 
-	if err := f.Put("surrogate", *s); err != nil {
+	if err := f.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func check(p *problem, fi *mat.File, fo *mat.File) error {
-	s := new(adhier.Surrogate)
+func check(problem *problem, fi *mat.File, fo *mat.File) error {
+	target, err := newTarget(problem)
+	if err != nil {
+		return err
+	}
+	solver := newSolver(problem, target)
+
+	fmt.Println(problem)
+	fmt.Println(target)
+
+	surrogate := new(adhier.Surrogate)
 	if fi == nil {
 		return errors.New("an input file is required")
 	}
-	if err := fi.Get("surrogate", s); err != nil {
+	if err := fi.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
-	fmt.Println(p)
-	fmt.Println(s)
+	fmt.Println(surrogate)
 
-	c := &p.config
-
-	if c.Samples == 0 {
+	sc := problem.config.Samples
+	if sc == 0 {
 		return errors.New("the number of samples is zero")
 	}
 
-	rand.Seed(c.Seed)
-	points := prob.Sample(uniform.New(0, 1), c.Samples*p.ic)
+	ic, oc := target.InputsOutputs()
+
+	rand.Seed(problem.config.Seed)
+	points := prob.Sample(uniform.New(0, 1), sc*ic)
 
 	var values, realValues []float64
 
 	track("Evaluating the surrogate model...", true, func() {
-		values = p.evaluate(s, points)
+		values = solver.evaluate(surrogate, points)
 	})
 
 	track("Evaluating the original model...", true, func() {
-		realValues = p.compute(points)
+		realValues = solver.compute(points)
 	})
 
 	fmt.Printf("NRMSE: %e\n", assess.NRMSE(values, realValues))
@@ -101,15 +116,13 @@ func check(p *problem, fi *mat.File, fo *mat.File) error {
 		return nil
 	}
 
-	if err := fo.PutMatrix("points", points, p.ic, c.Samples); err != nil {
+	if err := fo.PutMatrix("points", points, ic, sc); err != nil {
 		return err
 	}
-
-	if err := fo.PutMatrix("values", values, p.oc, c.Samples); err != nil {
+	if err := fo.PutMatrix("values", values, oc, sc); err != nil {
 		return err
 	}
-
-	if err := fo.PutMatrix("realValues", realValues, p.oc, c.Samples); err != nil {
+	if err := fo.PutMatrix("realValues", realValues, oc, sc); err != nil {
 		return err
 	}
 
