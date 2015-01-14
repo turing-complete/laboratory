@@ -6,7 +6,7 @@ import (
 
 	"github.com/ready-steady/persim/system"
 	"github.com/ready-steady/persim/time"
-	"github.com/ready-steady/prob"
+	"github.com/ready-steady/probability"
 	"github.com/ready-steady/stats/corr"
 
 	"../../pkg/acorr"
@@ -26,7 +26,7 @@ type problem struct {
 	uc uint32 // dependent variables
 	zc uint32 // independent variables
 
-	marginals []prob.Inverter
+	marginals []probability.Inverter
 	transform []float64
 
 	time     *time.List
@@ -79,7 +79,7 @@ func newProblem(config Config) (*problem, error) {
 		return nil, err
 	}
 
-	p.marginals = make([]prob.Inverter, p.uc)
+	p.marginals = make([]probability.Inverter, p.uc)
 	marginalizer := probconv.ParseInverter(c.ProbModel.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")

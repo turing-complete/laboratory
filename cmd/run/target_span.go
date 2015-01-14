@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/ready-steady/linal/matrix"
-	"github.com/ready-steady/prob/gaussian"
+	"github.com/ready-steady/probability/gaussian"
 
 	"../../pkg/solver"
 )

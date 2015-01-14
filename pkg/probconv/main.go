@@ -5,8 +5,8 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ready-steady/prob"
-	"github.com/ready-steady/prob/beta"
+	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/beta"
 )
 
 type family uint
@@ -16,12 +16,12 @@ const (
 	betaFamily
 )
 
-func ParseInverter(line string) func(min, max float64) prob.Inverter {
+func ParseInverter(line string) func(min, max float64) probability.Inverter {
 	family, params := parse(line)
 
 	switch family {
 	case betaFamily:
-		return func(min, max float64) prob.Inverter {
+		return func(min, max float64) probability.Inverter {
 			return beta.New(params[0], params[1], min, max)
 		}
 	}

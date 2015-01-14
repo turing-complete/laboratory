@@ -8,8 +8,8 @@ import (
 
 	"github.com/ready-steady/format/mat"
 	"github.com/ready-steady/numan/interp/adhier"
-	"github.com/ready-steady/prob"
-	"github.com/ready-steady/prob/uniform"
+	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/uniform"
 	"github.com/ready-steady/stats/assess"
 )
 
@@ -101,7 +101,7 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 	} else {
 		rand.Seed(time.Now().Unix())
 	}
-	points := prob.Sample(uniform.New(0, 1), sc*ic)
+	points := probability.Sample(uniform.New(0, 1), sc*ic)
 
 	var values, realValues []float64
 

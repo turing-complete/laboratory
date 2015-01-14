@@ -10,7 +10,7 @@ import (
 
 	"github.com/ready-steady/linal/matrix"
 	"github.com/ready-steady/persim/power"
-	"github.com/ready-steady/prob/gaussian"
+	"github.com/ready-steady/probability/gaussian"
 	"github.com/ready-steady/tempan/expint"
 
 	"../../pkg/solver"
