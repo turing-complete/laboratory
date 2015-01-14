@@ -23,7 +23,7 @@ type tempTarget struct {
 	oc uint32 // outputs
 	sc uint32 // steps
 
-	power       *power.Distributer
+	power       *power.Power
 	temperature *expint.Solver
 }
 
