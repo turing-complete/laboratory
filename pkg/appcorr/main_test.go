@@ -1,4 +1,4 @@
-package main
+package appcorr
 
 import (
 	"math"
@@ -10,19 +10,19 @@ import (
 )
 
 func TestCorrelate(t *testing.T) {
-	_, app, _ := system.Load("fixtures/002_020.tgff")
+	_, application, _ := system.Load("fixtures/002_020.tgff")
 
-	C := correlate(app, index(20), 2)
+	C := Compute(application, index(20), 2)
 	_, _, err := decomp.CovPCA(C, 20)
 	assert.Success(err, t)
 
-	C = correlate(app, index(1), 2)
+	C = Compute(application, index(1), 2)
 	assert.Equal(C, []float64{1}, t)
 }
 
 func TestMeasure(t *testing.T) {
-	_, app, _ := system.Load("fixtures/002_020.tgff")
-	distance := measure(app)
+	_, application, _ := system.Load("fixtures/002_020.tgff")
+	distance := measure(application)
 
 	cases := []struct {
 		i uint16
@@ -45,8 +45,8 @@ func TestMeasure(t *testing.T) {
 }
 
 func TestExplore(t *testing.T) {
-	_, app, _ := system.Load("fixtures/002_020.tgff")
-	depth := explore(app)
+	_, application, _ := system.Load("fixtures/002_020.tgff")
+	depth := explore(application)
 
 	assert.Equal(depth, []uint16{
 		0,
@@ -59,10 +59,20 @@ func TestExplore(t *testing.T) {
 }
 
 func BenchmarkCorrelate(b *testing.B) {
-	_, app, _ := system.Load("fixtures/002_020.tgff")
+	_, application, _ := system.Load("fixtures/002_020.tgff")
 	index := index(20)
 
 	for i := 0; i < b.N; i++ {
-		correlate(app, index, 2)
+		Compute(application, index, 2)
 	}
+}
+
+func index(count uint16) []uint16 {
+	index := make([]uint16, count)
+
+	for i := uint16(0); i < count; i++ {
+		index[i] = i
+	}
+
+	return index
 }

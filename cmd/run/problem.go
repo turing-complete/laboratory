@@ -8,6 +8,8 @@ import (
 	"github.com/ready-steady/persim/time"
 	"github.com/ready-steady/prob"
 	"github.com/ready-steady/stats/corr"
+
+	"../../pkg/appcorr"
 )
 
 type problem struct {
@@ -69,7 +71,7 @@ func newProblem(config Config) (*problem, error) {
 
 	p.uc = uint32(len(c.TaskIndex))
 
-	C := correlate(application, c.TaskIndex, c.ProbModel.CorrLength)
+	C := appcorr.Compute(application, c.TaskIndex, c.ProbModel.CorrLength)
 	p.transform, p.zc, err = corr.Decompose(C, p.uc, c.ProbModel.VarThreshold)
 	if err != nil {
 		return nil, err

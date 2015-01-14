@@ -1,4 +1,4 @@
-package main
+package appcorr
 
 import (
 	"math"
@@ -6,10 +6,10 @@ import (
 	"github.com/ready-steady/persim/system"
 )
 
-func correlate(app *system.Application, index []uint16, length float64) []float64 {
-	tc, dc := uint16(len(app.Tasks)), uint16(len(index))
+func Compute(application *system.Application, index []uint16, length float64) []float64 {
+	tc, dc := uint16(len(application.Tasks)), uint16(len(index))
 
-	distance := measure(app)
+	distance := measure(application)
 	C := make([]float64, dc*dc)
 
 	for i := uint16(0); i < dc; i++ {
@@ -24,10 +24,10 @@ func correlate(app *system.Application, index []uint16, length float64) []float6
 	return C
 }
 
-func measure(app *system.Application) []float64 {
-	tc := uint16(len(app.Tasks))
+func measure(application *system.Application) []float64 {
+	tc := uint16(len(application.Tasks))
 
-	depth := explore(app)
+	depth := explore(application)
 
 	index := make([]uint16, tc)
 	count := make([]uint16, tc)
@@ -54,23 +54,23 @@ func measure(app *system.Application) []float64 {
 	return distance
 }
 
-func explore(app *system.Application) []uint16 {
-	tc := uint16(len(app.Tasks))
+func explore(application *system.Application) []uint16 {
+	tc := uint16(len(application.Tasks))
 	depth := make([]uint16, tc)
 
-	for _, l := range app.Leafs() {
-		ascend(app, depth, l)
+	for _, l := range application.Leafs() {
+		ascend(application, depth, l)
 	}
 
 	return depth
 }
 
-func ascend(app *system.Application, depth []uint16, f uint16) {
+func ascend(application *system.Application, depth []uint16, f uint16) {
 	max := uint16(0)
 
-	for _, p := range app.Tasks[f].Parents {
+	for _, p := range application.Tasks[f].Parents {
 		if depth[p] == 0 {
-			ascend(app, depth, p)
+			ascend(application, depth, p)
 		}
 		if max < depth[p]+1 {
 			max = depth[p] + 1
