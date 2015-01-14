@@ -10,6 +10,7 @@ import (
 	"github.com/ready-steady/stats/corr"
 
 	"../../pkg/appcorr"
+	"../../pkg/sprob"
 )
 
 type problem struct {
@@ -78,13 +79,13 @@ func newProblem(config Config) (*problem, error) {
 	}
 
 	p.marginals = make([]prob.Inverter, p.uc)
-	marginalizer := marginalize(c.ProbModel.Marginal)
+	marginalizer := sprob.Parse(c.ProbModel.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
 	}
 	for i, tid := range c.TaskIndex {
 		duration := platform.Cores[p.schedule.Mapping[tid]].Time[application.Tasks[tid].Type]
-		p.marginals[i] = marginalizer(c.ProbModel.MaxDelay * duration)
+		p.marginals[i] = marginalizer(0, c.ProbModel.MaxDelay*duration)
 	}
 
 	return p, nil

@@ -1,10 +1,10 @@
-package main
+package sprob
 
 import (
 	"testing"
 )
 
-func TestMarginalize(t *testing.T) {
+func TestParse(t *testing.T) {
 	cases := []struct {
 		line    string
 		success bool
@@ -22,7 +22,7 @@ func TestMarginalize(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result := marginalize(c.line)
+		result := Parse(c.line)
 		if c.success && result == nil {
 			t.Errorf("expected “%v” to succeed", c.line)
 		} else if !c.success && result != nil {

@@ -1,4 +1,4 @@
-package main
+package sprob
 
 import (
 	"regexp"
@@ -9,7 +9,7 @@ import (
 	"github.com/ready-steady/prob/beta"
 )
 
-func marginalize(line string) func(max float64) prob.Inverter {
+func Parse(line string) func(min, max float64) prob.Inverter {
 	re := regexp.MustCompile("^(.+)\\((.+)\\)$")
 
 	chunks := re.FindStringSubmatch(line)
@@ -36,8 +36,8 @@ func marginalize(line string) func(max float64) prob.Inverter {
 			return nil
 		}
 
-		return func(max float64) prob.Inverter {
-			return beta.New(α, β, 0, max)
+		return func(min, max float64) prob.Inverter {
+			return beta.New(α, β, min, max)
 		}
 	}
 
