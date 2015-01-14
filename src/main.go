@@ -9,9 +9,9 @@ import (
 	"github.com/ready-steady/format/mat"
 )
 
-var config = flag.String("config", "", "")
-var input = flag.String("input", "", "")
-var output = flag.String("output", "", "")
+var config = flag.String("c", "", "")
+var input = flag.String("i", "", "")
+var output = flag.String("o", "", "")
 
 func main() {
 	if len(os.Args) == 1 {
@@ -82,14 +82,14 @@ func printUsage() {
 	fmt.Printf(`
 
 Commands:
-    show  - to display the configuration of a problem
-    solve - to construct a surrogate model
-    check - to assess a surrogate model
+    show        - to display the configuration of a problem
+    solve       - to construct a surrogate model
+    check       - to assess a surrogate model
 
 Options:
-    config - a problem specification in JSON (required)
-    input  - an input MAT file
-    output - an output MAT file
+    -c <FILE>   - a problem specification in JSON (required)
+    -i <FILE>   - an input MAT file
+    -o <FILE>   - an output MAT file
 `)
 }
 
