@@ -5,7 +5,7 @@ import (
 	"errors"
 	"os"
 
-	"github.com/ready-steady/tempan/expint"
+	"github.com/ready-steady/simulation/temperature"
 
 	"../../pkg/solver"
 )
@@ -37,7 +37,7 @@ type Config struct {
 
 	// The configuration of the algorithm for temperature analysis. Specific to
 	// the temperature-profile target.
-	TempAnalysis expint.Config
+	TempAnalysis temperature.Config
 
 	// The configuration of the solver.
 	Solver solver.Config

@@ -10,7 +10,7 @@ import (
 	"github.com/ready-steady/numan/interp/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
-	"github.com/ready-steady/stats/assess"
+	"github.com/ready-steady/statistics/assess"
 )
 
 func findCommand(name string) func(*problem, *mat.File, *mat.File) error {

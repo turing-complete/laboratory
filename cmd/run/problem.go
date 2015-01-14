@@ -4,14 +4,14 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ready-steady/persim/system"
-	"github.com/ready-steady/persim/time"
 	"github.com/ready-steady/probability"
-	"github.com/ready-steady/stats/corr"
+	"github.com/ready-steady/simulation/system"
+	"github.com/ready-steady/simulation/time"
+	"github.com/ready-steady/statistics/correlation"
 
 	"../../pkg/acorr"
-	"../../pkg/solver"
 	"../../pkg/probconv"
+	"../../pkg/solver"
 )
 
 type problem struct {
@@ -74,7 +74,7 @@ func newProblem(config Config) (*problem, error) {
 	p.uc = uint32(len(c.TaskIndex))
 
 	C := acorr.Compute(application, c.TaskIndex, c.ProbModel.CorrLength)
-	p.transform, p.zc, err = corr.Decompose(C, p.uc, c.ProbModel.VarThreshold)
+	p.transform, p.zc, err = correlation.Decompose(C, p.uc, c.ProbModel.VarThreshold)
 	if err != nil {
 		return nil, err
 	}

@@ -9,9 +9,9 @@ import (
 	"unsafe"
 
 	"github.com/ready-steady/linal/matrix"
-	"github.com/ready-steady/persim/power"
 	"github.com/ready-steady/probability/gaussian"
-	"github.com/ready-steady/tempan/expint"
+	"github.com/ready-steady/simulation/power"
+	"github.com/ready-steady/simulation/temperature"
 
 	"../../pkg/solver"
 )
@@ -24,7 +24,7 @@ type tempTarget struct {
 	sc uint32 // steps
 
 	power       *power.Power
-	temperature *expint.Solver
+	temperature *temperature.Solver
 }
 
 func newTempTarget(p *problem) (target, error) {
@@ -35,7 +35,7 @@ func newTempTarget(p *problem) (target, error) {
 	}
 
 	power := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
-	temperature, err := expint.New(expint.Config(c.TempAnalysis))
+	temperature, err := temperature.New(temperature.Config(c.TempAnalysis))
 	if err != nil {
 		return nil, err
 	}

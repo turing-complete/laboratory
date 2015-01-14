@@ -3,7 +3,7 @@ package acorr
 import (
 	"math"
 
-	"github.com/ready-steady/persim/system"
+	"github.com/ready-steady/simulation/system"
 )
 
 func Compute(application *system.Application, index []uint16, length float64) []float64 {

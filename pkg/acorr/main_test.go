@@ -4,8 +4,8 @@ import (
 	"math"
 	"testing"
 
-	"github.com/ready-steady/persim/system"
-	"github.com/ready-steady/stats/decomp"
+	"github.com/ready-steady/simulation/system"
+	"github.com/ready-steady/statistics/decomposition"
 	"github.com/ready-steady/support/assert"
 )
 
@@ -13,7 +13,7 @@ func TestCorrelate(t *testing.T) {
 	_, application, _ := system.Load("fixtures/002_020.tgff")
 
 	C := Compute(application, index(20), 2)
-	_, _, err := decomp.CovPCA(C, 20)
+	_, _, err := decomposition.CovPCA(C, 20)
 	assert.Success(err, t)
 
 	C = Compute(application, index(1), 2)
