@@ -1,4 +1,4 @@
-package acorr
+package correlation
 
 import (
 	"math"
