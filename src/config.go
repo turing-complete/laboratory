@@ -80,10 +80,6 @@ func (c *Config) validate() error {
 		return errors.New("the variance-reduction threshold is invalid")
 	}
 
-	if c.TempAnalysis.TimeStep <= 0 {
-		return errors.New("the time step is invalid")
-	}
-
 	if c.Interpolation.AbsError <= 0 {
 		return errors.New("the absolute-error tolerance is invalid")
 	}

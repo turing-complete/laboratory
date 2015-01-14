@@ -1,0 +1,28 @@
+{
+	"tgff": "assets/002_020.tgff",
+
+	"coreIndex": [0],
+	"taskIndex": [0],
+
+	"probModel": {
+		"maxDelay": 0.2,
+		"marginal": "Beta(1, 1)",
+		"corrLength": 5,
+		"varThreshold": 0.95
+	},
+
+	"target": "end-to-end-delay",
+
+	"workers": 0,
+	"interpolation": {
+		"minLevel": 1,
+		"maxLevel": 9,
+		"absError": 1e-2,
+		"relError": 1e-2
+	},
+
+	"seed": 0,
+	"samples": 1000,
+
+	"verbose": true
+}
