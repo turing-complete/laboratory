@@ -14,13 +14,7 @@ type spanTarget struct {
 }
 
 func newSpanTarget(p *problem) (target, error) {
-	target := &tempTarget{
-		problem: p,
-
-		ic: p.zc,
-	}
-
-	return target, nil
+	return &spanTarget{problem: p, ic: p.zc}, nil
 }
 
 func (t *spanTarget) String() string {
