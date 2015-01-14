@@ -11,7 +11,7 @@ import (
 
 	"../../pkg/acorr"
 	"../../pkg/solver"
-	"../../pkg/sprob"
+	"../../pkg/probconv"
 )
 
 type problem struct {
@@ -80,7 +80,7 @@ func newProblem(config Config) (*problem, error) {
 	}
 
 	p.marginals = make([]prob.Inverter, p.uc)
-	marginalizer := sprob.Parse(c.ProbModel.Marginal)
+	marginalizer := probconv.ParseInverter(c.ProbModel.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
 	}

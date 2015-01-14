@@ -1,10 +1,10 @@
-package sprob
+package probconv
 
 import (
 	"testing"
 )
 
-func TestParse(t *testing.T) {
+func TestParseInverter(t *testing.T) {
 	cases := []struct {
 		line    string
 		success bool
@@ -22,7 +22,7 @@ func TestParse(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result := Parse(c.line)
+		result := ParseInverter(c.line)
 		if c.success && result == nil {
 			t.Errorf("expected “%v” to succeed", c.line)
 		} else if !c.success && result != nil {
