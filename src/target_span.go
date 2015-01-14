@@ -52,9 +52,8 @@ func (t *spanTarget) Serve(jobs <-chan job) {
 			d[tid] = m[i].InvCDF(g.CDF(u[i]))
 		}
 
-		span := make([]float64, 1)
-		span[0] = p.time.Recompute(p.schedule, d).Span
+		job.value[0] = p.time.Recompute(p.schedule, d).Span
 
-		job.done <- result{data: span}
+		job.done <- result{}
 	}
 }
