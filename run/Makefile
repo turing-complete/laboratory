@@ -1,5 +1,5 @@
 bin := run
-src := ../src
+src := ../cmd/run
 gos := $(wildcard $(src)/*.go)
 
 cases := 002_020_span
