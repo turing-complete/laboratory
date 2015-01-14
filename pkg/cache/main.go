@@ -1,4 +1,4 @@
-package main
+package cache
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 // No cuncurrent access for now!
-type cache struct {
+type Cache struct {
 	hc uint32
 	mc uint32
 
@@ -16,28 +16,28 @@ type cache struct {
 	storage map[string][]float64
 }
 
-func (c *cache) String() string {
+func (c *Cache) String() string {
 	return fmt.Sprintf("Cache{hits: %d (%.2f%%), misses: %d (%.2f%%)}",
 		c.hc, float64(c.hc)/float64(c.hc+c.mc)*100,
 		c.mc, float64(c.mc)/float64(c.hc+c.mc)*100)
 }
 
-func newCache(length uint32, space uint32) *cache {
-	return &cache{
+func New(length uint32, space uint32) *Cache {
+	return &Cache{
 		length:  length,
 		buffer:  make([]byte, 8*length),
 		storage: make(map[string][]float64, space),
 	}
 }
 
-func (c *cache) key(sequence []uint64) string {
+func (c *Cache) Key(sequence []uint64) string {
 	for i := uint32(0); i < c.length; i++ {
 		*(*uint64)(unsafe.Pointer(&c.buffer[8*i])) = sequence[i]
 	}
 	return string(c.buffer)
 }
 
-func (c *cache) get(key string) []float64 {
+func (c *Cache) Get(key string) []float64 {
 	value := c.storage[key]
 
 	if value != nil {
@@ -49,10 +49,10 @@ func (c *cache) get(key string) []float64 {
 	return value
 }
 
-func (c *cache) set(key string, value []float64) {
+func (c *Cache) Set(key string, value []float64) {
 	c.storage[key] = value
 }
 
-func (c *cache) flush() {
+func (c *Cache) Flush() {
 	c.storage = make(map[string][]float64, len(c.storage))
 }

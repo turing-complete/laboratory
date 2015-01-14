@@ -4,6 +4,8 @@ import (
 	"fmt"
 
 	"github.com/ready-steady/numan/interp/adhier"
+
+	"../../pkg/cache"
 )
 
 const (
@@ -23,7 +25,7 @@ func (s *cachedSolver) Construct() *adhier.Surrogate {
 	ic, oc, fc := s.ic, s.oc, s.fc
 	NC, EC := uint32(0), uint32(0)
 
-	cache := newCache(p.zc, cacheCapacity)
+	cache := cache.New(p.zc, cacheCapacity)
 	jobs := s.spawnWorkers()
 
 	if c.Verbose {
@@ -43,9 +45,9 @@ func (s *cachedSolver) Construct() *adhier.Surrogate {
 		values := make([]float64, oc*nc)
 
 		for i := uint32(0); i < nc; i++ {
-			key := cache.key(index[fc+i*ic:])
+			key := cache.Key(index[fc+i*ic:])
 
-			data := cache.get(key)
+			data := cache.Get(key)
 			if data == nil {
 				ec++
 			}
@@ -61,7 +63,7 @@ func (s *cachedSolver) Construct() *adhier.Surrogate {
 
 		for i := uint32(0); i < nc; i++ {
 			result := <-done
-			cache.set(result.key, result.data)
+			cache.Set(result.key, result.data)
 		}
 
 		EC += ec
