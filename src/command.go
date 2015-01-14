@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"time"
 
 	"github.com/ready-steady/format/mat"
 	"github.com/ready-steady/numan/interp/adhier"
@@ -97,7 +98,11 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 
 	ic, oc := target.InputsOutputs()
 
-	rand.Seed(problem.config.Seed)
+	if problem.config.Seed > 0 {
+		rand.Seed(problem.config.Seed)
+	} else {
+		rand.Seed(time.Now().Unix())
+	}
 	points := prob.Sample(uniform.New(0, 1), sc*ic)
 
 	var values, realValues []float64
