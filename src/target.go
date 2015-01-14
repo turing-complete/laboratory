@@ -4,6 +4,11 @@ import (
 	"errors"
 )
 
+type target interface {
+	InputsOutputs() (uint32, uint32)
+	Serve(<-chan job)
+}
+
 type job struct {
 	key   string
 	data  []float64
@@ -15,11 +20,6 @@ type job struct {
 type result struct {
 	key  string
 	data []float64
-}
-
-type target interface {
-	InputsOutputs() (uint32, uint32)
-	Serve(<-chan job)
 }
 
 func newTarget(p *problem) (target, error) {

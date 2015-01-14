@@ -10,7 +10,13 @@ const (
 	cacheCapacity = 1000
 )
 
-func (s *solver) constructCached() *adhier.Surrogate {
+type cachedSolver struct {
+	*baseSolver
+
+	fc uint32 // fake inputs like time
+}
+
+func (s *cachedSolver) Construct() *adhier.Surrogate {
 	p := s.problem
 	c := &p.config
 

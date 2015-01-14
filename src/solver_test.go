@@ -11,6 +11,6 @@ func BenchmarkSolverConstruct(b *testing.B) {
 		problem, _ := newProblem(config)
 		target, _ := newTarget(problem)
 		solver := newSolver(problem, target)
-		solver.construct()
+		solver.Construct()
 	}
 }

@@ -6,7 +6,11 @@ import (
 	"github.com/ready-steady/numan/interp/adhier"
 )
 
-func (s *solver) constructDirect() *adhier.Surrogate {
+type directSolver struct {
+	*baseSolver
+}
+
+func (s *directSolver) Construct() *adhier.Surrogate {
 	c := &s.problem.config
 
 	ic, oc := s.ic, s.oc

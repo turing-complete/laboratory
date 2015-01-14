@@ -54,7 +54,7 @@ func solve(problem *problem, _ *mat.File, f *mat.File) error {
 
 	var surrogate *adhier.Surrogate
 	track("Constructing a surrogate...", true, func() {
-		surrogate = solver.construct()
+		surrogate = solver.Construct()
 	})
 
 	fmt.Println(surrogate)
@@ -103,11 +103,11 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 	var values, realValues []float64
 
 	track("Evaluating the surrogate model...", true, func() {
-		values = solver.evaluate(surrogate, points)
+		values = solver.Evaluate(surrogate, points)
 	})
 
 	track("Evaluating the original model...", true, func() {
-		realValues = solver.compute(points)
+		realValues = solver.Compute(points)
 	})
 
 	fmt.Printf("NRMSE: %e\n", assess.NRMSE(values, realValues))
