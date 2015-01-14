@@ -12,6 +12,8 @@ import (
 	"github.com/ready-steady/persim/power"
 	"github.com/ready-steady/prob/gaussian"
 	"github.com/ready-steady/tempan/expint"
+
+	"../../pkg/solver"
 )
 
 type tempTarget struct {
@@ -60,7 +62,7 @@ func (t *tempTarget) InputsOutputs() (uint32, uint32) {
 	return t.ic, t.oc
 }
 
-func (t *tempTarget) Serve(jobs <-chan job) {
+func (t *tempTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
 	c := &p.config
 
@@ -78,14 +80,14 @@ func (t *tempTarget) Serve(jobs <-chan job) {
 	d := make([]float64, p.tc)
 
 	for job := range jobs {
-		Q := job.data
+		Q := job.Data
 
 		if Q == nil {
 			Q = make([]float64, cc*sc)
 
 			// Independent uniform to independent Gaussian
 			for i := uint32(0); i < zc; i++ {
-				z[i] = g.InvCDF(job.node[1+i]) // +1 for time
+				z[i] = g.InvCDF(job.Node[1+i]) // +1 for time
 			}
 
 			// Independent Gaussian to dependent Gaussian
@@ -103,11 +105,11 @@ func (t *tempTarget) Serve(jobs <-chan job) {
 			t.temperature.ComputeTransient(P, Q, S, sc)
 		}
 
-		sid := uint32(job.node[0] * float64(sc-1))
+		sid := uint32(job.Node[0] * float64(sc-1))
 		for i := uint32(0); i < oc; i++ {
-			job.value[i] = Q[sid*cc+uint32(coreIndex[i])]
+			job.Value[i] = Q[sid*cc+uint32(coreIndex[i])]
 		}
 
-		job.done <- result{job.key, Q}
+		job.Done <- solver.Result{job.Key, Q}
 	}
 }

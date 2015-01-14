@@ -5,8 +5,9 @@ import (
 	"errors"
 	"os"
 
-	"github.com/ready-steady/numan/interp/adhier"
 	"github.com/ready-steady/tempan/expint"
+
+	"../../pkg/solver"
 )
 
 type Config struct {
@@ -38,17 +39,15 @@ type Config struct {
 	// the temperature-profile target.
 	TempAnalysis expint.Config
 
-	// The number of workers evaluating of the quantity of interest.
-	Workers uint8
-	// The configuration of the algorithm for interpolation.
-	Interpolation adhier.Config
+	// The configuration of the solver.
+	Solver solver.Config
 
 	// The seed for random number generation.
 	Seed int64
 	// The number of samples to take.
 	Samples uint32
 
-	// True to display progress information.
+	// A flag for displaying progress information.
 	Verbose bool
 }
 
@@ -78,13 +77,6 @@ func (c *Config) validate() error {
 	}
 	if c.ProbModel.VarThreshold <= 0 || 1 < c.ProbModel.VarThreshold {
 		return errors.New("the variance-reduction threshold is invalid")
-	}
-
-	if c.Interpolation.AbsError <= 0 {
-		return errors.New("the absolute-error tolerance is invalid")
-	}
-	if c.Interpolation.RelError <= 0 {
-		return errors.New("the relative-error tolerance is invalid")
 	}
 
 	return nil

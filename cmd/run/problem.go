@@ -10,6 +10,7 @@ import (
 	"github.com/ready-steady/stats/corr"
 
 	"../../pkg/acorr"
+	"../../pkg/solver"
 	"../../pkg/sprob"
 )
 
@@ -89,4 +90,25 @@ func newProblem(config Config) (*problem, error) {
 	}
 
 	return p, nil
+}
+
+func (p *problem) setup() (target, *solver.Solver, error) {
+	target, err := newTarget(p)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ic, oc := target.InputsOutputs()
+
+	config := p.config.Solver
+	config.Inputs = uint16(ic)
+	config.Outputs = uint16(oc)
+	config.CacheInputs = uint16(ic - p.zc)
+
+	solver, err := solver.New(config, target.Serve)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return target, solver, nil
 }

@@ -5,6 +5,8 @@ import (
 
 	"github.com/ready-steady/linal/matrix"
 	"github.com/ready-steady/prob/gaussian"
+
+	"../../pkg/solver"
 )
 
 type spanTarget struct {
@@ -25,7 +27,7 @@ func (t *spanTarget) InputsOutputs() (uint32, uint32) {
 	return t.ic, 1
 }
 
-func (t *spanTarget) Serve(jobs <-chan job) {
+func (t *spanTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
 	c := &p.config
 
@@ -41,7 +43,7 @@ func (t *spanTarget) Serve(jobs <-chan job) {
 	for job := range jobs {
 		// Independent uniform to independent Gaussian
 		for i := uint32(0); i < zc; i++ {
-			z[i] = g.InvCDF(job.node[i])
+			z[i] = g.InvCDF(job.Node[i])
 		}
 
 		// Independent Gaussian to dependent Gaussian
@@ -52,8 +54,8 @@ func (t *spanTarget) Serve(jobs <-chan job) {
 			d[tid] = m[i].InvCDF(g.CDF(u[i]))
 		}
 
-		job.value[0] = p.time.Recompute(p.schedule, d).Span
+		job.Value[0] = p.time.Recompute(p.schedule, d).Span
 
-		job.done <- result{}
+		job.Done <- solver.Result{}
 	}
 }

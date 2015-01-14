@@ -23,12 +23,15 @@
 		"ambientTemp": 318.15
 	},
 
-	"workers": 0,
-	"interpolation": {
-		"minLevel": 1,
-		"maxLevel": 9,
-		"absError": 1e-2,
-		"relError": 1e-2
+	"solver": {
+		"workers": 0,
+		"interpolation": {
+			"minLevel": 1,
+			"maxLevel": 9,
+			"absError": 1e-2,
+			"relError": 1e-2
+		},
+		"verbose": true
 	},
 
 	"seed": 0,

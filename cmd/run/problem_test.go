@@ -67,6 +67,16 @@ func TestNewProblemProbModel(t *testing.T) {
 	}, t)
 }
 
+func BenchmarkSolverConstruct(b *testing.B) {
+	config, _ := loadConfig("fixtures/002_020.json")
+
+	for i := 0; i < b.N; i++ {
+		problem, _ := newProblem(config)
+		_, solver, _ := problem.setup()
+		solver.Construct()
+	}
+}
+
 func index(count uint16) []uint16 {
 	index := make([]uint16, count)
 

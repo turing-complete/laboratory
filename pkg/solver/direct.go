@@ -1,4 +1,4 @@
-package main
+package solver
 
 import (
 	"fmt"
@@ -6,19 +6,15 @@ import (
 	"github.com/ready-steady/numan/interp/adhier"
 )
 
-type directSolver struct {
-	*baseSolver
-}
+func (s *Solver) constructDirect() *adhier.Surrogate {
+	verbose := s.config.Verbose
 
-func (s *directSolver) Construct() *adhier.Surrogate {
-	c := &s.problem.config
-
-	ic, oc := s.ic, s.oc
+	ic, oc := uint32(s.config.Inputs), uint32(s.config.Outputs)
 	NC := uint32(0)
 
 	jobs := s.spawnWorkers()
 
-	if c.Verbose {
+	if verbose {
 		fmt.Printf("%12s %12s\n", "New nodes", "Total nodes")
 	}
 
@@ -26,18 +22,18 @@ func (s *directSolver) Construct() *adhier.Surrogate {
 		nc := uint32(len(nodes)) / ic
 		NC += nc
 
-		if c.Verbose {
+		if verbose {
 			fmt.Printf("%12d %12d\n", nc, NC)
 		}
 
-		done := make(chan result, nc)
+		done := make(chan Result, nc)
 		values := make([]float64, oc*nc)
 
 		for i := uint32(0); i < nc; i++ {
-			jobs <- job{
-				node:  nodes[i*ic:],
-				value: values[i*oc:],
-				done:  done,
+			jobs <- Job{
+				Node:  nodes[i*ic:],
+				Value: values[i*oc:],
+				Done:  done,
 			}
 		}
 

@@ -2,24 +2,13 @@ package main
 
 import (
 	"errors"
+
+	"../../pkg/solver"
 )
 
 type target interface {
 	InputsOutputs() (uint32, uint32)
-	Serve(<-chan job)
-}
-
-type job struct {
-	key   string
-	data  []float64
-	node  []float64
-	value []float64
-	done  chan<- result
-}
-
-type result struct {
-	key  string
-	data []float64
+	Serve(<-chan solver.Job)
 }
 
 func newTarget(p *problem) (target, error) {

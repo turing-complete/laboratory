@@ -44,11 +44,10 @@ func show(problem *problem, f *mat.File, _ *mat.File) error {
 }
 
 func solve(problem *problem, _ *mat.File, f *mat.File) error {
-	target, err := newTarget(problem)
+	target, solver, err := problem.setup()
 	if err != nil {
 		return err
 	}
-	solver := newSolver(problem, target)
 
 	fmt.Println(problem)
 	fmt.Println(target)
@@ -72,11 +71,10 @@ func solve(problem *problem, _ *mat.File, f *mat.File) error {
 }
 
 func check(problem *problem, fi *mat.File, fo *mat.File) error {
-	target, err := newTarget(problem)
+	target, solver, err := problem.setup()
 	if err != nil {
 		return err
 	}
-	solver := newSolver(problem, target)
 
 	fmt.Println(problem)
 	fmt.Println(target)
