@@ -19,7 +19,7 @@ func (s *directSolver) Construct() *adhier.Surrogate {
 	jobs := s.spawnWorkers()
 
 	if c.Verbose {
-		fmt.Printf("%12s %12s\n", "new nodes", "total nodes")
+		fmt.Printf("%12s %12s\n", "New nodes", "Total nodes")
 	}
 
 	surrogate := s.interpolator.Compute(func(nodes []float64, index []uint64) []float64 {

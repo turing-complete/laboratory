@@ -28,7 +28,7 @@ func (s *cachedSolver) Construct() *adhier.Surrogate {
 
 	if c.Verbose {
 		fmt.Printf("%12s %12s (%6s) %12s %12s (%6s)\n",
-			"new nodes", "new evals", "%", "total nodes", "total evals", "%")
+			"New nodes", "New evals", "%", "Total nodes", "Total evals", "%")
 	}
 
 	surrogate := s.interpolator.Compute(func(nodes []float64, index []uint64) []float64 {
