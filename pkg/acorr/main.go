@@ -1,4 +1,4 @@
-package appcorr
+package acorr
 
 import (
 	"math"

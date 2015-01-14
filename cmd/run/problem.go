@@ -9,7 +9,7 @@ import (
 	"github.com/ready-steady/prob"
 	"github.com/ready-steady/stats/corr"
 
-	"../../pkg/appcorr"
+	"../../pkg/acorr"
 	"../../pkg/sprob"
 )
 
@@ -72,7 +72,7 @@ func newProblem(config Config) (*problem, error) {
 
 	p.uc = uint32(len(c.TaskIndex))
 
-	C := appcorr.Compute(application, c.TaskIndex, c.ProbModel.CorrLength)
+	C := acorr.Compute(application, c.TaskIndex, c.ProbModel.CorrLength)
 	p.transform, p.zc, err = corr.Decompose(C, p.uc, c.ProbModel.VarThreshold)
 	if err != nil {
 		return nil, err
