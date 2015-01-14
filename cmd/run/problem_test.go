@@ -66,3 +66,13 @@ func TestNewProblemProbModel(t *testing.T) {
 		0.0038, 0.0010, 0.0068, 0.0070, 0.0078, 0.0044, 0.0004, 0.0058, 0.0056, 0.0040,
 	}, t)
 }
+
+func index(count uint16) []uint16 {
+	index := make([]uint16, count)
+
+	for i := uint16(0); i < count; i++ {
+		index[i] = i
+	}
+
+	return index
+}
