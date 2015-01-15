@@ -24,7 +24,7 @@ type tempTarget struct {
 	sc uint32 // steps
 
 	power       *power.Power
-	temperature *temperature.Solver
+	temperature *temperature.Temperature
 }
 
 func newTempTarget(p *problem) (target, error) {
