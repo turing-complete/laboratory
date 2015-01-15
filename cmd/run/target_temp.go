@@ -4,7 +4,6 @@ package main
 import "C"
 
 import (
-	"errors"
 	"fmt"
 	"unsafe"
 
@@ -30,11 +29,11 @@ type tempTarget struct {
 func newTempTarget(p *problem) (target, error) {
 	c := &p.config
 
-	if c.TempAnalysis.TimeStep <= 0 {
-		return nil, errors.New("the time step is invalid")
+	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
+	if err != nil {
+		return nil, err
 	}
 
-	power := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
 	temperature, err := temperature.New(temperature.Config(c.TempAnalysis))
 	if err != nil {
 		return nil, err

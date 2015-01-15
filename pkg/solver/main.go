@@ -1,7 +1,6 @@
 package solver
 
 import (
-	"errors"
 	"fmt"
 	"runtime"
 
@@ -45,16 +44,12 @@ type Solver struct {
 }
 
 func New(config Config, target func(<-chan Job)) (*Solver, error) {
-	if config.Interpolation.AbsError <= 0 {
-		return nil, errors.New("the absolute-error tolerance is invalid")
-	}
-	if config.Interpolation.RelError <= 0 {
-		return nil, errors.New("the relative-error tolerance is invalid")
-	}
-
-	interpolator := adhier.New(newcot.NewOpen(config.Inputs),
+	interpolator, err := adhier.New(newcot.NewOpen(config.Inputs),
 		linhat.NewOpen(config.Inputs), adhier.Config(config.Interpolation),
 		config.Outputs)
+	if err != nil {
+		return nil, err
+	}
 
 	solver := &Solver{
 		config:       config,
