@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/ready-steady/format/mat"
-	"github.com/ready-steady/numan/interp/adhier"
+	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
 	"github.com/ready-steady/statistics/metric"

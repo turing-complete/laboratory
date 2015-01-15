@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/ready-steady/numan/basis/linhat"
-	"github.com/ready-steady/numan/grid/newcot"
-	"github.com/ready-steady/numan/interp/adhier"
+	"github.com/ready-steady/numeric/basis/linhat"
+	"github.com/ready-steady/numeric/grid/newcot"
+	"github.com/ready-steady/numeric/interpolation/adhier"
 )
 
 type Job struct {

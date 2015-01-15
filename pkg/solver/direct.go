@@ -3,7 +3,7 @@ package solver
 import (
 	"fmt"
 
-	"github.com/ready-steady/numan/interp/adhier"
+	"github.com/ready-steady/numeric/interpolation/adhier"
 )
 
 func (s *Solver) constructDirect() *adhier.Surrogate {
