@@ -10,7 +10,7 @@ import (
 	"github.com/ready-steady/numan/interp/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
-	"github.com/ready-steady/statistics/assess"
+	"github.com/ready-steady/statistics/metric"
 )
 
 func findCommand(name string) func(*problem, *mat.File, *mat.File) error {
@@ -113,7 +113,7 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 		realValues = solver.Compute(points)
 	})
 
-	fmt.Printf("NRMSE: %e\n", assess.NRMSE(values, realValues))
+	fmt.Printf("NRMSE: %e\n", metric.NRMSE(values, realValues))
 
 	if fo == nil {
 		return nil
