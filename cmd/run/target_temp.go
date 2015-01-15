@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"unsafe"
 
-	"github.com/ready-steady/linal/matrix"
+	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability/gaussian"
 	"github.com/ready-steady/simulation/power"
 	"github.com/ready-steady/simulation/temperature"

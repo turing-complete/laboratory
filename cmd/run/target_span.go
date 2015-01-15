@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ready-steady/linal/matrix"
+	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability/gaussian"
 
 	"../../pkg/solver"
