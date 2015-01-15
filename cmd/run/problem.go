@@ -10,7 +10,7 @@ import (
 	"github.com/ready-steady/statistics/correlation"
 
 	acorrelation "../../pkg/correlation"
-	"../../pkg/probconv"
+	aprobability "../../pkg/probability"
 	"../../pkg/solver"
 )
 
@@ -80,7 +80,7 @@ func newProblem(config Config) (*problem, error) {
 	}
 
 	p.marginals = make([]probability.Inverter, p.uc)
-	marginalizer := probconv.ParseInverter(c.ProbModel.Marginal)
+	marginalizer := aprobability.ParseInverter(c.ProbModel.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
 	}

@@ -1,4 +1,4 @@
-package probconv
+package probability
 
 import (
 	"regexp"
