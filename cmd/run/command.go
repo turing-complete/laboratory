@@ -27,7 +27,7 @@ func findCommand(name string) func(*problem, *mat.File, *mat.File) error {
 }
 
 func show(problem *problem, f *mat.File, _ *mat.File) error {
-	fmt.Println(problem)
+	problem.log(problem)
 
 	if f == nil {
 		return nil
@@ -38,7 +38,7 @@ func show(problem *problem, f *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	fmt.Println(surrogate)
+	problem.log(surrogate)
 
 	return nil
 }
@@ -49,15 +49,17 @@ func solve(problem *problem, _ *mat.File, f *mat.File) error {
 		return err
 	}
 
-	fmt.Println(problem)
-	fmt.Println(target)
+	problem.log(problem)
+	problem.log(target)
 
 	var surrogate *adhier.Surrogate
-	track("Constructing a surrogate...", true, func() {
-		surrogate = solver.Construct()
-	})
 
-	fmt.Println(surrogate)
+	problem.log("Constructing a surrogate...")
+	problem.log("Done in %v.", track(func() {
+		surrogate = solver.Construct()
+	}))
+
+	problem.log(surrogate)
 
 	if f == nil {
 		return nil
@@ -76,8 +78,8 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 		return err
 	}
 
-	fmt.Println(problem)
-	fmt.Println(target)
+	problem.log(problem)
+	problem.log(target)
 
 	surrogate := new(adhier.Surrogate)
 	if fi == nil {
@@ -105,13 +107,15 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 
 	var values, realValues []float64
 
-	track("Evaluating the surrogate model...", true, func() {
+	problem.log("Evaluating the surrogate model...")
+	problem.log("Done in %v.", track(func() {
 		values = solver.Evaluate(surrogate, points)
-	})
+	}))
 
-	track("Evaluating the original model...", true, func() {
+	problem.log("Evaluating the original model...")
+	problem.log("Done in %v.", track(func() {
 		realValues = solver.Compute(points)
-	})
+	}))
 
 	fmt.Printf("NRMSE: %e\n", metric.NRMSE(values, realValues))
 

@@ -112,3 +112,9 @@ func (p *problem) setup() (target, *solver.Solver, error) {
 
 	return target, solver, nil
 }
+
+func (p *problem) log(a ...interface{}) {
+	if p.config.Verbose {
+		fmt.Println(a...)
+	}
+}
