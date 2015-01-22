@@ -27,7 +27,7 @@ func findCommand(name string) func(*problem, *mat.File, *mat.File) error {
 }
 
 func show(problem *problem, f *mat.File, _ *mat.File) error {
-	problem.log(problem)
+	fmt.Println(problem)
 
 	if f == nil {
 		return nil
@@ -38,7 +38,7 @@ func show(problem *problem, f *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	problem.log(surrogate)
+	fmt.Println(surrogate)
 
 	return nil
 }
@@ -89,7 +89,7 @@ func check(problem *problem, fi *mat.File, fo *mat.File) error {
 		return err
 	}
 
-	fmt.Println(surrogate)
+	problem.log(surrogate)
 
 	sc := problem.config.Samples
 	if sc == 0 {

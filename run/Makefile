@@ -13,7 +13,8 @@ $(bin): $(gos)
 
 $(cases): $(bin)
 	@./run solve -c assets/$@.json -o solve_$@.mat
-	@./run check -c assets/$@.json -i solve_$@.mat -o check_$@.mat
+	@./run show -c assets/$@.json -i solve_$@.mat
+	@./run check -c assets/$@.json -i solve_$@.mat
 
 test:
 	cd $(src) && go test
