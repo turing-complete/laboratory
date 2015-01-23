@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"testing"
@@ -72,7 +72,7 @@ func BenchmarkSolverConstruct(b *testing.B) {
 
 	for i := 0; i < b.N; i++ {
 		problem, _ := newProblem(config)
-		_, solver, _ := problem.setup()
+		_, solver, _ := problem.Setup()
 		solver.Construct()
 	}
 }

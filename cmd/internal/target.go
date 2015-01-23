@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"errors"
@@ -6,12 +6,12 @@ import (
 	"../../pkg/solver"
 )
 
-type target interface {
+type Target interface {
 	InputsOutputs() (uint32, uint32)
 	Serve(<-chan solver.Job)
 }
 
-func newTarget(p *problem) (target, error) {
+func newTarget(p *Problem) (Target, error) {
 	switch p.config.Target {
 	case "end-to-end-delay":
 		return newSpanTarget(p)

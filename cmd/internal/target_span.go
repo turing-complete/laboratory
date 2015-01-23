@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"fmt"
@@ -10,12 +10,12 @@ import (
 )
 
 type spanTarget struct {
-	problem *problem
+	problem *Problem
 
 	ic uint32 // inputs
 }
 
-func newSpanTarget(p *problem) (target, error) {
+func newSpanTarget(p *Problem) (Target, error) {
 	return &spanTarget{problem: p, ic: p.zc}, nil
 }
 

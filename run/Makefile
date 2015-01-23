@@ -1,25 +1,26 @@
-bin := run
-src := ../cmd/run
-gos := $(wildcard $(src)/*.go)
+pwd := $(shell pwd)
+srcs := $(pwd)/../cmd
+bins := solve show check
 
 cases := 002_020_span
 cases += 002_020_temp 002_040_temp 004_080_temp
 
-all: $(bin)
+all: $(bins)
 
-$(bin): $(gos)
-	cd $(src) && go build -o $@
-	mv $(src)/$@ $@
+define define_bin
+$(1): $(shell find $(srcs)/$(1) -name '*.go')
+	cd $(srcs)/$(1) && go build
+	mv $(srcs)/$(1)/$(1) $(1)
+endef
 
-$(cases): $(bin)
-	@./run solve -c assets/$@.json -o solve_$@.mat
-	@./run show -c assets/$@.json -i solve_$@.mat
-	@./run check -c assets/$@.json -i solve_$@.mat
+$(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
-test:
-	cd $(src) && go test
+$(cases): $(bins)
+	@./solve -c assets/$@.json -o solve_$@.mat
+	@./show -c assets/$@.json -i solve_$@.mat
+	@./check -c assets/$@.json -i solve_$@.mat
 
 clean:
-	rm -f $(bin) *.mat
+	rm -f $(bins) *.mat
 
-.PHONY: all test clean
+.PHONY: all clean

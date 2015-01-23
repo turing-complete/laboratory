@@ -1,4 +1,4 @@
-package main
+package internal
 
 import (
 	"errors"
@@ -14,7 +14,7 @@ import (
 	"../../pkg/solver"
 )
 
-type problem struct {
+type Problem struct {
 	config Config
 
 	platform    *system.Platform
@@ -33,15 +33,15 @@ type problem struct {
 	schedule *time.Schedule
 }
 
-func (p *problem) String() string {
+func (p *Problem) String() string {
 	return fmt.Sprintf("Problem{cores: %d, tasks: %d, dvars: %d, ivars: %d}",
 		p.cc, p.tc, p.uc, p.zc)
 }
 
-func newProblem(config Config) (*problem, error) {
+func newProblem(config Config) (*Problem, error) {
 	var err error
 
-	p := &problem{config: config}
+	p := &Problem{config: config}
 	c := &p.config
 
 	platform, application, err := system.Load(c.TGFF)
@@ -92,7 +92,7 @@ func newProblem(config Config) (*problem, error) {
 	return p, nil
 }
 
-func (p *problem) setup() (target, *solver.Solver, error) {
+func (p *Problem) Setup() (Target, *solver.Solver, error) {
 	target, err := newTarget(p)
 	if err != nil {
 		return nil, nil, err
@@ -113,7 +113,7 @@ func (p *problem) setup() (target, *solver.Solver, error) {
 	return target, solver, nil
 }
 
-func (p *problem) log(a ...interface{}) {
+func (p *Problem) Log(a ...interface{}) {
 	if p.config.Verbose {
 		fmt.Println(a...)
 	}

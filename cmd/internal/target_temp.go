@@ -1,4 +1,4 @@
-package main
+package internal
 
 // #include <string.h>
 import "C"
@@ -16,7 +16,7 @@ import (
 )
 
 type tempTarget struct {
-	problem *problem
+	problem *Problem
 
 	ic uint32 // inputs
 	oc uint32 // outputs
@@ -26,7 +26,7 @@ type tempTarget struct {
 	temperature *temperature.Temperature
 }
 
-func newTempTarget(p *problem) (target, error) {
+func newTempTarget(p *Problem) (Target, error) {
 	c := &p.config
 
 	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
