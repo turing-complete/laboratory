@@ -27,8 +27,8 @@ func command(config *internal.Config, problem *internal.Problem,
 		return err
 	}
 
-	problem.Log(problem)
-	problem.Log(target)
+	problem.Println(problem)
+	problem.Println(target)
 
 	surrogate := new(adhier.Surrogate)
 	if fi == nil {
@@ -38,7 +38,7 @@ func command(config *internal.Config, problem *internal.Problem,
 		return err
 	}
 
-	problem.Log(surrogate)
+	problem.Println(surrogate)
 
 	sc := config.Samples
 	if sc == 0 {
@@ -56,17 +56,17 @@ func command(config *internal.Config, problem *internal.Problem,
 
 	var values, realValues []float64
 
-	problem.Log("Evaluating the surrogate model...")
-	problem.Log("Done in %v.", internal.Track(func() {
+	problem.Println("Evaluating the surrogate model...")
+	problem.Printf("Done in %v.\n", internal.Track(func() {
 		values = solver.Evaluate(surrogate, points)
 	}))
 
-	problem.Log("Evaluating the original model...")
-	problem.Log("Done in %v.", internal.Track(func() {
+	problem.Println("Evaluating the original model...")
+	problem.Printf("Done in %v.\n", internal.Track(func() {
 		realValues = solver.Compute(points)
 	}))
 
-	fmt.Printf("NRMSE: %e\n", metric.NRMSE(values, realValues))
+	fmt.Printf("NRMSE: %.2e\n", metric.NRMSE(values, realValues))
 
 	if fo == nil {
 		return nil

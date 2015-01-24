@@ -19,17 +19,17 @@ func command(_ *internal.Config, problem *internal.Problem,
 		return err
 	}
 
-	problem.Log(problem)
-	problem.Log(target)
+	problem.Println(problem)
+	problem.Println(target)
 
 	var surrogate *adhier.Surrogate
 
-	problem.Log("Constructing a surrogate...")
-	problem.Log("Done in %v.", internal.Track(func() {
+	problem.Println("Constructing a surrogate...")
+	problem.Printf("Done in %v.\n", internal.Track(func() {
 		surrogate = solver.Construct()
 	}))
 
-	problem.Log(surrogate)
+	problem.Println(surrogate)
 
 	if f == nil {
 		return nil

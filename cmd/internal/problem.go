@@ -113,8 +113,14 @@ func (p *Problem) Setup() (Target, *solver.Solver, error) {
 	return target, solver, nil
 }
 
-func (p *Problem) Log(a ...interface{}) {
+func (p *Problem) Printf(format string, arguments ...interface{}) {
 	if p.config.Verbose {
-		fmt.Println(a...)
+		fmt.Printf(format, arguments...)
+	}
+}
+
+func (p *Problem) Println(arguments ...interface{}) {
+	if p.config.Verbose {
+		fmt.Println(arguments...)
 	}
 }
