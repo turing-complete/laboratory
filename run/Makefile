@@ -1,16 +1,19 @@
 pwd := $(shell pwd)
-srcs := $(pwd)/../cmd
-bins := solve show check
+cmd := $(pwd)/../cmd
+pkg := $(pwd)/../pkg
 
-cases := 002_020_span
-cases += 002_020_temp 002_040_temp 004_080_temp
+bins := solve show check
+srcs := $(shell find $(cmd)/internal -name '*.go')
+srcs += $(shell find $(pkg) -name '*.go')
+
+cases := 002_020_span 004_040_span 008_080_span 016_160_span 032_320_span
 
 all: $(bins)
 
 define define_bin
-$(1): $(shell find $(srcs)/$(1) -name '*.go')
-	cd $(srcs)/$(1) && go build
-	mv $(srcs)/$(1)/$(1) $(1)
+$(1): $(srcs) $(shell find $(cmd)/$(1) -name '*.go')
+	cd $(cmd)/$(1) && go build
+	mv $(cmd)/$(1)/$(1) $(1)
 endef
 
 $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
