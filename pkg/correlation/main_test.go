@@ -9,15 +9,23 @@ import (
 	"github.com/ready-steady/support/assert"
 )
 
-func TestCorrelate(t *testing.T) {
+func TestCorrelateSmall(t *testing.T) {
 	_, application, _ := system.Load("fixtures/002_020.tgff")
 
 	C := Compute(application, index(20), 2)
-	_, _, err := decomposition.CovPCA(C, 20)
+	_, _, err := decomposition.CovPCA(C, 20, 0)
 	assert.Success(err, t)
 
 	C = Compute(application, index(1), 2)
 	assert.Equal(C, []float64{1}, t)
+}
+
+func TestCorrelateLarge(t *testing.T) {
+	_, application, _ := system.Load("fixtures/016_160.tgff")
+
+	C := Compute(application, index(160), 5)
+	_, _, err := decomposition.CovPCA(C, 160, math.Sqrt(math.Nextafter(1, 2) - 1))
+	assert.Success(err, t)
 }
 
 func TestMeasure(t *testing.T) {
