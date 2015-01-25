@@ -16,6 +16,7 @@
 	"solver": {
 		"workers": 0,
 		"interpolation": {
+			"rule": "closed",
 			"minLevel": 1,
 			"maxLevel": 10,
 			"absError": 1e-4,

@@ -86,7 +86,7 @@ func (t *tempTarget) Serve(jobs <-chan solver.Job) {
 
 			// Independent uniform to independent Gaussian
 			for i := uint32(0); i < zc; i++ {
-				z[i] = g.InvCDF(job.Node[1+i]) // +1 for time
+				z[i] = g.InvCDF(processNode(job.Node[1+i])) // +1 for time
 			}
 
 			// Independent Gaussian to dependent Gaussian

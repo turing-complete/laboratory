@@ -1,8 +1,10 @@
 package solver
 
 import (
+	"errors"
 	"fmt"
 	"runtime"
+	"strings"
 
 	"github.com/ready-steady/numeric/basis/linhat"
 	"github.com/ready-steady/numeric/grid/newcot"
@@ -32,7 +34,10 @@ type Config struct {
 	// The number of workers evaluating of the quantity of interest.
 	Workers uint8
 	// The configuration of the algorithm for interpolation.
-	Interpolation adhier.Config
+	Interpolation struct {
+		Rule string
+		adhier.Config
+	}
 
 	Verbose bool // A flag for displaying progress information.
 }
@@ -44,9 +49,22 @@ type Solver struct {
 }
 
 func New(config Config, target func(<-chan Job)) (*Solver, error) {
-	interpolator, err := adhier.New(newcot.NewOpen(config.Inputs),
-		linhat.NewOpen(config.Inputs), adhier.Config(config.Interpolation),
-		config.Outputs)
+	var grid adhier.Grid
+	var basis adhier.Basis
+
+	switch strings.ToLower(config.Interpolation.Rule) {
+	case "open":
+		grid = newcot.NewOpen(config.Inputs)
+		basis = linhat.NewOpen(config.Inputs)
+	case "closed":
+		grid = newcot.NewClosed(config.Inputs)
+		basis = linhat.NewClosed(config.Inputs)
+	default:
+		return nil, errors.New("the interpolation rule is unknown")
+	}
+
+	interpolator, err := adhier.New(grid, basis,
+		adhier.Config(config.Interpolation.Config), config.Outputs)
 	if err != nil {
 		return nil, err
 	}

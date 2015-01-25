@@ -43,7 +43,7 @@ func (t *spanTarget) Serve(jobs <-chan solver.Job) {
 	for job := range jobs {
 		// Independent uniform to independent Gaussian
 		for i := uint32(0); i < zc; i++ {
-			z[i] = g.InvCDF(job.Node[i])
+			z[i] = g.InvCDF(processNode(job.Node[i]))
 		}
 
 		// Independent Gaussian to dependent Gaussian

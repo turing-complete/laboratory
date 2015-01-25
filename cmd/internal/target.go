@@ -21,3 +21,18 @@ func newTarget(p *Problem) (Target, error) {
 		return nil, errors.New("the target is unknown")
 	}
 }
+
+func processNode(node float64) float64 {
+	const (
+		offset = 1e-8
+	)
+
+	switch node {
+	case 0:
+		node = 0 + offset
+	case 1:
+		node = 1 - offset
+	}
+
+	return node
+}
