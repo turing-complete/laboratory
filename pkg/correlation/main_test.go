@@ -24,7 +24,7 @@ func TestCorrelateLarge(t *testing.T) {
 	_, application, _ := system.Load("fixtures/016_160.tgff")
 
 	C := Compute(application, index(160), 5)
-	_, _, err := decomposition.CovPCA(C, 160, math.Sqrt(math.Nextafter(1, 2) - 1))
+	_, _, err := decomposition.CovPCA(C, 160, math.Sqrt(math.Nextafter(1, 2)-1))
 	assert.Success(err, t)
 }
 
