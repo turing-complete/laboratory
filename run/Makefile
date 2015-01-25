@@ -6,8 +6,6 @@ bins := solve show check
 srcs := $(shell find $(cmd)/internal -name '*.go')
 srcs += $(shell find $(pkg) -name '*.go')
 
-cases := 002_020_span 004_040_span 008_080_span 016_160_span 032_320_span
-
 all: $(bins)
 
 define define_bin
@@ -18,10 +16,20 @@ endef
 
 $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
-$(cases): $(bins)
-	@./solve -c assets/$@.json -o solve_$@.mat
-	@./show -c assets/$@.json -i solve_$@.mat
-	@./check -c assets/$@.json -i solve_$@.mat
+cases := 002_020_span 004_040_span 008_080_span 016_160_span 032_320_span
+
+define define_case
+$(1)_hash := $(shell cat assets/$(1).json | md5)
+
+$(1): $(1)_$$($(1)_hash).mat show check
+	@./show -c assets/$(1).json -i $$<
+	@./check -c assets/$(1).json -i $$<
+
+$(1)_$$($(1)_hash).mat: solve
+	@./solve -c assets/$(1).json -o $$@
+endef
+
+$(foreach case,$(cases),$(eval $(call define_case,$(case))))
 
 clean:
 	rm -f $(bins) *.mat
