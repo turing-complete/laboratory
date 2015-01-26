@@ -31,14 +31,14 @@ func (t *spanTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
 	c := &p.config
 
-	uc, zc := p.uc, p.zc
+	zc, uc, tc := p.zc, p.uc, p.tc
 
 	g := gaussian.New(0, 1)
 	m := p.marginals
 
 	z := make([]float64, zc)
 	u := make([]float64, uc)
-	d := make([]float64, p.tc)
+	d := make([]float64, tc)
 
 	for job := range jobs {
 		// Independent uniform to independent Gaussian

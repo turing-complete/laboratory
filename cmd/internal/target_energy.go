@@ -33,7 +33,7 @@ func (t *energyTarget) Serve(jobs <-chan solver.Job) {
 
 	cores, tasks := p.platform.Cores, p.application.Tasks
 
-	uc, zc, tc := p.uc, p.zc, p.tc
+	zc, uc, tc := p.zc, p.uc, p.tc
 
 	g := gaussian.New(0, 1)
 	m := p.marginals

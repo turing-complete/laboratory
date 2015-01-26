@@ -65,7 +65,7 @@ func (t *tempTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
 	c := &p.config
 
-	cc, uc, zc, oc, sc := p.cc, p.uc, p.zc, t.oc, t.sc
+	zc, uc, oc, cc, tc, sc := p.zc, p.uc, t.oc, p.cc, p.tc, t.sc
 	coreIndex := c.CoreIndex
 
 	g := gaussian.New(0, 1)
@@ -76,7 +76,7 @@ func (t *tempTarget) Serve(jobs <-chan solver.Job) {
 
 	z := make([]float64, zc)
 	u := make([]float64, uc)
-	d := make([]float64, p.tc)
+	d := make([]float64, tc)
 
 	for job := range jobs {
 		Q := job.Data
