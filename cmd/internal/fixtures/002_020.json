@@ -29,6 +29,7 @@
 			"rule": "closed",
 			"minLevel": 1,
 			"maxLevel": 4,
+			"maxNodes": 10000,
 			"absError": 1e-9,
 			"relError": 1e-9
 		}
