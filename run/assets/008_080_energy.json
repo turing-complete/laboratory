@@ -1,0 +1,33 @@
+{
+	"tgff": "assets/008_080.tgff",
+
+	"coreIndex": [],
+	"taskIndex": [],
+
+	"probModel": {
+		"maxDelay": 0.2,
+		"marginal": "Beta(2, 5)",
+		"corrLength": 5,
+		"varThreshold": 0.95
+	},
+
+	"target": "total-energy",
+
+	"solver": {
+		"workers": 0,
+		"interpolation": {
+			"rule": "open",
+			"minLevel": 1,
+			"maxLevel": 2,
+			"maxNodes": 100000,
+			"absError": 1e-3,
+			"relError": 1e-3
+		},
+		"verbose": false
+	},
+
+	"seed": 1,
+	"samples": 10000,
+
+	"verbose": false
+}
