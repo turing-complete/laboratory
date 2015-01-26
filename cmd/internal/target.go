@@ -15,6 +15,8 @@ func newTarget(p *Problem) (Target, error) {
 	switch p.config.Target {
 	case "end-to-end-delay":
 		return newSpanTarget(p)
+	case "total-energy":
+		return newEnergyTarget(p)
 	case "temperature-profile":
 		return newTempTarget(p)
 	default:
