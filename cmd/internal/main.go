@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime/pprof"
 
 	"github.com/ready-steady/format/mat"
 )
@@ -14,7 +15,19 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 	inputFile := flag.String("i", "", "")
 	outputFile := flag.String("o", "", "")
 
+	profile := flag.String("profile", "", "")
+
 	flag.Parse()
+
+	if len(*profile) > 0 {
+		pfile, err := os.Create(*profile)
+		if err != nil {
+			printError(errors.New("cannot enable profiling"))
+			return
+		}
+		pprof.StartCPUProfile(pfile)
+		defer pprof.StopCPUProfile()
+	}
 
 	var problem *Problem
 	var ifile, ofile *mat.File
