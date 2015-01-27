@@ -17,7 +17,7 @@ endef
 $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
 cases := 002_020_span 004_040_span 008_080_span 016_160_span 032_320_span
-cases += 002_020_energy 004_040_energy 008_080_energy 016_160_energy
+cases += 002_020_energy 004_040_energy 008_080_energy 016_160_energy 032_320_energy
 
 define define_case
 $(1)_hash := $(shell hash md5sum 2>/dev/null && (cat assets/$(1).json | md5sum | cut -d' ' -f1) || (cat assets/$(1).json | md5))
