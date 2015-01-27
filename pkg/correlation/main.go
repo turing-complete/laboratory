@@ -7,15 +7,15 @@ import (
 )
 
 func Compute(application *system.Application, index []uint16, length float64) []float64 {
-	tc, dc := uint16(len(application.Tasks)), uint16(len(index))
+	tc, dc := uint32(len(application.Tasks)), uint32(len(index))
 
 	distance := measure(application)
 	C := make([]float64, dc*dc)
 
-	for i := uint16(0); i < dc; i++ {
+	for i := uint32(0); i < dc; i++ {
 		C[i*dc+i] = 1
 		for j := i + 1; j < dc; j++ {
-			d := distance[index[i]*tc+index[j]]
+			d := distance[uint32(index[i])*tc+uint32(index[j])]
 			C[j*dc+i] = math.Exp(-d * d / (length * length))
 			C[i*dc+j] = C[j*dc+i]
 		}
@@ -25,7 +25,7 @@ func Compute(application *system.Application, index []uint16, length float64) []
 }
 
 func measure(application *system.Application) []float64 {
-	tc := uint16(len(application.Tasks))
+	tc := uint32(len(application.Tasks))
 
 	depth := explore(application)
 
@@ -38,7 +38,7 @@ func measure(application *system.Application) []float64 {
 
 	distance := make([]float64, tc*tc)
 
-	for i := uint16(0); i < tc; i++ {
+	for i := uint32(0); i < tc; i++ {
 		for j := i + 1; j < tc; j++ {
 			xi := float64(index[i]) - float64(count[depth[i]])/2.0
 			yi := float64(depth[i])
