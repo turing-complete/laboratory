@@ -9,25 +9,25 @@ import (
 	"../../pkg/solver"
 )
 
-type spanTarget struct {
+type delayTarget struct {
 	problem *Problem
 
 	ic uint32 // inputs
 }
 
-func newSpanTarget(p *Problem) (Target, error) {
-	return &spanTarget{problem: p, ic: p.zc}, nil
+func newDelayTarget(p *Problem) (Target, error) {
+	return &delayTarget{problem: p, ic: p.zc}, nil
 }
 
-func (t *spanTarget) String() string {
+func (t *delayTarget) String() string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: 1}", t.ic)
 }
 
-func (t *spanTarget) InputsOutputs() (uint32, uint32) {
+func (t *delayTarget) InputsOutputs() (uint32, uint32) {
 	return t.ic, 1
 }
 
-func (t *spanTarget) Serve(jobs <-chan solver.Job) {
+func (t *delayTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
 	c := &p.config
 

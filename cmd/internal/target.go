@@ -14,7 +14,7 @@ type Target interface {
 func newTarget(p *Problem) (Target, error) {
 	switch p.config.Target {
 	case "end-to-end-delay":
-		return newSpanTarget(p)
+		return newDelayTarget(p)
 	case "total-energy":
 		return newEnergyTarget(p)
 	case "temperature-profile":
