@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/016_160.tgff",
+	"tgff": "assets/032_320.tgff",
 
 	"coreIndex": [],
 	"taskIndex": [],
@@ -8,7 +8,7 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.975
+		"varThreshold": 0.95
 	},
 
 	"target": "end-to-end-delay",
@@ -16,12 +16,12 @@
 	"solver": {
 		"workers": 0,
 		"interpolation": {
-			"rule": "closed",
+			"rule": "open",
 			"minLevel": 1,
 			"maxLevel": 10,
-			"maxNodes": 10000,
-			"absError": 1e-4,
-			"relError": 1e-3
+			"maxNodes": 100000,
+			"absError": 1e-2,
+			"relError": 1e-2
 		},
 		"verbose": false
 	},

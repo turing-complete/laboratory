@@ -16,7 +16,7 @@ endef
 
 $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
-cases := 002_020_span 004_040_span 008_080_span 016_160_span 032_320_span
+cases := 002_020_delay 004_040_delay 008_080_delay 016_160_delay 032_320_delay
 cases += 002_020_energy 004_040_energy 008_080_energy 016_160_energy 032_320_energy
 
 define define_case
