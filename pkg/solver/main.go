@@ -55,16 +55,16 @@ func New(config Config, target func(<-chan Job)) (*Solver, error) {
 	switch strings.ToLower(config.Interpolation.Rule) {
 	case "open":
 		grid = newcot.NewOpen(config.Inputs)
-		basis = linhat.NewOpen(config.Inputs)
+		basis = linhat.NewOpen(config.Inputs, config.Outputs)
 	case "closed":
 		grid = newcot.NewClosed(config.Inputs)
-		basis = linhat.NewClosed(config.Inputs)
+		basis = linhat.NewClosed(config.Inputs, config.Outputs)
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
 	interpolator, err := adhier.New(grid, basis,
-		adhier.Config(config.Interpolation.Config), config.Outputs)
+		adhier.Config(config.Interpolation.Config))
 	if err != nil {
 		return nil, err
 	}
