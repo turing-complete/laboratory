@@ -42,8 +42,8 @@ func newHotspotTarget(p *Problem) (Target, error) {
 	target := &hotspotTarget{
 		problem: p,
 
-		ic: 1 + p.zc, // +1 for time
-		oc: uint32(len(c.CoreIndex)),
+		ic: p.zc,
+		oc: 1,
 		sc: uint32(p.schedule.Span / c.TempAnalysis.TimeStep),
 
 		power:       power,
@@ -81,7 +81,7 @@ func (t *hotspotTarget) Serve(jobs <-chan solver.Job) {
 	for job := range jobs {
 		// Independent uniform to independent Gaussian
 		for i := uint32(0); i < zc; i++ {
-			z[i] = g.InvCDF(processNode(job.Node[1+i])) // +1 for time
+			z[i] = g.InvCDF(processNode(job.Node[i]))
 		}
 
 		// Independent Gaussian to dependent Gaussian
