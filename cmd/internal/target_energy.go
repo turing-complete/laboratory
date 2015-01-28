@@ -58,7 +58,7 @@ func (t *energyTarget) Serve(jobs <-chan solver.Job) {
 
 		schedule := p.time.Recompute(p.schedule, d)
 
-		job.Value[0] = 0.0
+		job.Value[0] = 0
 		for tid := uint32(0); tid < tc; tid++ {
 			job.Value[0] += (schedule.Finish[tid] - schedule.Start[tid]) *
 				cores[uint32(schedule.Mapping[tid])].Power[tasks[tid].Type]
