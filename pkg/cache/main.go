@@ -21,7 +21,7 @@ func (c *Cache) String() string {
 		c.mc, float64(c.mc)/float64(c.hc+c.mc)*100)
 }
 
-func New(depth  uint32, capacity uint32) *Cache {
+func New(depth uint32, capacity uint32) *Cache {
 	return &Cache{
 		depth:   int(depth),
 		mapping: make(map[string][]float64, capacity),
