@@ -15,7 +15,7 @@ import (
 	"../../pkg/solver"
 )
 
-type tempTarget struct {
+type heatTarget struct {
 	problem *Problem
 
 	ic uint32 // inputs
@@ -26,7 +26,7 @@ type tempTarget struct {
 	temperature *temperature.Temperature
 }
 
-func newTempTarget(p *Problem) (Target, error) {
+func newHeatTarget(p *Problem) (Target, error) {
 	c := &p.config
 
 	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
@@ -39,7 +39,7 @@ func newTempTarget(p *Problem) (Target, error) {
 		return nil, err
 	}
 
-	target := &tempTarget{
+	target := &heatTarget{
 		problem: p,
 
 		ic: 1 + p.zc, // +1 for time
@@ -53,15 +53,15 @@ func newTempTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *tempTarget) String() string {
+func (t *heatTarget) String() string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.ic, t.oc)
 }
 
-func (t *tempTarget) InputsOutputs() (uint32, uint32) {
+func (t *heatTarget) InputsOutputs() (uint32, uint32) {
 	return t.ic, t.oc
 }
 
-func (t *tempTarget) Serve(jobs <-chan solver.Job) {
+func (t *heatTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
 	c := &p.config
 

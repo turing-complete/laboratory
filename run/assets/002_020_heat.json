@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/032_320.tgff",
+	"tgff": "assets/002_020.tgff",
 
 	"coreIndex": [],
 	"taskIndex": [],
@@ -11,15 +11,15 @@
 		"varThreshold": 0.9
 	},
 
-	"target": "maximal-temperature",
+	"target": "temperature-profile",
 
     "tempAnalysis": {
-        "floorplan": "assets/032.flp",
+        "floorplan": "assets/002.flp",
         "hotspot": {
             "config": "assets/hotspot.config",
             "params": ""
         },
-        "timeStep": 1e-3,
+        "timeStep": 1e-4,
         "ambientTemp": 318.15
     },
 

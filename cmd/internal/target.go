@@ -17,10 +17,8 @@ func newTarget(p *Problem) (Target, error) {
 		return newDelayTarget(p)
 	case "total-energy":
 		return newEnergyTarget(p)
-	case "maximal-temperature":
-		return newHotspotTarget(p)
 	case "temperature-profile":
-		return newTempTarget(p)
+		return newHeatTarget(p)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

@@ -11,7 +11,7 @@
 		"varThreshold": 0.9
 	},
 
-	"target": "maximal-temperature",
+	"target": "temperature-profile",
 
     "tempAnalysis": {
         "floorplan": "assets/008.flp",
@@ -19,7 +19,7 @@
             "config": "assets/hotspot.config",
             "params": ""
         },
-        "timeStep": 1e-3,
+        "timeStep": 1e-4,
         "ambientTemp": 318.15
     },
 

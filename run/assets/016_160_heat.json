@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/002_020.tgff",
+	"tgff": "assets/016_160.tgff",
 
 	"coreIndex": [],
 	"taskIndex": [],
@@ -8,18 +8,18 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.75
+		"varThreshold": 0.9
 	},
 
-	"target": "maximal-temperature",
+	"target": "temperature-profile",
 
     "tempAnalysis": {
-        "floorplan": "assets/002.flp",
+        "floorplan": "assets/016.flp",
         "hotspot": {
             "config": "assets/hotspot.config",
             "params": ""
         },
-        "timeStep": 1e-3,
+        "timeStep": 1e-4,
         "ambientTemp": 318.15
     },
 
@@ -30,8 +30,8 @@
 			"minLevel": 1,
 			"maxLevel": 10,
 			"maxNodes": 100000,
-			"absError": 5e-2,
-			"relError": 5e-2
+			"absError": 1e-2,
+			"relError": 1e-2
 		},
 		"verbose": false
 	},
