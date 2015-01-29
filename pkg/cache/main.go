@@ -2,18 +2,17 @@ package cache
 
 import (
 	"fmt"
+	"reflect"
 	"unsafe"
 )
 
 // No cuncurrent access for now!
 type Cache struct {
+	depth   int
+	mapping map[string][]float64
+
 	hc uint32
 	mc uint32
-
-	length uint32
-	buffer []byte
-
-	storage map[string][]float64
 }
 
 func (c *Cache) String() string {
@@ -22,23 +21,30 @@ func (c *Cache) String() string {
 		c.mc, float64(c.mc)/float64(c.hc+c.mc)*100)
 }
 
-func New(length uint32, space uint32) *Cache {
+func New(depth  uint32, capacity uint32) *Cache {
 	return &Cache{
-		length:  length,
-		buffer:  make([]byte, 8*length),
-		storage: make(map[string][]float64, space),
+		depth:   int(depth),
+		mapping: make(map[string][]float64, capacity),
 	}
 }
 
-func (c *Cache) Key(sequence []uint64) string {
-	for i := uint32(0); i < c.length; i++ {
-		*(*uint64)(unsafe.Pointer(&c.buffer[8*i])) = sequence[i]
+func (c *Cache) Key(trace []uint64) string {
+	const (
+		sizeOfUInt64 = 8
+	)
+
+	sliceHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&trace))
+
+	stringHeader := reflect.StringHeader{
+		Data: sliceHeader.Data,
+		Len:  sizeOfUInt64 * c.depth,
 	}
-	return string(c.buffer)
+
+	return *(*string)(unsafe.Pointer(&stringHeader))
 }
 
 func (c *Cache) Get(key string) []float64 {
-	value := c.storage[key]
+	value := c.mapping[key]
 
 	if value != nil {
 		c.hc++
@@ -50,9 +56,9 @@ func (c *Cache) Get(key string) []float64 {
 }
 
 func (c *Cache) Set(key string, value []float64) {
-	c.storage[key] = value
+	c.mapping[key] = value
 }
 
 func (c *Cache) Flush() {
-	c.storage = make(map[string][]float64, len(c.storage))
+	c.mapping = make(map[string][]float64, len(c.mapping))
 }
