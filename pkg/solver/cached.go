@@ -26,7 +26,7 @@ func (s *Solver) constructCached() *adhier.Surrogate {
 			"New nodes", "New evals", "%", "Total nodes", "Total evals", "%")
 	}
 
-	surrogate := s.interpolator.Compute(func(nodes []float64, index []uint64) []float64 {
+	surrogate := s.interpolator.Compute(func(nodes []float64, indices []uint64) []float64 {
 		nc, ec := uint32(len(nodes))/ic, uint32(0)
 
 		NC += nc
@@ -35,10 +35,10 @@ func (s *Solver) constructCached() *adhier.Surrogate {
 		}
 
 		done := make(chan Result, nc)
-		values := make([]float64, oc*nc)
+		values := make([]float64, nc*oc)
 
 		for i := uint32(0); i < nc; i++ {
-			key := cache.Key(index[cc+i*ic:])
+			key := cache.Key(indices[cc+i*ic : (i+1)*ic])
 
 			data := cache.Get(key)
 			if data == nil {
@@ -48,8 +48,8 @@ func (s *Solver) constructCached() *adhier.Surrogate {
 			jobs <- Job{
 				Key:   key,
 				Data:  data,
-				Node:  nodes[i*ic:],
-				Value: values[i*oc:],
+				Node:  nodes[i*ic : (i+1)*ic],
+				Value: values[i*oc : (i+1)*oc],
 				Done:  done,
 			}
 		}

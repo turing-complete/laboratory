@@ -18,7 +18,7 @@ func (s *Solver) constructDirect() *adhier.Surrogate {
 		fmt.Printf("%12s %12s\n", "New nodes", "Total nodes")
 	}
 
-	surrogate := s.interpolator.Compute(func(nodes []float64, index []uint64) []float64 {
+	surrogate := s.interpolator.Compute(func(nodes []float64, _ []uint64) []float64 {
 		nc := uint32(len(nodes)) / ic
 		NC += nc
 
@@ -27,12 +27,12 @@ func (s *Solver) constructDirect() *adhier.Surrogate {
 		}
 
 		done := make(chan Result, nc)
-		values := make([]float64, oc*nc)
+		values := make([]float64, nc*oc)
 
 		for i := uint32(0); i < nc; i++ {
 			jobs <- Job{
-				Node:  nodes[i*ic:],
-				Value: values[i*oc:],
+				Node:  nodes[i*ic : (i+1)*ic],
+				Value: values[i*oc : (i+1)*oc],
 				Done:  done,
 			}
 		}
