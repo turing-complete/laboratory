@@ -28,8 +28,10 @@ type Config struct {
 	Inputs  uint16 // The number of inputs.
 	Outputs uint16 // The number of outputs.
 
-	// The number specifying how many of the inputs should be used for caching.
-	CacheInputs uint16
+	// The number of artificial inputs such as time. These inputs provide a
+	// possibility for caching. The caching gets enabled when this value is
+	// greater than zero.
+	ArtificialInputs uint16
 
 	// The number of workers evaluating of the quantity of interest.
 	Workers uint8
@@ -79,7 +81,7 @@ func New(config Config, target func(<-chan Job)) (*Solver, error) {
 }
 
 func (s *Solver) Construct() *adhier.Surrogate {
-	if s.config.CacheInputs == 0 {
+	if s.config.ArtificialInputs == 0 {
 		return s.constructDirect()
 	} else {
 		return s.constructCached()

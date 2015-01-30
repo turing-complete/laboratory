@@ -15,10 +15,11 @@ const (
 func (s *Solver) constructCached() *adhier.Surrogate {
 	verbose := s.config.Verbose
 
-	ic, oc, cc := uint32(s.config.Inputs), uint32(s.config.Outputs), uint32(s.config.CacheInputs)
+	ic, oc := uint32(s.config.Inputs), uint32(s.config.Outputs)
+	ac := uint32(s.config.ArtificialInputs)
 	NC, EC := uint32(0), uint32(0)
 
-	cache := cache.New(ic-cc, cacheCapacity)
+	cache := cache.New(ic-ac, cacheCapacity)
 	jobs := s.spawnWorkers()
 
 	if verbose {
@@ -38,7 +39,7 @@ func (s *Solver) constructCached() *adhier.Surrogate {
 		values := make([]float64, nc*oc)
 
 		for i := uint32(0); i < nc; i++ {
-			key := cache.Key(indices[cc+i*ic : (i+1)*ic])
+			key := cache.Key(indices[ac+i*ic : (i+1)*ic])
 
 			data := cache.Get(key)
 			if data == nil {

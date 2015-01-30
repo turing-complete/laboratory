@@ -103,7 +103,7 @@ func (p *Problem) Setup() (Target, *solver.Solver, error) {
 	config := p.config.Solver
 	config.Inputs = uint16(ic)
 	config.Outputs = uint16(oc)
-	config.CacheInputs = uint16(ic - p.zc)
+	config.ArtificialInputs = uint16(ic - p.zc)
 
 	solver, err := solver.New(config, target.Serve)
 	if err != nil {
