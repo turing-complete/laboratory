@@ -1,9 +1,6 @@
 {
 	"tgff": "assets/004_040.tgff",
 
-	"coreIndex": [],
-	"taskIndex": [],
-
 	"probModel": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",

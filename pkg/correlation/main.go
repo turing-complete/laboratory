@@ -6,18 +6,18 @@ import (
 	"github.com/ready-steady/simulation/system"
 )
 
-func Compute(application *system.Application, index []uint16, length float64) []float64 {
-	tc, dc := uint32(len(application.Tasks)), uint32(len(index))
+func Compute(application *system.Application, length float64) []float64 {
+	tc := uint32(len(application.Tasks))
 
 	distance := measure(application)
-	C := make([]float64, dc*dc)
+	C := make([]float64, tc*tc)
 
-	for i := uint32(0); i < dc; i++ {
-		C[i*dc+i] = 1
-		for j := i + 1; j < dc; j++ {
-			d := distance[uint32(index[i])*tc+uint32(index[j])]
-			C[j*dc+i] = math.Exp(-d * d / (length * length))
-			C[i*dc+j] = C[j*dc+i]
+	for i := uint32(0); i < tc; i++ {
+		C[i*tc+i] = 1
+		for j := i + 1; j < tc; j++ {
+			d := distance[i*tc+j]
+			C[j*tc+i] = math.Exp(-d * d / (length * length))
+			C[i*tc+j] = C[j*tc+i]
 		}
 	}
 

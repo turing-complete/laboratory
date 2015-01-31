@@ -12,18 +12,15 @@ import (
 func TestCorrelateSmall(t *testing.T) {
 	_, application, _ := system.Load("fixtures/002_020.tgff")
 
-	C := Compute(application, index(20), 2)
+	C := Compute(application, 2)
 	_, _, err := decomposition.CovPCA(C, 20, 0)
 	assert.Success(err, t)
-
-	C = Compute(application, index(1), 2)
-	assert.Equal(C, []float64{1}, t)
 }
 
 func TestCorrelateLarge(t *testing.T) {
 	_, application, _ := system.Load("fixtures/016_160.tgff")
 
-	C := Compute(application, index(160), 5)
+	C := Compute(application, 5)
 	_, _, err := decomposition.CovPCA(C, 160, math.Sqrt(math.Nextafter(1, 2)-1))
 	assert.Success(err, t)
 }
@@ -68,19 +65,8 @@ func TestExplore(t *testing.T) {
 
 func BenchmarkCorrelate(b *testing.B) {
 	_, application, _ := system.Load("fixtures/002_020.tgff")
-	index := index(20)
 
 	for i := 0; i < b.N; i++ {
-		Compute(application, index, 2)
+		Compute(application, 2)
 	}
-}
-
-func index(count uint16) []uint16 {
-	index := make([]uint16, count)
-
-	for i := uint16(0); i < count; i++ {
-		index[i] = i
-	}
-
-	return index
 }

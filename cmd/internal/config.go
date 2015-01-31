@@ -14,11 +14,6 @@ type Config struct {
 	// The TGFF file of the system to analyze.
 	TGFF string
 
-	// The IDs of the cores to analyze; if empty, set to all cores.
-	CoreIndex []uint16
-	// The IDs of the tasks to analyze; if empty, set to all tasks.
-	TaskIndex []uint16
-
 	ProbModel struct {
 		// The multiplier used to calculate the maximal delay of a task.
 		MaxDelay float64 // ∈ [0, 1)

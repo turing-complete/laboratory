@@ -13,9 +13,9 @@ func TestNewTempTarget(t *testing.T) {
 	target, err := newTarget(problem)
 	assert.Success(err, t)
 
-	tempTarget := target.(*tempTarget)
+	heatTarget := target.(*heatTarget)
 
-	assert.Equal(tempTarget.ic, uint32(3+1), t)
-	assert.Equal(tempTarget.oc, uint32(1), t)
-	assert.Equal(tempTarget.sc, uint32(29100), t)
+	assert.Equal(heatTarget.ic, uint32(3+1), t)
+	assert.Equal(heatTarget.oc, uint32(2), t)
+	assert.Equal(heatTarget.sc, uint32(29100), t)
 }

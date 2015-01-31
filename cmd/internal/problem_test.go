@@ -31,22 +31,6 @@ func TestNewProblemGeneral(t *testing.T) {
 	assert.AlmostEqual(problem.schedule.Span, 0.291, t)
 }
 
-func TestNewProblemNoCores(t *testing.T) {
-	config, _ := loadConfig("fixtures/002_020.json")
-	config.CoreIndex = []uint16{}
-
-	problem, _ := newProblem(config)
-	assert.Equal(problem.config.CoreIndex, index(2), t)
-}
-
-func TestNewProblemNoTasks(t *testing.T) {
-	config, _ := loadConfig("fixtures/002_020.json")
-	config.TaskIndex = []uint16{}
-
-	problem, _ := newProblem(config)
-	assert.Equal(problem.config.TaskIndex, index(20), t)
-}
-
 func TestNewProblemProbModel(t *testing.T) {
 	config, _ := loadConfig("fixtures/002_020.json")
 	problem, _ := newProblem(config)

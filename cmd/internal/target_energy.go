@@ -29,7 +29,6 @@ func (t *energyTarget) InputsOutputs() (uint32, uint32) {
 
 func (t *energyTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
-	c := &p.config
 
 	cores, tasks := p.platform.Cores, p.application.Tasks
 
@@ -52,16 +51,16 @@ func (t *energyTarget) Serve(jobs <-chan solver.Job) {
 		matrix.Multiply(p.transform, z, u, uc, zc, 1)
 
 		// Dependent Gaussian to dependent uniform to dependent target
-		for i, tid := range c.TaskIndex {
-			d[tid] = m[i].InvCDF(g.CDF(u[i]))
+		for i := uint32(0); i < tc; i++ {
+			d[i] = m[i].InvCDF(g.CDF(u[i]))
 		}
 
 		schedule := p.time.Recompute(p.schedule, d)
 
 		job.Value[0] = 0
-		for tid := uint32(0); tid < tc; tid++ {
-			job.Value[0] += (schedule.Finish[tid] - schedule.Start[tid]) *
-				cores[uint32(schedule.Mapping[tid])].Power[tasks[tid].Type]
+		for i := uint32(0); i < tc; i++ {
+			job.Value[0] += (schedule.Finish[i] - schedule.Start[i]) *
+				cores[uint32(schedule.Mapping[i])].Power[tasks[i].Type]
 		}
 
 		job.Done <- solver.Result{}

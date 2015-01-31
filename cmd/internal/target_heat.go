@@ -43,7 +43,7 @@ func newHeatTarget(p *Problem) (Target, error) {
 		problem: p,
 
 		ic: 1 + p.zc, // +1 for time
-		oc: uint32(len(c.CoreIndex)),
+		oc: p.cc,
 		sc: uint32(p.schedule.Span / c.TempAnalysis.TimeStep),
 
 		power:       power,
@@ -63,10 +63,8 @@ func (t *heatTarget) InputsOutputs() (uint32, uint32) {
 
 func (t *heatTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
-	c := &p.config
 
 	zc, uc, oc, cc, tc, sc := p.zc, p.uc, t.oc, p.cc, p.tc, t.sc
-	coreIndex := c.CoreIndex
 
 	g := gaussian.New(0, 1)
 	m := p.marginals
@@ -93,8 +91,8 @@ func (t *heatTarget) Serve(jobs <-chan solver.Job) {
 			matrix.Multiply(p.transform, z, u, uc, zc, 1)
 
 			// Dependent Gaussian to dependent uniform to dependent target
-			for i, tid := range c.TaskIndex {
-				d[tid] = m[i].InvCDF(g.CDF(u[i]))
+			for i := uint32(0); i < tc; i++ {
+				d[i] = m[i].InvCDF(g.CDF(u[i]))
 			}
 
 			// FIXME: Bad, bad, bad!
@@ -106,7 +104,9 @@ func (t *heatTarget) Serve(jobs <-chan solver.Job) {
 
 		sid := uint32(job.Node[0] * float64(sc-1))
 		for i := uint32(0); i < oc; i++ {
-			job.Value[i] = Q[sid*cc+uint32(coreIndex[i])]
+			// NOTE: The number of outputs (that is, oc) is assumed to be equal
+			// to the number of cores (that is, cc).
+			job.Value[i] = Q[sid*cc+i]
 		}
 
 		job.Done <- solver.Result{job.Key, Q}

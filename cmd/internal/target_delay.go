@@ -29,7 +29,6 @@ func (t *delayTarget) InputsOutputs() (uint32, uint32) {
 
 func (t *delayTarget) Serve(jobs <-chan solver.Job) {
 	p := t.problem
-	c := &p.config
 
 	zc, uc, tc := p.zc, p.uc, p.tc
 
@@ -50,8 +49,8 @@ func (t *delayTarget) Serve(jobs <-chan solver.Job) {
 		matrix.Multiply(p.transform, z, u, uc, zc, 1)
 
 		// Dependent Gaussian to dependent uniform to dependent target
-		for i, tid := range c.TaskIndex {
-			d[tid] = m[i].InvCDF(g.CDF(u[i]))
+		for i := uint32(0); i < tc; i++ {
+			d[i] = m[i].InvCDF(g.CDF(u[i]))
 		}
 
 		job.Value[0] = p.time.Recompute(p.schedule, d).Span
