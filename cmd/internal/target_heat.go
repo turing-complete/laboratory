@@ -5,6 +5,7 @@ import "C"
 
 import (
 	"fmt"
+	"math"
 	"unsafe"
 
 	"github.com/ready-steady/linear/matrix"
@@ -102,11 +103,21 @@ func (t *heatTarget) Serve(jobs <-chan solver.Job) {
 			t.temperature.ComputeTransient(P, Q, S, sc)
 		}
 
-		sid := uint32(job.Node[0] * float64(sc-1))
-		for i := uint32(0); i < oc; i++ {
-			// NOTE: The number of outputs (that is, oc) is assumed to be equal
-			// to the number of cores (that is, cc).
-			job.Value[i] = Q[sid*cc+i]
+		sid := job.Node[0] * float64(sc-1)
+		lid, rid := uint32(math.Floor(sid)), uint32(math.Ceil(sid))
+
+		// NOTE: The number of outputs (oc) is assumed to be equal to the number
+		// of cores (cc).
+		if lid == rid {
+			for i := uint32(0); i < oc; i++ {
+				job.Value[i] = Q[lid*cc+i]
+			}
+		} else {
+			fraction := (sid - float64(lid)) / (float64(rid) - float64(lid))
+			for i := uint32(0); i < oc; i++ {
+				left, right := Q[lid*cc+i], Q[rid*cc+i]
+				job.Value[i] = fraction*(right-left) + left
+			}
 		}
 
 		job.Done <- solver.Result{job.Key, Q}
