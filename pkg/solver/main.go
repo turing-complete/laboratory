@@ -135,14 +135,12 @@ func (s *Solver) Evaluate(surrogate *adhier.Surrogate, points []float64) []float
 func (s *Solver) spawnWorkers() chan<- Job {
 	wc := int(s.config.Workers)
 	if wc <= 0 {
-		wc = runtime.NumCPU()
+		wc = runtime.GOMAXPROCS(0)
 	}
 
 	if s.config.Verbose {
 		fmt.Printf("Using %d workers...\n", wc)
 	}
-
-	runtime.GOMAXPROCS(wc)
 
 	jobs := make(chan Job)
 	for i := 0; i < wc; i++ {

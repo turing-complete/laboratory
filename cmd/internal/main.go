@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"runtime"
 	"runtime/pprof"
 
 	"github.com/ready-steady/format/mat"
@@ -47,6 +48,8 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 		printError(err)
 		return
 	}
+
+	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if problem, err = newProblem(config); err != nil {
 		printError(err)
