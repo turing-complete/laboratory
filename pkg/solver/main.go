@@ -33,8 +33,6 @@ type Config struct {
 	// greater than zero.
 	ArtificialInputs uint16
 
-	// The number of workers evaluating of the quantity of interest.
-	Workers uint8
 	// The configuration of the algorithm for interpolation.
 	Interpolation struct {
 		Rule string

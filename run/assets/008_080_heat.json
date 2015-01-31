@@ -21,7 +21,6 @@
     },
 
 	"solver": {
-		"workers": 0,
 		"interpolation": {
 			"rule": "open",
 			"minLevel": 1,
