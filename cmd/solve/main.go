@@ -14,7 +14,7 @@ func main() {
 func command(_ *internal.Config, problem *internal.Problem,
 	_ *mat.File, f *mat.File) error {
 
-	target, solver, err := problem.Setup()
+	target, interpolator, err := internal.Setup(problem)
 	if err != nil {
 		return err
 	}
@@ -26,7 +26,7 @@ func command(_ *internal.Config, problem *internal.Problem,
 
 	problem.Println("Constructing a surrogate...")
 	problem.Printf("Done in %v.\n", internal.Track(func() {
-		surrogate = solver.Construct()
+		surrogate = interpolator.Compute(target.Evaluate)
 	}))
 
 	problem.Println(surrogate)

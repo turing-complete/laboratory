@@ -7,8 +7,12 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 
 	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/numeric/basis/linhat"
+	"github.com/ready-steady/numeric/grid/newcot"
+	"github.com/ready-steady/numeric/interpolation/adhier"
 )
 
 func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
@@ -51,7 +55,7 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	if problem, err = newProblem(config); err != nil {
+	if problem, err = newProblem(&config); err != nil {
 		printError(err)
 		return
 	}
@@ -72,10 +76,54 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 		defer ofile.Close()
 	}
 
-	if err = command(&problem.config, problem, ifile, ofile); err != nil {
+	if err = command(&config, problem, ifile, ofile); err != nil {
 		printError(err)
 		return
 	}
+}
+
+func Setup(p *Problem) (Target, *adhier.Interpolator, error) {
+	c := p.config
+
+	var target Target
+	var err error
+
+	switch p.config.Target {
+	case "end-to-end-delay":
+		target = newDelayTarget(p)
+	case "total-energy":
+		target = newEnergyTarget(p)
+	case "temperature-profile":
+		target, err = newTemperatureTarget(p)
+	default:
+		err = errors.New("the target is unknown")
+	}
+	if err != nil {
+		return nil, nil, err
+	}
+
+	ic, oc := target.InputsOutputs()
+
+	var grid adhier.Grid
+	var basis adhier.Basis
+
+	switch strings.ToLower(c.Interpolation.Rule) {
+	case "open":
+		grid = newcot.NewOpen(uint16(ic))
+		basis = linhat.NewOpen(uint16(ic), uint16(oc))
+	case "closed":
+		grid = newcot.NewClosed(uint16(ic))
+		basis = linhat.NewClosed(uint16(ic), uint16(oc))
+	default:
+		return nil, nil, errors.New("the interpolation rule is unknown")
+	}
+
+	interpolator, err := adhier.New(grid, basis, adhier.Config(c.Interpolation.Config))
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return target, interpolator, nil
 }
 
 func printError(err error) {

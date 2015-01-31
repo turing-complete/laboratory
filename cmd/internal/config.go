@@ -5,9 +5,8 @@ import (
 	"errors"
 	"os"
 
+	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/simulation/temperature"
-
-	"../../pkg/solver"
 )
 
 type Config struct {
@@ -34,8 +33,11 @@ type Config struct {
 	// the temperature-profile target.
 	TempAnalysis temperature.Config
 
-	// The configuration of the solver.
-	Solver solver.Config
+	// The configuration of the interpolation algorithm.
+	Interpolation struct {
+		Rule string
+		adhier.Config
+	}
 
 	// The seed for random number generation.
 	Seed int64

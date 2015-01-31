@@ -22,7 +22,7 @@ func main() {
 func command(config *internal.Config, problem *internal.Problem,
 	fi *mat.File, fo *mat.File) error {
 
-	target, solver, err := problem.Setup()
+	target, interpolator, err := internal.Setup(problem)
 	if err != nil {
 		return err
 	}
@@ -58,12 +58,23 @@ func command(config *internal.Config, problem *internal.Problem,
 
 	problem.Println("Evaluating the surrogate model...")
 	problem.Printf("Done in %v.\n", internal.Track(func() {
-		values = solver.Evaluate(surrogate, points)
+		values = interpolator.Evaluate(surrogate, points)
 	}))
 
 	problem.Println("Evaluating the original model...")
 	problem.Printf("Done in %v.\n", internal.Track(func() {
-		realValues = solver.Compute(points)
+		realValues = make([]float64, sc*oc)
+		done := make(chan bool, sc)
+
+		for i := uint32(0); i < sc; i++ {
+			go func(point, value []float64) {
+				target.Evaluate(point, value, nil)
+				done <- true
+			}(points[i*ic:(i+1)*ic], realValues[i*oc:(i+1)*oc])
+		}
+		for i := uint32(0); i < sc; i++ {
+			<-done
+		}
 	}))
 
 	fmt.Printf("NRMSE: %.2e\n", metric.NRMSE(values, realValues))

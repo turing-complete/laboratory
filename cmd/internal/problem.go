@@ -4,45 +4,45 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/gaussian"
 	"github.com/ready-steady/simulation/system"
 	"github.com/ready-steady/simulation/time"
 	"github.com/ready-steady/statistics/correlation"
 
 	acorrelation "../../pkg/correlation"
 	aprobability "../../pkg/probability"
-	"../../pkg/solver"
 )
 
+var standardGaussian = gaussian.New(0, 1)
+
 type Problem struct {
-	config Config
+	config *Config
 
 	platform    *system.Platform
 	application *system.Application
 
-	cc uint32 // cores
-	tc uint32 // tasks
+	cc uint32
+	tc uint32
+	zc uint32
 
-	uc uint32 // dependent variables
-	zc uint32 // independent variables
-
-	marginals []probability.Inverter
-	transform []float64
+	marginals  []probability.Inverter
+	multiplier []float64
 
 	time     *time.List
 	schedule *time.Schedule
 }
 
 func (p *Problem) String() string {
-	return fmt.Sprintf("Problem{cores: %d, tasks: %d, dvars: %d, ivars: %d}",
-		p.cc, p.tc, p.uc, p.zc)
+	return fmt.Sprintf("Problem{cores: %d, tasks: %d, variables: %d}",
+		p.cc, p.tc, p.zc)
 }
 
-func newProblem(config Config) (*Problem, error) {
+func newProblem(c *Config) (*Problem, error) {
 	var err error
 
-	p := &Problem{config: config}
-	c := &p.config
+	p := &Problem{config: c}
 
 	platform, application, err := system.Load(c.TGFF)
 	if err != nil {
@@ -58,15 +58,13 @@ func newProblem(config Config) (*Problem, error) {
 	p.time = time.NewList(platform, application)
 	p.schedule = p.time.Compute(system.NewProfile(platform, application).Mobility)
 
-	p.uc = p.tc
-
 	C := acorrelation.Compute(application, c.ProbModel.CorrLength)
-	p.transform, p.zc, err = correlation.Decompose(C, p.uc, c.ProbModel.VarThreshold)
+	p.multiplier, p.zc, err = correlation.Decompose(C, p.tc, c.ProbModel.VarThreshold)
 	if err != nil {
 		return nil, err
 	}
 
-	p.marginals = make([]probability.Inverter, p.uc)
+	p.marginals = make([]probability.Inverter, p.tc)
 	marginalizer := aprobability.ParseInverter(c.ProbModel.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
@@ -79,25 +77,35 @@ func newProblem(config Config) (*Problem, error) {
 	return p, nil
 }
 
-func (p *Problem) Setup() (Target, *solver.Solver, error) {
-	target, err := newTarget(p)
-	if err != nil {
-		return nil, nil, err
+func (p *Problem) transform(node []float64) []float64 {
+	const (
+		offset = 1e-8
+	)
+
+	z := make([]float64, p.zc)
+	u := make([]float64, p.tc)
+
+	// Independent uniform to independent Gaussian
+	for i := range z {
+		switch node[i] {
+		case 0:
+			z[i] = standardGaussian.InvCDF(0 + offset)
+		case 1:
+			z[i] = standardGaussian.InvCDF(1 - offset)
+		default:
+			z[i] = standardGaussian.InvCDF(node[i])
+		}
 	}
 
-	ic, oc := target.InputsOutputs()
+	// Independent Gaussian to dependent Gaussian
+	matrix.Multiply(p.multiplier, z, u, p.tc, p.zc, 1)
 
-	config := p.config.Solver
-	config.Inputs = uint16(ic)
-	config.Outputs = uint16(oc)
-	config.ArtificialInputs = uint16(ic - p.zc)
-
-	solver, err := solver.New(config, target.Serve)
-	if err != nil {
-		return nil, nil, err
+	// Dependent Gaussian to dependent uniform to dependent target
+	for i := range u {
+		u[i] = p.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
-	return target, solver, nil
+	return u
 }
 
 func (p *Problem) Printf(format string, arguments ...interface{}) {

@@ -3,16 +3,18 @@ package cache
 import (
 	"fmt"
 	"reflect"
+	"sync"
 	"unsafe"
 )
 
-// No cuncurrent access for now!
 type Cache struct {
 	depth   int
 	mapping map[string][]float64
 
 	hc uint32
 	mc uint32
+
+	sync.Mutex
 }
 
 func (c *Cache) String() string {
@@ -44,21 +46,22 @@ func (c *Cache) Key(trace []uint64) string {
 }
 
 func (c *Cache) Get(key string) []float64 {
-	value := c.mapping[key]
+	c.Lock()
 
-	if value != nil {
+	value, ok := c.mapping[key]
+	if ok {
 		c.hc++
 	} else {
 		c.mc++
 	}
 
+	c.Unlock()
+
 	return value
 }
 
 func (c *Cache) Set(key string, value []float64) {
+	c.Lock()
 	c.mapping[key] = value
-}
-
-func (c *Cache) Flush() {
-	c.mapping = make(map[string][]float64, len(c.mapping))
+	c.Unlock()
 }
