@@ -118,7 +118,7 @@ func Setup(p *Problem) (Target, *adhier.Interpolator, error) {
 		return nil, nil, errors.New("the interpolation rule is unknown")
 	}
 
-	interpolator, err := adhier.New(grid, basis, adhier.Config(c.Interpolation.Config))
+	interpolator, err := adhier.New(grid, basis, (*adhier.Config)(&c.Interpolation.Config))
 	if err != nil {
 		return nil, nil, err
 	}
