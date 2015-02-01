@@ -20,16 +20,14 @@
 		"ambientTemp": 318.15
 	},
 
-	"solver": {
-		"interpolation": {
-			"rule": "closed",
-			"minLevel": 1,
-			"maxLevel": 4,
-			"maxNodes": 10000,
-			"absError": 1e-9,
-			"relError": 1e-9
-		}
-	},
+	"interpolation": {
+		"rule": "closed",
+		"minLevel": 1,
+		"maxLevel": 4,
+		"maxNodes": 10000,
+		"absError": 1e-9,
+		"relError": 1e-9
+	}
 
 	"seed": 0,
 	"samples": 1000,

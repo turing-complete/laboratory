@@ -10,16 +10,13 @@
 
 	"target": "end-to-end-delay",
 
-	"solver": {
-		"interpolation": {
-			"rule": "open",
-			"minLevel": 1,
-			"maxLevel": 10,
-			"maxNodes": 100000,
-			"absError": 1e-2,
-			"relError": 1e-2
-		},
-		"verbose": false
+	"interpolation": {
+		"rule": "open",
+		"minLevel": 1,
+		"maxLevel": 10,
+		"maxNodes": 100000,
+		"absError": 1e-2,
+		"relError": 1e-2
 	},
 
 	"seed": 1,
