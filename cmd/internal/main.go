@@ -19,13 +19,12 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 	configFile := flag.String("c", "", "")
 	inputFile := flag.String("i", "", "")
 	outputFile := flag.String("o", "", "")
-
-	profile := flag.String("profile", "", "")
+	profileFile := flag.String("p", "", "")
 
 	flag.Parse()
 
-	if len(*profile) > 0 {
-		pfile, err := os.Create(*profile)
+	if len(*profileFile) > 0 {
+		pfile, err := os.Create(*profileFile)
 		if err != nil {
 			printError(errors.New("cannot enable profiling"))
 			return
@@ -34,28 +33,12 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 		defer pprof.StopCPUProfile()
 	}
 
-	var problem *Problem
-	var ifile, ofile *mat.File
-
-	if len(*configFile) == 0 {
-		printError(errors.New("a problem specification is required"))
-		return
-	}
-
-	config, err := loadConfig(*configFile)
-	if err != nil {
-		printError(err)
-		return
-	}
-
-	if err = config.validate(); err != nil {
-		printError(err)
-		return
-	}
-
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	if problem, err = newProblem(config); err != nil {
+	var ifile, ofile *mat.File
+
+	problem, err := SetupProblem(*configFile)
+	if err != nil {
 		printError(err)
 		return
 	}
@@ -76,38 +59,49 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 		defer ofile.Close()
 	}
 
-	if err = command(config, problem, ifile, ofile); err != nil {
+	if err = command(problem.config, problem, ifile, ofile); err != nil {
 		printError(err)
 		return
 	}
 }
 
-func Setup(p *Problem) (Target, *adhier.Interpolator, error) {
-	c := p.config
-
-	var target Target
-	var err error
-
-	switch p.config.Target {
-	case "end-to-end-delay":
-		target = newDelayTarget(p)
-	case "total-energy":
-		target = newEnergyTarget(p)
-	case "temperature-profile":
-		target, err = newTemperatureTarget(p)
-	default:
-		err = errors.New("the target is unknown")
+func SetupProblem(configFile string) (*Problem, error) {
+	if len(configFile) == 0 {
+		return nil, errors.New("a problem specification is required")
 	}
+
+	config, err := loadConfig(configFile)
 	if err != nil {
-		return nil, nil, err
+		return nil, err
+	}
+	if err = config.validate(); err != nil {
+		return nil, err
 	}
 
+	return newProblem(config)
+}
+
+func SetupTarget(problem *Problem) (Target, error) {
+	switch problem.config.Target {
+	case "end-to-end-delay":
+		return newDelayTarget(problem), nil
+	case "total-energy":
+		return newEnergyTarget(problem), nil
+	case "temperature-profile":
+		return newTemperatureTarget(problem)
+	default:
+		return nil, errors.New("the target is unknown")
+	}
+}
+
+func SetupInterpolator(problem *Problem, target Target) (*adhier.Interpolator, error) {
+	config := &problem.config.Interpolation
 	ic, oc := target.InputsOutputs()
 
 	var grid adhier.Grid
 	var basis adhier.Basis
 
-	switch strings.ToLower(c.Interpolation.Rule) {
+	switch strings.ToLower(config.Rule) {
 	case "open":
 		grid = newcot.NewOpen(uint16(ic))
 		basis = linhat.NewOpen(uint16(ic), uint16(oc))
@@ -115,15 +109,10 @@ func Setup(p *Problem) (Target, *adhier.Interpolator, error) {
 		grid = newcot.NewClosed(uint16(ic))
 		basis = linhat.NewClosed(uint16(ic), uint16(oc))
 	default:
-		return nil, nil, errors.New("the interpolation rule is unknown")
+		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	interpolator, err := adhier.New(grid, basis, (*adhier.Config)(&c.Interpolation.Config))
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return target, interpolator, nil
+	return adhier.New(grid, basis, (*adhier.Config)(&config.Config))
 }
 
 func printError(err error) {

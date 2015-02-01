@@ -22,7 +22,12 @@ func main() {
 func command(config *internal.Config, problem *internal.Problem,
 	fi *mat.File, fo *mat.File) error {
 
-	target, interpolator, err := internal.Setup(problem)
+	target, err := internal.SetupTarget(problem)
+	if err != nil {
+		return err
+	}
+
+	interpolator, err := internal.SetupInterpolator(problem, target)
 	if err != nil {
 		return err
 	}
@@ -81,18 +86,18 @@ func command(config *internal.Config, problem *internal.Problem,
 
 func invoke(target internal.Target, points []float64) []float64 {
 	ic, oc := target.InputsOutputs()
-	sc := uint32(len(points)) / ic
+	pc := uint32(len(points)) / ic
 
-	values := make([]float64, sc*oc)
-	done := make(chan bool, sc)
+	values := make([]float64, pc*oc)
+	done := make(chan bool, pc)
 
-	for i := uint32(0); i < sc; i++ {
+	for i := uint32(0); i < pc; i++ {
 		go func(point, value []float64) {
 			target.Evaluate(point, value, nil)
 			done <- true
 		}(points[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc])
 	}
-	for i := uint32(0); i < sc; i++ {
+	for i := uint32(0); i < pc; i++ {
 		<-done
 	}
 

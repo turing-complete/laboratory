@@ -1,0 +1,36 @@
+{
+	"tgff": "fixtures/002_020.tgff",
+
+	"probModel": {
+		"maxDelay": 0.2,
+		"marginal": "Beta(2, 5)",
+		"corrLength": 5,
+		"varThreshold": 0.9
+	},
+
+	"target": "temperature-profile",
+
+    "tempAnalysis": {
+        "floorplan": "fixtures/002.flp",
+        "hotspot": {
+            "config": "fixtures/hotspot.config",
+            "params": ""
+        },
+        "timeStep": 1e-4,
+        "ambientTemp": 318.15
+    },
+
+	"interpolation": {
+		"rule": "open",
+		"minLevel": 1,
+		"maxLevel": 9,
+		"maxNodes": 100000,
+		"absError": 1e-2,
+		"relError": 1e-2
+	},
+
+	"seed": 1,
+	"samples": 10000,
+
+	"verbose": false
+}
