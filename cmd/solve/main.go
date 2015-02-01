@@ -22,7 +22,12 @@ func command(_ *internal.Config, problem *internal.Problem,
 	problem.Println(target)
 
 	problem.Println("Constructing a surrogate...")
-	surrogate := interpolator.Compute(target.Evaluate)
+	problem.Printf("%5s %10s %10s\n", "Level", "Active", "Total")
+	progress := func(level uint8, activeNodes uint32, totalNodes uint32) {
+		problem.Printf("%5d %10d %10d\n", level, activeNodes, totalNodes)
+	}
+
+	surrogate := interpolator.Compute(target.Evaluate, progress)
 	problem.Println(surrogate)
 
 	if f == nil {
