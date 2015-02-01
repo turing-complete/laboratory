@@ -54,23 +54,13 @@ func command(config *internal.Config, problem *internal.Problem,
 	}
 	points := probability.Sample(uniform.New(0, 1), sc*ic)
 
-	problem.Println("Evaluating the surrogate model...")
-	values := interpolator.Evaluate(surrogate, points)
-
 	problem.Println("Evaluating the original model...")
-	realValues := make([]float64, sc*oc)
-	done := make(chan bool, sc)
-	for i := uint32(0); i < sc; i++ {
-		go func(point, value []float64) {
-			target.Evaluate(point, value, nil)
-			done <- true
-		}(points[i*ic:(i+1)*ic], realValues[i*oc:(i+1)*oc])
-	}
-	for i := uint32(0); i < sc; i++ {
-		<-done
-	}
+	values := invoke(target, points)
 
-	fmt.Printf("NRMSE: %.2e\n", metric.NRMSE(values, realValues))
+	problem.Println("Evaluating the surrogate model...")
+	approximations := interpolator.Evaluate(surrogate, points)
+
+	fmt.Printf("NRMSE: %.2e\n", metric.NRMSE(approximations, values))
 
 	if fo == nil {
 		return nil
@@ -82,9 +72,29 @@ func command(config *internal.Config, problem *internal.Problem,
 	if err := fo.PutMatrix("values", values, oc, sc); err != nil {
 		return err
 	}
-	if err := fo.PutMatrix("realValues", realValues, oc, sc); err != nil {
+	if err := fo.PutMatrix("approximations", approximations, oc, sc); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func invoke(target internal.Target, points []float64) []float64 {
+	ic, oc := target.InputsOutputs()
+	sc := uint32(len(points)) / ic
+
+	values := make([]float64, sc*oc)
+	done := make(chan bool, sc)
+
+	for i := uint32(0); i < sc; i++ {
+		go func(point, value []float64) {
+			target.Evaluate(point, value, nil)
+			done <- true
+		}(points[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc])
+	}
+	for i := uint32(0); i < sc; i++ {
+		<-done
+	}
+
+	return values
 }
