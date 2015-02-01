@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/ready-steady/format/mat"
-	"github.com/ready-steady/numeric/interpolation/adhier"
 
 	"../internal"
 )
@@ -22,13 +21,8 @@ func command(_ *internal.Config, problem *internal.Problem,
 	problem.Println(problem)
 	problem.Println(target)
 
-	var surrogate *adhier.Surrogate
-
 	problem.Println("Constructing a surrogate...")
-	problem.Printf("Done in %v.\n", internal.Track(func() {
-		surrogate = interpolator.Compute(target.Evaluate)
-	}))
-
+	surrogate := interpolator.Compute(target.Evaluate)
 	problem.Println(surrogate)
 
 	if f == nil {

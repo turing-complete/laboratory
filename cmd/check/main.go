@@ -54,28 +54,21 @@ func command(config *internal.Config, problem *internal.Problem,
 	}
 	points := probability.Sample(uniform.New(0, 1), sc*ic)
 
-	var values, realValues []float64
-
 	problem.Println("Evaluating the surrogate model...")
-	problem.Printf("Done in %v.\n", internal.Track(func() {
-		values = interpolator.Evaluate(surrogate, points)
-	}))
+	values := interpolator.Evaluate(surrogate, points)
 
 	problem.Println("Evaluating the original model...")
-	problem.Printf("Done in %v.\n", internal.Track(func() {
-		realValues = make([]float64, sc*oc)
-		done := make(chan bool, sc)
-
-		for i := uint32(0); i < sc; i++ {
-			go func(point, value []float64) {
-				target.Evaluate(point, value, nil)
-				done <- true
-			}(points[i*ic:(i+1)*ic], realValues[i*oc:(i+1)*oc])
-		}
-		for i := uint32(0); i < sc; i++ {
-			<-done
-		}
-	}))
+	realValues := make([]float64, sc*oc)
+	done := make(chan bool, sc)
+	for i := uint32(0); i < sc; i++ {
+		go func(point, value []float64) {
+			target.Evaluate(point, value, nil)
+			done <- true
+		}(points[i*ic:(i+1)*ic], realValues[i*oc:(i+1)*oc])
+	}
+	for i := uint32(0); i < sc; i++ {
+		<-done
+	}
 
 	fmt.Printf("NRMSE: %.2e\n", metric.NRMSE(values, realValues))
 
