@@ -4,6 +4,7 @@ package internal
 import "C"
 
 import (
+	"fmt"
 	"math"
 	"unsafe"
 
@@ -72,10 +73,6 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *temperatureTarget) InputsOutputs() (uint32, uint32) {
-	return 1 + t.problem.zc, t.problem.cc // +1 for time
-}
-
 func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
 	p := t.problem
 
@@ -122,4 +119,13 @@ func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
 			value[i] = fraction*(right-left) + left
 		}
 	}
+}
+
+func (t *temperatureTarget) InputsOutputs() (uint32, uint32) {
+	return 1 + t.problem.zc, t.problem.cc // +1 for time
+}
+
+func (t *temperatureTarget) String() string {
+	ic, oc := t.InputsOutputs()
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
 }
