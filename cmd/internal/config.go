@@ -48,18 +48,18 @@ type Config struct {
 	Verbose bool
 }
 
-func loadConfig(path string) (Config, error) {
-	c := Config{}
+func loadConfig(path string) (*Config, error) {
+	c := &Config{}
 
 	file, err := os.Open(path)
 	if err != nil {
-		return c, err
+		return nil, err
 	}
 	defer file.Close()
 
 	dec := json.NewDecoder(file)
-	if err = dec.Decode(&c); err != nil {
-		return c, err
+	if err = dec.Decode(c); err != nil {
+		return nil, err
 	}
 
 	return c, nil

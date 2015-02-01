@@ -55,7 +55,7 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	if problem, err = newProblem(&config); err != nil {
+	if problem, err = newProblem(config); err != nil {
 		printError(err)
 		return
 	}
@@ -76,7 +76,7 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 		defer ofile.Close()
 	}
 
-	if err = command(&config, problem, ifile, ofile); err != nil {
+	if err = command(config, problem, ifile, ofile); err != nil {
 		printError(err)
 		return
 	}

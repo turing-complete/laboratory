@@ -7,11 +7,8 @@ import (
 )
 
 func TestNewProblemGeneral(t *testing.T) {
-	config, err := loadConfig("fixtures/002_020.json")
-	assert.Success(err, t)
-
-	problem, err := newProblem(config)
-	assert.Success(err, t)
+	config, _ := loadConfig("fixtures/002_020.json")
+	problem, _ := newProblem(config)
 
 	assert.Equal(problem.cc, uint32(2), t)
 	assert.Equal(problem.tc, uint32(20), t)
@@ -35,10 +32,9 @@ func TestNewProblemProbModel(t *testing.T) {
 	config, _ := loadConfig("fixtures/002_020.json")
 	problem, _ := newProblem(config)
 
-	assert.Equal(problem.uc, uint32(20), t)
 	assert.Equal(problem.zc, uint32(3), t)
 
-	assert.Equal(len(problem.transform), 3*20, t)
+	assert.Equal(len(problem.multiplier), 3*20, t)
 
 	delay := make([]float64, 20)
 	for i := 0; i < 20; i++ {
@@ -53,20 +49,10 @@ func TestNewProblemProbModel(t *testing.T) {
 
 func BenchmarkSolverConstruct(b *testing.B) {
 	config, _ := loadConfig("fixtures/002_020.json")
+	problem, _ := newProblem(config)
 
 	for i := 0; i < b.N; i++ {
-		problem, _ := newProblem(config)
-		_, solver, _ := problem.Setup()
-		solver.Construct()
+		target, interpolator, _ := Setup(problem)
+		interpolator.Compute(target.Evaluate)
 	}
-}
-
-func index(count uint16) []uint16 {
-	index := make([]uint16, count)
-
-	for i := uint16(0); i < count; i++ {
-		index[i] = i
-	}
-
-	return index
 }
