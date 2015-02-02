@@ -39,7 +39,12 @@ func (p *Problem) String() string {
 		p.cc, p.tc, p.zc)
 }
 
-func newProblem(c *Config) (*Problem, error) {
+func NewProblem(config string) (*Problem, error) {
+	c, err := loadConfig(config)
+	if err != nil {
+		return nil, err
+	}
+
 	if c.ProbModel.MaxDelay < 0 || 1 <= c.ProbModel.MaxDelay {
 		return nil, errors.New("the delay rate is invalid")
 	}
@@ -49,8 +54,6 @@ func newProblem(c *Config) (*Problem, error) {
 	if c.ProbModel.VarThreshold <= 0 || 1 < c.ProbModel.VarThreshold {
 		return nil, errors.New("the variance-reduction threshold is invalid")
 	}
-
-	var err error
 
 	p := &Problem{config: c}
 

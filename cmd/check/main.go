@@ -22,12 +22,12 @@ func main() {
 func command(config *internal.Config, problem *internal.Problem,
 	fi *mat.File, fo *mat.File) error {
 
-	target, err := internal.SetupTarget(problem)
+	target, err := internal.NewTarget(problem)
 	if err != nil {
 		return err
 	}
 
-	interpolator, err := internal.SetupInterpolator(problem, target)
+	interpolator, err := internal.NewInterpolator(problem, target)
 	if err != nil {
 		return err
 	}
