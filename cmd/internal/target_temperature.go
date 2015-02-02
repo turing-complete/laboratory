@@ -6,6 +6,7 @@ import "C"
 import (
 	"fmt"
 	"math"
+	"sync/atomic"
 	"unsafe"
 
 	"github.com/ready-steady/simulation/power"
@@ -19,6 +20,7 @@ type temperatureTarget struct {
 	problem *Problem
 
 	sc uint32
+	ec uint32
 
 	power       *power.Power
 	temperature *temperature.Temperature
@@ -103,6 +105,8 @@ func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
 		if index != nil {
 			t.cache.Set(key, Q)
 		}
+
+		atomic.AddUint32(&t.ec, 1)
 	}
 
 	sid := node[0] * float64(sc-1)
@@ -123,6 +127,10 @@ func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
 
 func (t *temperatureTarget) InputsOutputs() (uint32, uint32) {
 	return 1 + t.problem.zc, t.problem.cc // +1 for time
+}
+
+func (t *temperatureTarget) Evaluations() uint32 {
+	return t.ec
 }
 
 func (t *temperatureTarget) String() string {
