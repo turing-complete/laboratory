@@ -34,7 +34,7 @@ type profileData struct {
 func newProfileTarget(p *Problem) (Target, error) {
 	const (
 		poolCapacity = 100
-		MaxUInt16 = ^uint16(0)
+		MaxUInt16    = ^uint16(0)
 	)
 
 	c := p.config
