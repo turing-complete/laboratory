@@ -9,12 +9,12 @@ import (
 	"../internal"
 )
 
-func BenchmarkInvokeNoChannels(b *testing.B) {
-	benchmarkInvoke(invokeNoChannel, b)
+func BenchmarkInvokeJobQueue(b *testing.B) {
+	benchmarkInvoke(invoke, b)
 }
 
-func BenchmarkInvokeWithChannels(b *testing.B) {
-	benchmarkInvoke(invoke, b)
+func BenchmarkInvokeNoJobQueue(b *testing.B) {
+	benchmarkInvoke(invokeNoJobQueue, b)
 }
 
 func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testing.B) {
@@ -36,7 +36,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 	}
 }
 
-func invokeNoChannel(target internal.Target, points []float64) []float64 {
+func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
 	ic, oc := target.InputsOutputs()
 	pc := uint32(len(points)) / ic
 
