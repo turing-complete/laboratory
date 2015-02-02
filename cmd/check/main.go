@@ -66,7 +66,8 @@ func command(config *internal.Config, problem *internal.Problem,
 	problem.Println("Evaluating the surrogate model...")
 	approximations := interpolator.Evaluate(surrogate, points)
 
-	fmt.Printf("Nodes: %d, NRMSE: %.2e\n", surrogate.Nodes,
+	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, NRMSE: %.2e\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes,
 		metric.NRMSE(approximations, values))
 
 	if fo == nil {
