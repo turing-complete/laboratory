@@ -2,7 +2,6 @@ package internal
 
 import (
 	"encoding/json"
-	"errors"
 	"os"
 
 	"github.com/ready-steady/numeric/interpolation/adhier"
@@ -63,18 +62,4 @@ func loadConfig(path string) (*Config, error) {
 	}
 
 	return c, nil
-}
-
-func (c *Config) validate() error {
-	if c.ProbModel.MaxDelay < 0 || 1 <= c.ProbModel.MaxDelay {
-		return errors.New("the delay rate is invalid")
-	}
-	if c.ProbModel.CorrLength <= 0 {
-		return errors.New("the correlation length is invalid")
-	}
-	if c.ProbModel.VarThreshold <= 0 || 1 < c.ProbModel.VarThreshold {
-		return errors.New("the variance-reduction threshold is invalid")
-	}
-
-	return nil
 }

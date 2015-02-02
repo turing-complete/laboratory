@@ -74,9 +74,6 @@ func SetupProblem(configFile string) (*Problem, error) {
 	if err != nil {
 		return nil, err
 	}
-	if err = config.validate(); err != nil {
-		return nil, err
-	}
 
 	return newProblem(config)
 }

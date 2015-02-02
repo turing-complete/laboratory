@@ -40,6 +40,16 @@ func (p *Problem) String() string {
 }
 
 func newProblem(c *Config) (*Problem, error) {
+	if c.ProbModel.MaxDelay < 0 || 1 <= c.ProbModel.MaxDelay {
+		return nil, errors.New("the delay rate is invalid")
+	}
+	if c.ProbModel.CorrLength <= 0 {
+		return nil, errors.New("the correlation length is invalid")
+	}
+	if c.ProbModel.VarThreshold <= 0 || 1 < c.ProbModel.VarThreshold {
+		return nil, errors.New("the variance-reduction threshold is invalid")
+	}
+
 	var err error
 
 	p := &Problem{config: c}
