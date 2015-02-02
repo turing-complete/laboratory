@@ -15,8 +15,8 @@
 		"minLevel": 1,
 		"maxLevel": 10,
 		"maxNodes": 100000,
-		"absError": 2e-2,
-		"relError": 2e-2
+		"absError": 1e-2,
+		"relError": 1e-2
 	},
 
 	"seed": 1,
