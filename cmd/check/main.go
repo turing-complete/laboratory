@@ -88,8 +88,7 @@ func command(config *internal.Config, problem *internal.Problem,
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
-	workerCount := uint32(runtime.GOMAXPROCS(0))
-
+	wc := uint32(runtime.GOMAXPROCS(0))
 	ic, oc := target.InputsOutputs()
 	pc := uint32(len(points)) / ic
 
@@ -97,7 +96,7 @@ func invoke(target internal.Target, points []float64) []float64 {
 	jobs := make(chan uint32, pc)
 	done := make(chan bool, pc)
 
-	for i := uint32(0); i < workerCount; i++ {
+	for i := uint32(0); i < wc; i++ {
 		go func() {
 			for j := range jobs {
 				target.Evaluate(points[j*ic:(j+1)*ic], values[j*oc:(j+1)*oc], nil)
