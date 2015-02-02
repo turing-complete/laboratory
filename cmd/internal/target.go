@@ -16,8 +16,10 @@ func NewTarget(problem *Problem) (Target, error) {
 		return newDelayTarget(problem), nil
 	case "total-energy":
 		return newEnergyTarget(problem), nil
-	case "temperature-profile":
+	case "temperature-slice":
 		return newTemperatureTarget(problem)
+	case "temperature-profile":
+		return newProfileTarget(problem)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

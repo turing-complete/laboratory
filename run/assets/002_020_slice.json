@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/032_320.tgff",
+	"tgff": "assets/002_020.tgff",
 
 	"probModel": {
 		"maxDelay": 0.2,
@@ -8,10 +8,10 @@
 		"varThreshold": 0.9
 	},
 
-	"target": "temperature-profile",
+	"target": "temperature-slice",
 
     "tempAnalysis": {
-        "floorplan": "assets/032.flp",
+        "floorplan": "assets/002.flp",
         "hotspot": {
             "config": "assets/hotspot.config",
             "params": ""

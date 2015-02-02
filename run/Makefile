@@ -18,7 +18,7 @@ $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
 cases := 002_020_delay 004_040_delay 008_080_delay 016_160_delay 032_320_delay
 cases += 002_020_energy 004_040_energy 008_080_energy 016_160_energy 032_320_energy
-cases += 002_020_temperature 004_040_temperature 008_080_temperature 016_160_temperature 032_320_temperature
+cases += 002_020_slice 004_040_slice 008_080_slice 016_160_slice 032_320_slice
 
 define define_case
 $(1)_hash := $(shell hash md5sum 2>/dev/null && (cat assets/$(1).json | md5sum | cut -d' ' -f1) || (cat assets/$(1).json | md5))

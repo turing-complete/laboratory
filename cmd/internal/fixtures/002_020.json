@@ -8,7 +8,7 @@
 		"varThreshold": 0.95
 	},
 
-	"target": "temperature-profile",
+	"target": "temperature-slice",
 
 	"tempAnalysis": {
 		"floorplan": "fixtures/002.flp",
