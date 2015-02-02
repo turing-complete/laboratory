@@ -10,7 +10,7 @@ func TestNewTarget(t *testing.T) {
 	problem, _ := NewProblem("fixtures/002_020.json")
 
 	target, _ := NewTarget(problem)
-	temperatureTarget := target.(*temperatureTarget)
+	sliceTarget := target.(*sliceTarget)
 
-	assert.Equal(temperatureTarget.sc, uint32(29100), t)
+	assert.Equal(sliceTarget.sc, uint32(29100), t)
 }

@@ -16,7 +16,7 @@ import (
 	"../../pkg/pool"
 )
 
-type temperatureTarget struct {
+type sliceTarget struct {
 	problem *Problem
 
 	sc uint32
@@ -29,12 +29,12 @@ type temperatureTarget struct {
 	pool  *pool.Pool
 }
 
-type temperatureData struct {
+type sliceData struct {
 	P []float64
 	S []float64
 }
 
-func newTemperatureTarget(p *Problem) (Target, error) {
+func newSliceTarget(p *Problem) (Target, error) {
 	const (
 		cacheCapacity = 1000
 		poolCapacity  = 100
@@ -55,7 +55,7 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 	cc, sc := p.cc, uint32(p.schedule.Span/c.TempAnalysis.TimeStep)
 	nc := temperature.Nodes
 
-	target := &temperatureTarget{
+	target := &sliceTarget{
 		problem: p,
 
 		sc: sc,
@@ -65,7 +65,7 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 
 		cache: cache.New(p.zc, cacheCapacity),
 		pool: pool.New(poolCapacity, func() interface{} {
-			return &temperatureData{
+			return &sliceData{
 				P: make([]float64, cc*sc),
 				S: make([]float64, nc*sc),
 			}
@@ -75,7 +75,7 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
+func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	p := t.problem
 
 	cc, sc := p.cc, t.sc
@@ -89,7 +89,7 @@ func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
 	}
 
 	if Q == nil {
-		data := t.pool.Get().(*temperatureData)
+		data := t.pool.Get().(*sliceData)
 
 		// FIXME: Bad, bad, bad!
 		C.memset(unsafe.Pointer(&data.P[0]), 0, C.size_t(8*cc*sc))
@@ -125,15 +125,15 @@ func (t *temperatureTarget) Evaluate(node, value []float64, index []uint64) {
 	}
 }
 
-func (t *temperatureTarget) InputsOutputs() (uint32, uint32) {
+func (t *sliceTarget) InputsOutputs() (uint32, uint32) {
 	return 1 + t.problem.zc, t.problem.cc // +1 for time
 }
 
-func (t *temperatureTarget) Evaluations() uint32 {
+func (t *sliceTarget) Evaluations() uint32 {
 	return t.ec
 }
 
-func (t *temperatureTarget) String() string {
+func (t *sliceTarget) String() string {
 	ic, oc := t.InputsOutputs()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
 }

@@ -17,7 +17,7 @@ func NewTarget(problem *Problem) (Target, error) {
 	case "total-energy":
 		return newEnergyTarget(problem), nil
 	case "temperature-slice":
-		return newTemperatureTarget(problem)
+		return newSliceTarget(problem)
 	case "temperature-profile":
 		return newProfileTarget(problem)
 	default:
