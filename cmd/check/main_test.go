@@ -1,7 +1,6 @@
 package main
 
 import (
-	"runtime"
 	"testing"
 
 	"github.com/ready-steady/probability"
@@ -10,16 +9,12 @@ import (
 	"../internal"
 )
 
-var (
-	workerCount = uint32(runtime.GOMAXPROCS(0))
-)
-
-func BenchmarkInvokeWithoutChannels(b *testing.B) {
-	benchmarkInvoke(invoke, b)
+func BenchmarkInvokeNoChannels(b *testing.B) {
+	benchmarkInvoke(invokeNoChannel, b)
 }
 
 func BenchmarkInvokeWithChannels(b *testing.B) {
-	benchmarkInvoke(invokeChannel, b)
+	benchmarkInvoke(invoke, b)
 }
 
 func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testing.B) {
@@ -41,31 +36,22 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 	}
 }
 
-func invokeChannel(target internal.Target, points []float64) []float64 {
+func invokeNoChannel(target internal.Target, points []float64) []float64 {
 	ic, oc := target.InputsOutputs()
 	pc := uint32(len(points)) / ic
 
 	values := make([]float64, pc*oc)
-	jobs := make(chan uint32, pc)
 	done := make(chan bool, pc)
 
-	for i := uint32(0); i < workerCount; i++ {
-		go func() {
-			for j := range jobs {
-				target.Evaluate(points[j*ic:(j+1)*ic], values[j*oc:(j+1)*oc], nil)
-				done <- true
-			}
-		}()
-	}
-
 	for i := uint32(0); i < pc; i++ {
-		jobs <- i
+		go func(point, value []float64) {
+			target.Evaluate(point, value, nil)
+			done <- true
+		}(points[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc])
 	}
 	for i := uint32(0); i < pc; i++ {
 		<-done
 	}
-
-	close(jobs)
 
 	return values
 }

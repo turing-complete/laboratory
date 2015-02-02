@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"math/rand"
+	"runtime"
 	"time"
 
 	"github.com/ready-steady/format/mat"
@@ -85,21 +86,32 @@ func command(config *internal.Config, problem *internal.Problem,
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
+	workerCount := uint32(runtime.GOMAXPROCS(0))
+
 	ic, oc := target.InputsOutputs()
 	pc := uint32(len(points)) / ic
 
 	values := make([]float64, pc*oc)
+	jobs := make(chan uint32, pc)
 	done := make(chan bool, pc)
 
+	for i := uint32(0); i < workerCount; i++ {
+		go func() {
+			for j := range jobs {
+				target.Evaluate(points[j*ic:(j+1)*ic], values[j*oc:(j+1)*oc], nil)
+				done <- true
+			}
+		}()
+	}
+
 	for i := uint32(0); i < pc; i++ {
-		go func(point, value []float64) {
-			target.Evaluate(point, value, nil)
-			done <- true
-		}(points[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc])
+		jobs <- i
 	}
 	for i := uint32(0); i < pc; i++ {
 		<-done
 	}
+
+	close(jobs)
 
 	return values
 }
