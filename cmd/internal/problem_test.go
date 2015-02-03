@@ -7,7 +7,8 @@ import (
 )
 
 func TestNewProblem(t *testing.T) {
-	problem, _ := NewProblem("fixtures/002_020_slice.json")
+	config, _ := NewConfig("fixtures/002_020_slice.json")
+	problem, _ := NewProblem(config)
 
 	assert.Equal(problem.cc, uint32(2), t)
 	assert.Equal(problem.tc, uint32(20), t)

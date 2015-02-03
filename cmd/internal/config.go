@@ -54,7 +54,7 @@ type Config struct {
 	Verbose bool
 }
 
-func loadConfig(path string) (*Config, error) {
+func NewConfig(path string) (*Config, error) {
 	c := &Config{}
 
 	file, err := os.Open(path)

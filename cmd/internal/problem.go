@@ -40,12 +40,7 @@ func (p *Problem) String() string {
 		p.cc, p.tc, p.uc, p.zc)
 }
 
-func NewProblem(config string) (*Problem, error) {
-	c, err := loadConfig(config)
-	if err != nil {
-		return nil, err
-	}
-
+func NewProblem(c *Config) (*Problem, error) {
 	if c.ProbModel.MaxDelay < 0 || 1 <= c.ProbModel.MaxDelay {
 		return nil, errors.New("the delay rate is invalid")
 	}
