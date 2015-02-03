@@ -7,8 +7,7 @@ import (
 )
 
 func TestNewTarget(t *testing.T) {
-	config, _ := NewConfig("fixtures/002_020_slice.json")
-	problem, _ := NewProblem(config)
+	problem, _ := NewProblem("fixtures/002_020_slice.json")
 
 	target, _ := NewTarget(problem)
 	sliceTarget := target.(*sliceTarget)

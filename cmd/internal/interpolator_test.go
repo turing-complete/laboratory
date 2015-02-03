@@ -8,8 +8,7 @@ import (
 )
 
 func TestInterpolatorCompute(t *testing.T) {
-	config, _ := NewConfig("fixtures/002_020_profile.json")
-	problem, _ := NewProblem(config)
+	problem, _ := NewProblem("fixtures/002_020_profile.json")
 	target, _ := NewTarget(problem)
 	interpolator, _ := NewInterpolator(problem, target)
 	surrogate := interpolator.Compute(target.Evaluate)
@@ -31,8 +30,7 @@ func TestInterpolatorCompute(t *testing.T) {
 }
 
 func BenchmarkInterpolatorCompute(b *testing.B) {
-	config, _ := NewConfig("fixtures/002_020_slice.json")
-	problem, _ := NewProblem(config)
+	problem, _ := NewProblem("fixtures/002_020_slice.json")
 
 	for i := 0; i < b.N; i++ {
 		target, _ := NewTarget(problem)

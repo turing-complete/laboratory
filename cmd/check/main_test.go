@@ -22,8 +22,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 		sampleCount = 10000
 	)
 
-	config, _ := internal.NewConfig("fixtures/002_020.json")
-	problem, _ := internal.NewProblem(config)
+	problem, _ := internal.NewProblem("fixtures/002_020.json")
 	target, _ := internal.NewTarget(problem)
 
 	ic, _ := target.InputsOutputs()
