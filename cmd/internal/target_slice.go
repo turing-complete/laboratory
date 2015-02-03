@@ -94,7 +94,7 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	var key string
 
 	if index != nil {
-		key = makeKey(index[1:]) // +1 for time
+		key = makeString(index[1:]) // +1 for time
 		if result, ok := t.cache.Get(key); ok {
 			Q = result.([]float64)
 		}
@@ -142,16 +142,16 @@ func (t *sliceTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
 	t.problem.Printf("%5d %10d %10d %10d\n", level, passiveNodes, t.ec, activeNodes)
 }
 
-func makeKey(trace []uint64) string {
+func makeString(index []uint64) string {
 	const (
 		sizeOfUInt64 = 8
 	)
 
-	sliceHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&trace))
+	sliceHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&index))
 
 	stringHeader := reflect.StringHeader{
 		Data: sliceHeader.Data,
-		Len:  sizeOfUInt64 * len(trace),
+		Len:  sizeOfUInt64 * len(index),
 	}
 
 	return *(*string)(unsafe.Pointer(&stringHeader))
