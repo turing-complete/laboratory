@@ -20,74 +20,125 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config string, fi *mat.File, fo *mat.File) error {
-	problem, err := internal.NewProblem(config)
+func command(config string, ifile *mat.File, ofile *mat.File) error {
+	values, err := sampleOriginal(config)
 	if err != nil {
 		return err
+	}
+
+	approximations, surrogate, err := sampleSurrogate(config, ifile)
+	if err != nil {
+		return err
+	}
+
+	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, NRMSE: %.2e\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes,
+		metric.NRMSE(approximations, values))
+
+	if ofile == nil {
+		return nil
+	}
+
+	oc := surrogate.Outputs
+	sc := uint32(len(approximations)) / oc
+
+	if err := ofile.PutMatrix("approximations", approximations, oc, sc); err != nil {
+		return err
+	}
+	if err := ofile.PutMatrix("values", values, oc, sc); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func sampleOriginal(configFile string) ([]float64, error) {
+	config, err := internal.NewConfig(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	problem, err := internal.NewProblem(config)
+	if err != nil {
+		return nil, err
 	}
 
 	target, err := internal.NewTarget(problem)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	interpolator, err := internal.NewInterpolator(problem, target)
+	points, err := generate(problem, target)
 	if err != nil {
-		return err
+		return nil, err
 	}
+
+	problem.Println("Processing the original model...")
 
 	problem.Println(problem)
 	problem.Println(target)
 
-	surrogate := new(adhier.Surrogate)
-	if fi == nil {
-		return errors.New("an input file is required")
-	}
-	if err := fi.Get("surrogate", surrogate); err != nil {
-		return err
+	return invoke(target, points), nil
+}
+
+func sampleSurrogate(configFile string, ifile *mat.File) ([]float64, *adhier.Surrogate, error) {
+	config, err := internal.NewConfig(configFile)
+	if err != nil {
+		return nil, nil, err
 	}
 
+	problem, err := internal.NewProblem(config)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	target, err := internal.NewTarget(problem)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	interpolator, err := internal.NewInterpolator(problem, target)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	surrogate := new(adhier.Surrogate)
+	if ifile == nil {
+		return nil, nil, errors.New("an input file is required")
+	}
+	if err = ifile.Get("surrogate", surrogate); err != nil {
+		return nil, nil, err
+	}
+
+	problem.Println("Processing the surrogate model...")
+
+	problem.Println(problem)
+	problem.Println(target)
 	problem.Println(surrogate)
 
-	sc := problem.Config.Samples
-	if sc == 0 {
-		return errors.New("the number of samples is zero")
+	points, err := generate(problem, target)
+	if err != nil {
+		return nil, nil, err
 	}
 
-	ic, oc := target.InputsOutputs()
+	return interpolator.Evaluate(surrogate, points), surrogate, nil
+}
+
+func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
+	sc := problem.Config.Samples
+	if sc == 0 {
+		return nil, errors.New("the number of samples is zero")
+	}
 
 	if problem.Config.Seed > 0 {
 		rand.Seed(problem.Config.Seed)
 	} else {
 		rand.Seed(time.Now().Unix())
 	}
-	points := probability.Sample(uniform.New(0, 1), sc*ic)
 
-	problem.Println("Evaluating the original model...")
-	values := invoke(target, points)
+	ic, _ := target.InputsOutputs()
 
-	problem.Println("Evaluating the surrogate model...")
-	approximations := interpolator.Evaluate(surrogate, points)
-
-	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, NRMSE: %.2e\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes,
-		metric.NRMSE(approximations, values))
-
-	if fo == nil {
-		return nil
-	}
-
-	if err := fo.PutMatrix("points", points, ic, sc); err != nil {
-		return err
-	}
-	if err := fo.PutMatrix("values", values, oc, sc); err != nil {
-		return err
-	}
-	if err := fo.PutMatrix("approximations", approximations, oc, sc); err != nil {
-		return err
-	}
-
-	return nil
+	return probability.Sample(uniform.New(0, 1), sc*ic), nil
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
