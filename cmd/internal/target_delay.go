@@ -27,6 +27,11 @@ func (t *delayTarget) Evaluate(node []float64, value []float64, _ []uint64) {
 }
 
 func (t *delayTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+	if level == 0 {
+		t.problem.Printf("%10s %15s %15s\n",
+			"Level", "Passive Nodes", "Active Nodes")
+	}
+
 	passiveNodes := totalNodes - activeNodes
-	t.problem.Printf("%5d %10d %10d\n", level, passiveNodes, activeNodes)
+	t.problem.Printf("%10d %15d %15d\n", level, passiveNodes, activeNodes)
 }
