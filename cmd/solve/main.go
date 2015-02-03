@@ -28,6 +28,7 @@ func command(_ *internal.Config, problem *internal.Problem,
 
 	problem.Println("Constructing a surrogate...")
 	surrogate := interpolator.Compute(target.Evaluate, target.Progress)
+	target.Progress(surrogate.Level, 0, surrogate.Nodes)
 	problem.Println(surrogate)
 
 	if f == nil {
