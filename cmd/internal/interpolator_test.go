@@ -14,11 +14,12 @@ func TestInterpolatorCompute(t *testing.T) {
 	surrogate := interpolator.Compute(target.Evaluate)
 
 	ic, oc := target.InputsOutputs()
+	nc := surrogate.Nodes
+
+	assert.Equal(nc, uint32(4127), t)
 
 	grid := newcot.NewOpen(uint16(ic))
 	nodes := grid.ComputeNodes(surrogate.Indices)
-
-	nc := uint32(len(nodes)) / ic
 
 	values := make([]float64, nc*oc)
 	for i := uint32(0); i < nc; i++ {
