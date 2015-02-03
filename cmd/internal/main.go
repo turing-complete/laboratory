@@ -36,7 +36,13 @@ func Run(command func(*Problem, *mat.File, *mat.File) error) {
 		return
 	}
 
-	problem, err := NewProblem(*configFile)
+	config, err := NewConfig(*configFile)
+	if err != nil {
+		printError(err)
+		return
+	}
+
+	problem, err := NewProblem(config)
 	if err != nil {
 		printError(err)
 		return
