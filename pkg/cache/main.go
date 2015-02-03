@@ -27,9 +27,3 @@ func (c *Cache) Add(key string, value interface{}) {
 	c.mapping[key] = value
 	c.mutex.Unlock()
 }
-
-func (c *Cache) Flush() {
-	c.mutex.Lock()
-	c.mapping = make(map[string]interface{}, len(c.mapping))
-	c.mutex.Unlock()
-}
