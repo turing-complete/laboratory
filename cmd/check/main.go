@@ -11,7 +11,7 @@ import (
 	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
-	"github.com/ready-steady/statistics/metric"
+	"github.com/ready-steady/statistics/test"
 
 	"../internal"
 )
@@ -21,19 +21,24 @@ func main() {
 }
 
 func command(config string, ifile *mat.File, ofile *mat.File) error {
-	values, err := sampleOriginal(config)
-	if err != nil {
-		return err
-	}
+	const (
+		α = 0.05
+	)
 
 	approximations, surrogate, err := sampleSurrogate(config, ifile)
 	if err != nil {
 		return err
 	}
 
-	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, NRMSE: %.2e\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes,
-		metric.NRMSE(approximations, values))
+	values, err := sampleOriginal(config)
+	if err != nil {
+		return err
+	}
+
+	passed, p := test.KolmogorovSmirnov(approximations, values, α)
+
+	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, Passed: %v, P-value: %.4e\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes, passed, p)
 
 	if ofile == nil {
 		return nil
@@ -50,35 +55,6 @@ func command(config string, ifile *mat.File, ofile *mat.File) error {
 	}
 
 	return nil
-}
-
-func sampleOriginal(configFile string) ([]float64, error) {
-	config, err := internal.NewConfig(configFile)
-	if err != nil {
-		return nil, err
-	}
-
-	problem, err := internal.NewProblem(config)
-	if err != nil {
-		return nil, err
-	}
-
-	target, err := internal.NewTarget(problem)
-	if err != nil {
-		return nil, err
-	}
-
-	points, err := generate(problem, target)
-	if err != nil {
-		return nil, err
-	}
-
-	problem.Println("Processing the original model...")
-
-	problem.Println(problem)
-	problem.Println(target)
-
-	return invoke(target, points), nil
 }
 
 func sampleSurrogate(configFile string, ifile *mat.File) ([]float64, *adhier.Surrogate, error) {
@@ -122,6 +98,37 @@ func sampleSurrogate(configFile string, ifile *mat.File) ([]float64, *adhier.Sur
 	}
 
 	return interpolator.Evaluate(surrogate, points), surrogate, nil
+}
+
+func sampleOriginal(configFile string) ([]float64, error) {
+	config, err := internal.NewConfig(configFile)
+	if err != nil {
+		return nil, err
+	}
+
+	config.ProbModel.VarThreshold = 42
+
+	problem, err := internal.NewProblem(config)
+	if err != nil {
+		return nil, err
+	}
+
+	target, err := internal.NewTarget(problem)
+	if err != nil {
+		return nil, err
+	}
+
+	points, err := generate(problem, target)
+	if err != nil {
+		return nil, err
+	}
+
+	problem.Println("Processing the original model...")
+
+	problem.Println(problem)
+	problem.Println(target)
+
+	return invoke(target, points), nil
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
