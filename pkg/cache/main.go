@@ -1,67 +1,29 @@
 package cache
 
 import (
-	"fmt"
-	"reflect"
 	"sync"
-	"unsafe"
 )
 
 type Cache struct {
-	depth   int
-	mapping map[string][]float64
-
-	hc uint32
-	mc uint32
-
-	sync.Mutex
+	mutex   sync.Mutex
+	mapping map[string]interface{}
 }
 
-func (c *Cache) String() string {
-	return fmt.Sprintf("Cache{hits: %d (%.2f%%), misses: %d (%.2f%%)}",
-		c.hc, float64(c.hc)/float64(c.hc+c.mc)*100,
-		c.mc, float64(c.mc)/float64(c.hc+c.mc)*100)
-}
-
-func New(depth uint32, capacity uint32) *Cache {
+func New(capacity uint32) *Cache {
 	return &Cache{
-		depth:   int(depth),
-		mapping: make(map[string][]float64, capacity),
+		mapping: make(map[string]interface{}, capacity),
 	}
 }
 
-func (c *Cache) Key(trace []uint64) string {
-	const (
-		sizeOfUInt64 = 8
-	)
-
-	sliceHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&trace))
-
-	stringHeader := reflect.StringHeader{
-		Data: sliceHeader.Data,
-		Len:  sizeOfUInt64 * c.depth,
-	}
-
-	return *(*string)(unsafe.Pointer(&stringHeader))
+func (c *Cache) Get(key string) (value interface{}, ok bool) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
+	value, ok = c.mapping[key]
+	return
 }
 
-func (c *Cache) Get(key string) []float64 {
-	c.Lock()
-
-	value, ok := c.mapping[key]
-	if ok {
-		c.hc++
-	} else {
-		c.mc++
-	}
-
-	c.Unlock()
-
-	return value
-}
-
-func (c *Cache) Set(key string, value []float64) {
-	c.Lock()
+func (c *Cache) Add(key string, value interface{}) {
+	c.mutex.Lock()
+	defer c.mutex.Unlock()
 	c.mapping[key] = value
-	c.Unlock()
 }

@@ -6,6 +6,7 @@ import "C"
 import (
 	"fmt"
 	"math"
+	"reflect"
 	"sync/atomic"
 	"unsafe"
 
@@ -63,7 +64,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 		power:       power,
 		temperature: temperature,
 
-		cache: cache.New(p.zc, cacheCapacity),
+		cache: cache.New(cacheCapacity),
 		pool: pool.New(poolCapacity, func() interface{} {
 			return &sliceData{
 				P: make([]float64, cc*sc),
@@ -84,8 +85,10 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	var key string
 
 	if index != nil {
-		key = t.cache.Key(index[1:]) // +1 for time
-		Q = t.cache.Get(key)
+		key = makeKey(index[1:]) // +1 for time
+		if result, ok := t.cache.Get(key); ok {
+			Q = result.([]float64)
+		}
 	}
 
 	if Q == nil {
@@ -103,7 +106,7 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 		t.pool.Put(data)
 
 		if index != nil {
-			t.cache.Set(key, Q)
+			t.cache.Add(key, Q)
 		}
 
 		atomic.AddUint32(&t.ec, 1)
@@ -136,4 +139,19 @@ func (t *sliceTarget) Evaluations() uint32 {
 func (t *sliceTarget) String() string {
 	ic, oc := t.InputsOutputs()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+}
+
+func makeKey(trace []uint64) string {
+	const (
+		sizeOfUInt64 = 8
+	)
+
+	sliceHeader := *(*reflect.SliceHeader)(unsafe.Pointer(&trace))
+
+	stringHeader := reflect.StringHeader{
+		Data: sliceHeader.Data,
+		Len:  sizeOfUInt64 * len(trace),
+	}
+
+	return *(*string)(unsafe.Pointer(&stringHeader))
 }
