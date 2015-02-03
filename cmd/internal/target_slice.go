@@ -1,8 +1,5 @@
 package internal
 
-// #include <string.h>
-import "C"
-
 import (
 	"fmt"
 	"math"
@@ -10,10 +7,10 @@ import (
 	"sync/atomic"
 	"unsafe"
 
+	"camlistore.org/pkg/lru"
 	"github.com/ready-steady/simulation/power"
 	"github.com/ready-steady/simulation/temperature"
 
-	"camlistore.org/pkg/lru"
 	"../../pkg/pool"
 )
 
@@ -77,7 +74,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 }
 
 func (t *sliceTarget) InputsOutputs() (uint32, uint32) {
-	return 1 + t.problem.zc, t.problem.cc // +1 for time
+	return 1 + t.problem.zc, uint32(len(t.problem.config.CoreIndex)) // +1 for time
 }
 
 func (t *sliceTarget) String() string {
@@ -103,9 +100,6 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	if Q == nil {
 		data := t.pool.Get().(*sliceData)
 
-		// FIXME: Bad, bad, bad!
-		C.memset(unsafe.Pointer(&data.P[0]), 0, C.size_t(8*cc*sc))
-
 		u := p.transform(node[1:]) // +1 for time
 		t.power.Compute(p.time.Recompute(p.schedule, u), data.P, sc)
 
@@ -125,13 +119,13 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	lid, rid := uint32(math.Floor(sid)), uint32(math.Ceil(sid))
 
 	if lid == rid {
-		for i := uint32(0); i < cc; i++ {
-			value[i] = Q[lid*cc+i]
+		for i, cid := range p.config.CoreIndex {
+			value[i] = Q[lid*cc+uint32(cid)]
 		}
 	} else {
 		fraction := (sid - float64(lid)) / (float64(rid) - float64(lid))
-		for i := uint32(0); i < cc; i++ {
-			left, right := Q[lid*cc+i], Q[rid*cc+i]
+		for i, cid := range p.config.CoreIndex {
+			left, right := Q[lid*cc+uint32(cid)], Q[rid*cc+uint32(cid)]
 			value[i] = fraction*(right-left) + left
 		}
 	}

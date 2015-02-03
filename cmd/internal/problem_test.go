@@ -11,6 +11,7 @@ func TestNewProblem(t *testing.T) {
 
 	assert.Equal(problem.cc, uint32(2), t)
 	assert.Equal(problem.tc, uint32(20), t)
+	assert.Equal(problem.uc, uint32(20), t)
 	assert.Equal(problem.zc, uint32(3), t)
 
 	delay := make([]float64, 20)

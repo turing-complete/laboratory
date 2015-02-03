@@ -1,11 +1,7 @@
 package internal
 
-// #include <string.h>
-import "C"
-
 import (
 	"fmt"
-	"unsafe"
 
 	"github.com/ready-steady/simulation/power"
 	"github.com/ready-steady/simulation/temperature"
@@ -27,6 +23,7 @@ type profileTarget struct {
 type profileData struct {
 	P []float64
 	S []float64
+	Q []float64
 }
 
 func newProfileTarget(p *Problem) (Target, error) {
@@ -66,6 +63,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 			return &profileData{
 				P: make([]float64, cc*sc),
 				S: make([]float64, nc*sc),
+				Q: make([]float64, cc*sc),
 			}
 		}),
 	}
@@ -74,7 +72,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 }
 
 func (t *profileTarget) InputsOutputs() (uint32, uint32) {
-	return t.problem.zc, t.sc * t.problem.cc
+	return t.problem.zc, t.sc * uint32(len(t.problem.config.CoreIndex))
 }
 
 func (t *profileTarget) String() string {
@@ -85,17 +83,22 @@ func (t *profileTarget) String() string {
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	p := t.problem
 
-	cc, sc := p.cc, t.sc
+	coreIndex := p.config.CoreIndex
 
-	u := p.transform(node)
+	cc, occ, sc := p.cc, uint32(len(coreIndex)), t.sc
 
 	data := t.pool.Get().(*profileData)
 
-	// FIXME: Bad, bad, bad!
-	C.memset(unsafe.Pointer(&data.P[0]), 0, C.size_t(8*cc*sc))
+	Q := data.Q
 
-	t.power.Compute(p.time.Recompute(p.schedule, u), data.P, sc)
-	t.temperature.ComputeTransient(data.P, value, data.S, sc)
+	t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), data.P, sc)
+	t.temperature.ComputeTransient(data.P, Q, data.S, sc)
+
+	for i := uint32(0); i < sc; i++ {
+		for j := uint32(0); j < occ; j++ {
+			value[i*cc+j] = Q[i*cc+uint32(coreIndex[j])]
+		}
+	}
 
 	t.pool.Put(data)
 }
