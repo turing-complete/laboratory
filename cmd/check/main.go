@@ -20,9 +20,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config, problem *internal.Problem,
-	fi *mat.File, fo *mat.File) error {
-
+func command(problem *internal.Problem, fi *mat.File, fo *mat.File) error {
 	target, err := internal.NewTarget(problem)
 	if err != nil {
 		return err
@@ -46,15 +44,15 @@ func command(config *internal.Config, problem *internal.Problem,
 
 	problem.Println(surrogate)
 
-	sc := config.Samples
+	sc := problem.Config.Samples
 	if sc == 0 {
 		return errors.New("the number of samples is zero")
 	}
 
 	ic, oc := target.InputsOutputs()
 
-	if config.Seed > 0 {
-		rand.Seed(config.Seed)
+	if problem.Config.Seed > 0 {
+		rand.Seed(problem.Config.Seed)
 	} else {
 		rand.Seed(time.Now().Unix())
 	}

@@ -10,7 +10,7 @@ import (
 )
 
 func NewInterpolator(problem *Problem, target Target) (*adhier.Interpolator, error) {
-	config := &problem.config.Interpolation
+	config := &problem.Config.Interpolation
 	ic, oc := target.InputsOutputs()
 
 	var grid adhier.Grid

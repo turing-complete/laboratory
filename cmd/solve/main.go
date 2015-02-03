@@ -10,9 +10,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(_ *internal.Config, problem *internal.Problem,
-	_ *mat.File, f *mat.File) error {
-
+func command(problem *internal.Problem, _ *mat.File, f *mat.File) error {
 	target, err := internal.NewTarget(problem)
 	if err != nil {
 		return err

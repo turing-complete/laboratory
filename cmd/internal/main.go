@@ -11,7 +11,7 @@ import (
 	"github.com/ready-steady/format/mat"
 )
 
-func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
+func Run(command func(*Problem, *mat.File, *mat.File) error) {
 	configFile := flag.String("c", "", "")
 	inputFile := flag.String("i", "", "")
 	outputFile := flag.String("o", "", "")
@@ -60,7 +60,7 @@ func Run(command func(*Config, *Problem, *mat.File, *mat.File) error) {
 		defer ofile.Close()
 	}
 
-	if err = command(problem.config, problem, ifile, ofile); err != nil {
+	if err = command(problem, ifile, ofile); err != nil {
 		printError(err)
 		return
 	}

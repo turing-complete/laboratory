@@ -18,7 +18,7 @@ import (
 var standardGaussian = gaussian.New(0, 1)
 
 type Problem struct {
-	config *Config
+	Config *Config
 
 	platform    *system.Platform
 	application *system.Application
@@ -56,7 +56,7 @@ func NewProblem(config string) (*Problem, error) {
 		return nil, errors.New("the variance-reduction threshold is invalid")
 	}
 
-	p := &Problem{config: c}
+	p := &Problem{Config: c}
 
 	platform, application, err := system.Load(c.TGFF)
 	if err != nil {
@@ -131,7 +131,7 @@ func (p *Problem) transform(node []float64) []float64 {
 	matrix.Multiply(p.multiplier, z, u, p.uc, p.zc, 1)
 
 	// Dependent Gaussian to dependent uniform to dependent target
-	for i, tid := range p.config.TaskIndex {
+	for i, tid := range p.Config.TaskIndex {
 		d[tid] = p.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
@@ -139,13 +139,13 @@ func (p *Problem) transform(node []float64) []float64 {
 }
 
 func (p *Problem) Printf(format string, arguments ...interface{}) {
-	if p.config.Verbose {
+	if p.Config.Verbose {
 		fmt.Printf(format, arguments...)
 	}
 }
 
 func (p *Problem) Println(arguments ...interface{}) {
-	if p.config.Verbose {
+	if p.Config.Verbose {
 		fmt.Println(arguments...)
 	}
 }

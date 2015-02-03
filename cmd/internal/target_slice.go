@@ -38,7 +38,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 		poolCapacity  = 100
 	)
 
-	c := p.config
+	c := p.Config
 
 	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
 	if err != nil {
@@ -74,7 +74,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 }
 
 func (t *sliceTarget) InputsOutputs() (uint32, uint32) {
-	return 1 + t.problem.zc, uint32(len(t.problem.config.CoreIndex)) // +1 for time
+	return 1 + t.problem.zc, uint32(len(t.problem.Config.CoreIndex)) // +1 for time
 }
 
 func (t *sliceTarget) String() string {
@@ -119,12 +119,12 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	lid, rid := uint32(math.Floor(sid)), uint32(math.Ceil(sid))
 
 	if lid == rid {
-		for i, cid := range p.config.CoreIndex {
+		for i, cid := range p.Config.CoreIndex {
 			value[i] = Q[lid*cc+uint32(cid)]
 		}
 	} else {
 		fraction := (sid - float64(lid)) / (float64(rid) - float64(lid))
-		for i, cid := range p.config.CoreIndex {
+		for i, cid := range p.Config.CoreIndex {
 			left, right := Q[lid*cc+uint32(cid)], Q[rid*cc+uint32(cid)]
 			value[i] = fraction*(right-left) + left
 		}

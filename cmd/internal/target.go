@@ -11,7 +11,7 @@ type Target interface {
 }
 
 func NewTarget(problem *Problem) (Target, error) {
-	switch problem.config.Target {
+	switch problem.Config.Target {
 	case "end-to-end-delay":
 		return newDelayTarget(problem), nil
 	case "total-energy":

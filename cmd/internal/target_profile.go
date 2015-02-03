@@ -32,7 +32,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 		MaxUInt16    = ^uint16(0)
 	)
 
-	c := p.config
+	c := p.Config
 
 	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
 	if err != nil {
@@ -72,7 +72,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 }
 
 func (t *profileTarget) InputsOutputs() (uint32, uint32) {
-	return t.problem.zc, t.sc * uint32(len(t.problem.config.CoreIndex))
+	return t.problem.zc, t.sc * uint32(len(t.problem.Config.CoreIndex))
 }
 
 func (t *profileTarget) String() string {
@@ -83,7 +83,7 @@ func (t *profileTarget) String() string {
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	p := t.problem
 
-	coreIndex := p.config.CoreIndex
+	coreIndex := p.Config.CoreIndex
 
 	cc, occ, sc := p.cc, uint32(len(coreIndex)), t.sc
 
