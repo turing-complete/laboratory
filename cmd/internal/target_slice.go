@@ -138,6 +138,8 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 }
 
 func (t *sliceTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+	t.cache.Flush()
+
 	if level == 0 {
 		t.problem.Printf("%10s %15s %15s %15s\n",
 			"Level", "Passive Nodes", "Evaluations", "Active Nodes")
