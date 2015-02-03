@@ -76,6 +76,15 @@ func newSliceTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
+func (t *sliceTarget) InputsOutputs() (uint32, uint32) {
+	return 1 + t.problem.zc, t.problem.cc // +1 for time
+}
+
+func (t *sliceTarget) String() string {
+	ic, oc := t.InputsOutputs()
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+}
+
 func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	p := t.problem
 
@@ -128,17 +137,9 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	}
 }
 
-func (t *sliceTarget) InputsOutputs() (uint32, uint32) {
-	return 1 + t.problem.zc, t.problem.cc // +1 for time
-}
-
-func (t *sliceTarget) Evaluations() uint32 {
-	return t.ec
-}
-
-func (t *sliceTarget) String() string {
-	ic, oc := t.InputsOutputs()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+func (t *sliceTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+	passiveNodes := totalNodes - activeNodes
+	t.problem.Printf("%5d %10d %10d %10d\n", level, passiveNodes, t.ec, activeNodes)
 }
 
 func makeKey(trace []uint64) string {

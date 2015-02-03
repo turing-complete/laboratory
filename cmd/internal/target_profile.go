@@ -5,7 +5,6 @@ import "C"
 
 import (
 	"fmt"
-	"sync/atomic"
 	"unsafe"
 
 	"github.com/ready-steady/simulation/power"
@@ -18,7 +17,6 @@ type profileTarget struct {
 	problem *Problem
 
 	sc uint32
-	ec uint32
 
 	power       *power.Power
 	temperature *temperature.Temperature
@@ -75,6 +73,15 @@ func newProfileTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
+func (t *profileTarget) InputsOutputs() (uint32, uint32) {
+	return t.problem.zc, t.sc * t.problem.cc
+}
+
+func (t *profileTarget) String() string {
+	ic, oc := t.InputsOutputs()
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+}
+
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	p := t.problem
 
@@ -91,19 +98,9 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	t.temperature.ComputeTransient(data.P, value, data.S, sc)
 
 	t.pool.Put(data)
-
-	atomic.AddUint32(&t.ec, 1)
 }
 
-func (t *profileTarget) InputsOutputs() (uint32, uint32) {
-	return t.problem.zc, t.sc * t.problem.cc
-}
-
-func (t *profileTarget) Evaluations() uint32 {
-	return t.ec
-}
-
-func (t *profileTarget) String() string {
-	ic, oc := t.InputsOutputs()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+func (t *profileTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+	passiveNodes := totalNodes - activeNodes
+	t.problem.Printf("%5d %10d %10d\n", level, passiveNodes, activeNodes)
 }

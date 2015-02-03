@@ -5,9 +5,9 @@ import (
 )
 
 type Target interface {
-	Evaluate([]float64, []float64, []uint64)
 	InputsOutputs() (uint32, uint32)
-	Evaluations() uint32
+	Evaluate([]float64, []float64, []uint64)
+	Progress(uint8, uint32, uint32)
 }
 
 func NewTarget(problem *Problem) (Target, error) {
