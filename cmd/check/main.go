@@ -35,10 +35,10 @@ func command(config string, ifile *mat.File, ofile *mat.File) error {
 		return err
 	}
 
-	passed, p := test.KolmogorovSmirnov(approximations, values, α)
+	rejected, p := test.KolmogorovSmirnov(approximations, values, α)
 
-	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, Passed: %v, P-value: %.4e\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes, passed, p)
+	fmt.Printf("Inputs: %d, Outputs: %d, Nodes: %d, Passed: %v (%.2f%%)\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes, !rejected, 100*p)
 
 	if ofile == nil {
 		return nil
