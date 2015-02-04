@@ -18,7 +18,7 @@ import (
 var standardGaussian = gaussian.New(0, 1)
 
 type Problem struct {
-	Config *Config
+	Config Config
 
 	platform    *system.Platform
 	application *system.Application
@@ -40,7 +40,10 @@ func (p *Problem) String() string {
 		p.cc, p.tc, p.uc, p.zc)
 }
 
-func NewProblem(c *Config) (*Problem, error) {
+func NewProblem(config Config) (*Problem, error) {
+	p := &Problem{Config: config}
+	c := &p.Config
+
 	if c.ProbModel.MaxDelay < 0 || 1 <= c.ProbModel.MaxDelay {
 		return nil, errors.New("the delay rate is invalid")
 	}
@@ -50,8 +53,6 @@ func NewProblem(c *Config) (*Problem, error) {
 	if c.ProbModel.VarThreshold <= 0 {
 		return nil, errors.New("the variance-reduction threshold is invalid")
 	}
-
-	p := &Problem{Config: c}
 
 	platform, application, err := system.Load(c.TGFF)
 	if err != nil {

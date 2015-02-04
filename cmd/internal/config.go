@@ -31,7 +31,7 @@ type Config struct {
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The quantity of interest. Available targes are “end-to-end-delay” and
+	// The quantity of interest. Available targets are “end-to-end-delay” and
 	// “temperature-profile.”
 	Target string
 
@@ -45,28 +45,32 @@ type Config struct {
 		adhier.Config
 	}
 
-	// The seed for random number generation.
-	Seed int64
-	// The number of samples to take.
-	Samples uint32
+	Assessment struct {
+		// The seed for random number generation.
+		Seed int64
+		// The number of samples to take.
+		Samples uint32
+		// The significance level of the Kolmogorov–Smirnov test.
+		Alpha float64
+	}
 
 	// A flag for displaying progress information.
 	Verbose bool
 }
 
-func NewConfig(path string) (*Config, error) {
-	c := &Config{}
-
+func NewConfig(path string) (Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
-		return nil, err
+		return Config{}, err
 	}
 	defer file.Close()
 
-	dec := json.NewDecoder(file)
-	if err = dec.Decode(c); err != nil {
-		return nil, err
+	decoder := json.NewDecoder(file)
+
+	var config Config
+	if err = decoder.Decode(&config); err != nil {
+		return Config{}, err
 	}
 
-	return c, nil
+	return config, nil
 }

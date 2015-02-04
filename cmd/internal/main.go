@@ -11,52 +11,57 @@ import (
 	"github.com/ready-steady/format/mat"
 )
 
-func Run(command func(string, *mat.File, *mat.File) error) {
-	config := flag.String("c", "", "")
-	input := flag.String("i", "", "")
-	output := flag.String("o", "", "")
-	profile := flag.String("p", "", "")
+func Run(command func(Config, *mat.File, *mat.File) error) {
+	configFile := flag.String("c", "", "")
+	inputFile := flag.String("i", "", "")
+	outputFile := flag.String("o", "", "")
+	profileFile := flag.String("p", "", "")
 
 	flag.Parse()
 
 	var err error
 
-	if len(*profile) > 0 {
-		pfile, err := os.Create(*profile)
+	if len(*profileFile) > 0 {
+		profile, err := os.Create(*profileFile)
 		if err != nil {
 			printError(errors.New("cannot enable profiling"))
 			return
 		}
-		pprof.StartCPUProfile(pfile)
+		pprof.StartCPUProfile(profile)
 		defer pprof.StopCPUProfile()
 	}
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	var ifile, ofile *mat.File
+	var input, output *mat.File
 
-	if len(*config) == 0 {
+	if len(*configFile) == 0 {
 		printError(errors.New("a configuration file is required"))
 		return
 	}
+	config, err := NewConfig(*configFile)
+	if err != nil {
+		printError(err)
+		return
+	}
 
-	if len(*input) > 0 {
-		if ifile, err = mat.Open(*input, "r"); err != nil {
+	if len(*inputFile) > 0 {
+		if input, err = mat.Open(*inputFile, "r"); err != nil {
 			printError(err)
 			return
 		}
-		defer ifile.Close()
+		defer input.Close()
 	}
 
-	if len(*output) > 0 {
-		if ofile, err = mat.Open(*output, "w7.3"); err != nil {
+	if len(*outputFile) > 0 {
+		if output, err = mat.Open(*outputFile, "w7.3"); err != nil {
 			printError(err)
 			return
 		}
-		defer ofile.Close()
+		defer output.Close()
 	}
 
-	if err := command(*config, ifile, ofile); err != nil {
+	if err := command(config, input, output); err != nil {
 		printError(err)
 		return
 	}

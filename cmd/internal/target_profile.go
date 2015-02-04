@@ -32,7 +32,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 		MaxUInt16    = ^uint16(0)
 	)
 
-	c := p.Config
+	c := &p.Config
 
 	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
 	if err != nil {

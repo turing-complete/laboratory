@@ -38,7 +38,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 		poolCapacity  = 100
 	)
 
-	c := p.Config
+	c := &p.Config
 
 	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
 	if err != nil {

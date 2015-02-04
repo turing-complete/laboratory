@@ -29,8 +29,10 @@
 		"relError": 1e-2
 	},
 
-	"seed": 1,
-	"samples": 10000,
+	"assessment": {
+		"seed": 1,
+		"samples": 10000
+	},
 
 	"verbose": false
 }

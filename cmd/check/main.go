@@ -20,12 +20,8 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config string, ifile *mat.File, ofile *mat.File) error {
-	const (
-		α = 0.05
-	)
-
-	approximations, surrogate, err := sampleSurrogate(config, ifile)
+func command(config internal.Config, input *mat.File, output *mat.File) error {
+	approximations, surrogate, err := sampleSurrogate(config, input)
 	if err != nil {
 		return err
 	}
@@ -35,34 +31,34 @@ func command(config string, ifile *mat.File, ofile *mat.File) error {
 		return err
 	}
 
+	α := config.Assessment.Alpha
+	if α <= 0 {
+		α = 0.05
+	}
+
 	rejected, p, Δ := test.KolmogorovSmirnov(approximations, values, α)
 
-	fmt.Printf("Inputs: %d, outputs: %d, nodes: %d, accepted: %v (p %.4f%%, Δ %.4e)\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes, !rejected, 100*p, Δ)
+	fmt.Printf("Inputs: %d, outputs: %d, nodes: %d, rejected: %v (α %.4f%%, p %.4f%%, Δ %.4e)\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes, rejected, 100*α, 100*p, Δ)
 
-	if ofile == nil {
+	if output == nil {
 		return nil
 	}
 
 	oc := surrogate.Outputs
 	sc := uint32(len(approximations)) / oc
 
-	if err := ofile.PutMatrix("approximations", approximations, oc, sc); err != nil {
+	if err := output.PutMatrix("approximations", approximations, oc, sc); err != nil {
 		return err
 	}
-	if err := ofile.PutMatrix("values", values, oc, sc); err != nil {
+	if err := output.PutMatrix("values", values, oc, sc); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func sampleSurrogate(configFile string, ifile *mat.File) ([]float64, *adhier.Surrogate, error) {
-	config, err := internal.NewConfig(configFile)
-	if err != nil {
-		return nil, nil, err
-	}
-
+func sampleSurrogate(config internal.Config, input *mat.File) ([]float64, *adhier.Surrogate, error) {
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return nil, nil, err
@@ -79,10 +75,10 @@ func sampleSurrogate(configFile string, ifile *mat.File) ([]float64, *adhier.Sur
 	}
 
 	surrogate := new(adhier.Surrogate)
-	if ifile == nil {
+	if input == nil {
 		return nil, nil, errors.New("an input file is required")
 	}
-	if err = ifile.Get("surrogate", surrogate); err != nil {
+	if err = input.Get("surrogate", surrogate); err != nil {
 		return nil, nil, err
 	}
 
@@ -100,12 +96,7 @@ func sampleSurrogate(configFile string, ifile *mat.File) ([]float64, *adhier.Sur
 	return interpolator.Evaluate(surrogate, points), surrogate, nil
 }
 
-func sampleOriginal(configFile string) ([]float64, error) {
-	config, err := internal.NewConfig(configFile)
-	if err != nil {
-		return nil, err
-	}
-
+func sampleOriginal(config internal.Config) ([]float64, error) {
 	config.ProbModel.VarThreshold = 42
 
 	problem, err := internal.NewProblem(config)
@@ -132,13 +123,15 @@ func sampleOriginal(configFile string) ([]float64, error) {
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
-	sc := problem.Config.Samples
+	config := &problem.Config.Assessment
+
+	sc := config.Samples
 	if sc == 0 {
 		return nil, errors.New("the number of samples is zero")
 	}
 
-	if problem.Config.Seed > 0 {
-		rand.Seed(problem.Config.Seed)
+	if config.Seed > 0 {
+		rand.Seed(config.Seed)
 	} else {
 		rand.Seed(time.Now().Unix())
 	}

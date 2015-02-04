@@ -10,12 +10,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(configFile string, _ *mat.File, file *mat.File) error {
-	config, err := internal.NewConfig(configFile)
-	if err != nil {
-		return err
-	}
-
+func command(config internal.Config, _ *mat.File, output *mat.File) error {
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return err
@@ -39,11 +34,11 @@ func command(configFile string, _ *mat.File, file *mat.File) error {
 	target.Progress(surrogate.Level, 0, surrogate.Nodes)
 	problem.Println(surrogate)
 
-	if file == nil {
+	if output == nil {
 		return nil
 	}
 
-	if err := file.Put("surrogate", *surrogate); err != nil {
+	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
 
