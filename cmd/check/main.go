@@ -38,8 +38,8 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 
 	rejected, p, Δ := test.KolmogorovSmirnov(approximations, values, α)
 
-	fmt.Printf("Inputs: %d, outputs: %d, nodes: %d, rejected: %v (α %.4f%%, p %.4f%%, Δ %.4e)\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Nodes, rejected, 100*α, 100*p, Δ)
+	fmt.Printf("Inputs: %d, outputs: %d, level: %2d, nodes: %6d, rejected: %5v (α %.3f, p %.3e, Δ %.3e)\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes, rejected, α, p, Δ)
 
 	if output == nil {
 		return nil
