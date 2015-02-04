@@ -32,7 +32,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	}
 
 	α := config.Assessment.Alpha
-	if α <= 0 {
+	if α <= 0 || α > 1 {
 		α = 0.05
 	}
 
