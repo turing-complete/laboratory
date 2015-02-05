@@ -26,9 +26,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 	problem, _ := internal.NewProblem(config)
 	target, _ := internal.NewTarget(problem)
 
-	ic, _ := target.InputsOutputs()
-
-	points := probability.Sample(uniform.New(0, 1), sampleCount*ic)
+	points := probability.Sample(uniform.New(0, 1), sampleCount*target.Inputs())
 
 	b.ResetTimer()
 
@@ -38,7 +36,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 }
 
 func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
-	ic, oc := target.InputsOutputs()
+	ic, oc := target.Inputs(), target.Outputs()
 	pc := uint32(len(points)) / ic
 
 	values := make([]float64, pc*oc)

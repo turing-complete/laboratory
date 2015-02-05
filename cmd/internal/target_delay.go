@@ -12,13 +12,16 @@ func newDelayTarget(p *Problem) Target {
 	return &delayTarget{problem: p}
 }
 
-func (t *delayTarget) InputsOutputs() (uint32, uint32) {
-	return t.problem.zc, 1
+func (t *delayTarget) Inputs() uint32 {
+	return t.problem.zc
+}
+
+func (t *delayTarget) Outputs() uint32 {
+	return 1
 }
 
 func (t *delayTarget) String() string {
-	ic, oc := t.InputsOutputs()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
 func (t *delayTarget) Evaluate(node []float64, value []float64, _ []uint64) {

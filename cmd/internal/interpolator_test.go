@@ -14,7 +14,7 @@ func TestInterpolatorCompute(t *testing.T) {
 	interpolator, _ := NewInterpolator(problem, target)
 	surrogate := interpolator.Compute(target.Evaluate)
 
-	ic, oc := target.InputsOutputs()
+	ic, oc := target.Inputs(), target.Outputs()
 	nc := surrogate.Nodes
 
 	assert.Equal(nc, uint32(4127), t)

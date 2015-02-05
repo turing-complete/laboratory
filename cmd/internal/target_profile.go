@@ -71,13 +71,16 @@ func newProfileTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *profileTarget) InputsOutputs() (uint32, uint32) {
-	return t.problem.zc, t.sc * uint32(len(t.problem.Config.CoreIndex))
+func (t *profileTarget) Inputs() uint32 {
+	return t.problem.zc
+}
+
+func (t *profileTarget) Outputs() uint32 {
+	return t.sc * uint32(len(t.problem.Config.CoreIndex))
 }
 
 func (t *profileTarget) String() string {
-	ic, oc := t.InputsOutputs()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {

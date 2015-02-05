@@ -11,7 +11,7 @@ import (
 
 func NewInterpolator(problem *Problem, target Target) (*adhier.Interpolator, error) {
 	config := &problem.Config.Interpolation
-	ic, oc := target.InputsOutputs()
+	ic, oc := target.Inputs(), target.Outputs()
 
 	var grid adhier.Grid
 	var basis adhier.Basis

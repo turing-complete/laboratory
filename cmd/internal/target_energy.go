@@ -12,13 +12,16 @@ func newEnergyTarget(p *Problem) Target {
 	return &energyTarget{problem: p}
 }
 
-func (t *energyTarget) InputsOutputs() (uint32, uint32) {
-	return t.problem.zc, 1
+func (t *energyTarget) Inputs() uint32 {
+	return t.problem.zc
+}
+
+func (t *energyTarget) Outputs() uint32 {
+	return 1
 }
 
 func (t *energyTarget) String() string {
-	ic, oc := t.InputsOutputs()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
 func (t *energyTarget) Evaluate(node, value []float64, _ []uint64) {

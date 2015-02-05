@@ -73,13 +73,16 @@ func newSliceTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *sliceTarget) InputsOutputs() (uint32, uint32) {
-	return 1 + t.problem.zc, uint32(len(t.problem.Config.CoreIndex)) // +1 for time
+func (t *sliceTarget) Inputs() uint32 {
+	return 1 + t.problem.zc // +1 for time
+}
+
+func (t *sliceTarget) Outputs() uint32 {
+	return uint32(len(t.problem.Config.CoreIndex))
 }
 
 func (t *sliceTarget) String() string {
-	ic, oc := t.InputsOutputs()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ic, oc)
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
 func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {

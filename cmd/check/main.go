@@ -137,14 +137,14 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		rand.Seed(time.Now().Unix())
 	}
 
-	ic, _ := target.InputsOutputs()
+	ic := target.Inputs()
 
 	return probability.Sample(uniform.New(0, 1), sc*ic), nil
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
 	wc := uint32(runtime.GOMAXPROCS(0))
-	ic, oc := target.InputsOutputs()
+	ic, oc := target.Inputs(), target.Outputs()
 	pc := uint32(len(points)) / ic
 
 	values := make([]float64, pc*oc)
