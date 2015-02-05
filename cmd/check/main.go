@@ -126,18 +126,19 @@ func sampleOriginal(config internal.Config) ([]float64, error) {
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
 	config := &problem.Config.Assessment
 
+	cc, tc := problem.Cores(), problem.Tasks()
+	ic, oc := target.Inputs(), target.Outputs()
+
 	sc := config.Samples
 	if sc == 0 {
 		return nil, errors.New("the number of samples is zero")
 	}
 
 	if config.Seed > 0 {
-		rand.Seed(config.Seed)
+		rand.Seed(config.Seed * int64(cc) * int64(tc) * int64(ic) * int64(oc) * int64(sc))
 	} else {
 		rand.Seed(time.Now().Unix())
 	}
-
-	ic := target.Inputs()
 
 	return probability.Sample(uniform.New(0, 1), sc*ic), nil
 }

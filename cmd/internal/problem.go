@@ -40,6 +40,14 @@ func (p *Problem) String() string {
 		p.cc, p.tc, p.uc, p.zc)
 }
 
+func (p *Problem) Cores() uint32 {
+	return p.cc
+}
+
+func (p *Problem) Tasks() uint32 {
+	return p.tc
+}
+
 func NewProblem(config Config) (*Problem, error) {
 	p := &Problem{Config: config}
 	c := &p.Config
