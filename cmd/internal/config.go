@@ -50,8 +50,6 @@ type Config struct {
 		Seed int64
 		// The number of samples to take.
 		Samples uint32
-		// The significance level of the Kolmogorov–Smirnov test.
-		Alpha float64
 	}
 
 	// A flag for displaying progress information.

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math"
 	"math/rand"
 	"runtime"
 	"time"
@@ -11,6 +12,7 @@ import (
 	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
+	"github.com/ready-steady/statistics"
 	"github.com/ready-steady/statistics/test"
 
 	"../internal"
@@ -31,16 +33,17 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return err
 	}
 
-	α := config.Assessment.Alpha
-	if α <= 0 || α > 1 {
-		α = 0.05
-	}
+	μ1 := statistics.Mean(values)
+	μ2 := statistics.Mean(approximations)
 
-	rejected, p, Δ := test.KolmogorovSmirnov(approximations, values, α)
+	σ1 := math.Sqrt(statistics.Variance(values))
+	σ2 := math.Sqrt(statistics.Variance(approximations))
 
-	fmt.Printf("Inputs: %d, outputs: %d, level: %2d, nodes: %6d, rejected: %5v"+
-		" (α %.3f, p %.3e, Δ %.3e)\n", surrogate.Inputs, surrogate.Outputs,
-		surrogate.Level, surrogate.Nodes, rejected, α, p, Δ)
+	_, _, Δ := test.KolmogorovSmirnov(approximations, values, 0)
+
+	fmt.Printf("Inputs: %2d, outputs: %4d, level: %2d, nodes: %7d, μ %.2e, σ %.2e, Δ %.2e\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes,
+		math.Abs((μ1 - μ2) / μ1), math.Abs((σ1 - σ2) / σ1), Δ)
 
 	if output == nil {
 		return nil
