@@ -2,8 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
-	"math"
 	"math/rand"
 	"runtime"
 	"time"
@@ -12,8 +10,6 @@ import (
 	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
-	"github.com/ready-steady/statistics"
-	"github.com/ready-steady/statistics/test"
 
 	"../internal"
 )
@@ -23,84 +19,42 @@ func main() {
 }
 
 func command(config internal.Config, input *mat.File, output *mat.File) error {
-	approximations, surrogate, err := sampleSurrogate(config, input)
+	if input == nil {
+		return errors.New("an input file is required")
+	}
+
+	observed, err := observe(config)
 	if err != nil {
 		return err
 	}
 
-	values, err := sampleOriginal(config)
+	predicted, surrogate, err := predict(config, input)
 	if err != nil {
 		return err
 	}
-
-	μ1 := statistics.Mean(values)
-	μ2 := statistics.Mean(approximations)
-
-	σ1 := math.Sqrt(statistics.Variance(values))
-	σ2 := math.Sqrt(statistics.Variance(approximations))
-
-	_, _, Δ := test.KolmogorovSmirnov(approximations, values, 0)
-
-	fmt.Printf("Inputs: %2d, outputs: %4d, level: %2d, nodes: %7d, μ %.2e, σ %.2e, Δ %.2e\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes,
-		math.Abs((μ1 - μ2) / μ1), math.Abs((σ1 - σ2) / σ1), Δ)
 
 	if output == nil {
 		return nil
 	}
 
-	oc := surrogate.Outputs
-	sc := uint32(len(approximations)) / oc
-
-	if err := output.PutMatrix("approximations", approximations, oc, sc); err != nil {
+	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
-	if err := output.PutMatrix("values", values, oc, sc); err != nil {
+
+	oc := surrogate.Outputs
+	sc := uint32(len(predicted)) / oc
+
+	if err := output.PutMatrix("predicted", predicted, oc, sc); err != nil {
+		return err
+	}
+	if err := output.PutMatrix("observed", observed, oc, sc); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func sampleSurrogate(config internal.Config, input *mat.File) ([]float64, *adhier.Surrogate, error) {
-	problem, err := internal.NewProblem(config)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	target, err := internal.NewTarget(problem)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	interpolator, err := internal.NewInterpolator(problem, target)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	surrogate := new(adhier.Surrogate)
-	if input == nil {
-		return nil, nil, errors.New("an input file is required")
-	}
-	if err = input.Get("surrogate", surrogate); err != nil {
-		return nil, nil, err
-	}
-
-	problem.Println("Processing the surrogate model...")
-
-	problem.Println(problem)
-	problem.Println(target)
-	problem.Println(surrogate)
-
-	points, err := generate(problem, target)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	return interpolator.Evaluate(surrogate, points), surrogate, nil
-}
-
-func sampleOriginal(config internal.Config) ([]float64, error) {
+func observe(config internal.Config) ([]float64, error) {
 	config.ProbModel.VarThreshold = 42
 
 	problem, err := internal.NewProblem(config)
@@ -124,6 +78,41 @@ func sampleOriginal(config internal.Config) ([]float64, error) {
 	problem.Println(target)
 
 	return invoke(target, points), nil
+}
+
+func predict(config internal.Config, input *mat.File) ([]float64, *adhier.Surrogate, error) {
+	problem, err := internal.NewProblem(config)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	target, err := internal.NewTarget(problem)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	interpolator, err := internal.NewInterpolator(problem, target)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	surrogate := new(adhier.Surrogate)
+	if err = input.Get("surrogate", surrogate); err != nil {
+		return nil, nil, err
+	}
+
+	problem.Println("Processing the surrogate model...")
+
+	problem.Println(problem)
+	problem.Println(target)
+	problem.Println(surrogate)
+
+	points, err := generate(problem, target)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	return interpolator.Evaluate(surrogate, points), surrogate, nil
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
