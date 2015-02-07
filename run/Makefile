@@ -21,16 +21,19 @@ cases += 002_020_energy 004_040_energy 008_080_energy 016_160_energy 032_320_ene
 cases += 002_020_slice 004_040_slice 008_080_slice 016_160_slice 032_320_slice
 
 define define_case
-$(1)_hash := $(shell hash md5sum 2>/dev/null && (cat assets/$(1).json | md5sum | cut -d' ' -f1) || (cat assets/$(1).json | md5))
+$(1)_config := assets/$(1).json
+$(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config) | md5))
+$(1)_construct := $(1)_$$($(1)_hash)_construct.mat
+$(1)_sample := $(1)_$$($(1)_hash)_sample.mat
 
-$(1): $(1)_$$($(1)_hash)_sample.mat compare
-	@./compare -c assets/$(1).json -i $$<
+$(1): $$($(1)_sample) compare
+	@./compare -c $$($(1)_config) -i $$<
 
-$(1)_$$($(1)_hash)_sample.mat: $(1)_$$($(1)_hash)_construct.mat sample
-	@./sample -c assets/$(1).json -i $$< -o $$@
+$$($(1)_sample): $$($(1)_construct) sample
+	@./sample -c $$($(1)_config) -i $$< -o $$@
 
-$(1)_$$($(1)_hash)_construct.mat: construct
-	@./construct -c assets/$(1).json -o $$@
+$$($(1)_construct): construct
+	@./construct -c $$($(1)_config) -o $$@
 endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))
