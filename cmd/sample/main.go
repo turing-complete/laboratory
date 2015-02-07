@@ -118,8 +118,7 @@ func predict(config internal.Config, input *mat.File) ([]float64, *adhier.Surrog
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
 	config := &problem.Config.Assessment
 
-	cc, tc := problem.Cores(), problem.Tasks()
-	ic, oc := target.Inputs(), target.Outputs()
+	ic := target.Inputs()
 
 	sc := config.Samples
 	if sc == 0 {
@@ -127,7 +126,7 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 	}
 
 	if config.Seed > 0 {
-		rand.Seed(config.Seed * int64(cc) * int64(tc) * int64(ic) * int64(oc) * int64(sc))
+		rand.Seed(config.Seed)
 	} else {
 		rand.Seed(time.Now().Unix())
 	}
