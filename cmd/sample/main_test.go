@@ -1,6 +1,7 @@
 package main
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/ready-steady/probability"
@@ -40,17 +41,17 @@ func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
 	pc := uint32(len(points)) / ic
 
 	values := make([]float64, pc*oc)
-	done := make(chan bool, pc)
+	group := sync.WaitGroup{}
+	group.Add(int(pc))
 
 	for i := uint32(0); i < pc; i++ {
 		go func(point, value []float64) {
 			target.Evaluate(point, value, nil)
-			done <- true
+			group.Done()
 		}(points[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc])
 	}
-	for i := uint32(0); i < pc; i++ {
-		<-done
-	}
+
+	group.Wait()
 
 	return values
 }

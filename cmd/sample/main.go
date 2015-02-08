@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math/rand"
 	"runtime"
+	"sync"
 	"time"
 
 	"github.com/ready-steady/format/mat"
@@ -141,13 +142,14 @@ func invoke(target internal.Target, points []float64) []float64 {
 
 	values := make([]float64, pc*oc)
 	jobs := make(chan uint32, pc)
-	done := make(chan bool, pc)
+	group := sync.WaitGroup{}
+	group.Add(int(pc))
 
 	for i := uint32(0); i < wc; i++ {
 		go func() {
 			for j := range jobs {
 				target.Evaluate(points[j*ic:(j+1)*ic], values[j*oc:(j+1)*oc], nil)
-				done <- true
+				group.Done()
 			}
 		}()
 	}
@@ -155,10 +157,8 @@ func invoke(target internal.Target, points []float64) []float64 {
 	for i := uint32(0); i < pc; i++ {
 		jobs <- i
 	}
-	for i := uint32(0); i < pc; i++ {
-		<-done
-	}
 
+	group.Wait()
 	close(jobs)
 
 	return values
