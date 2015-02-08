@@ -15,6 +15,8 @@ import (
 	"../internal"
 )
 
+var timeBasedSeed sync.Once
+
 func main() {
 	internal.Run(command)
 }
@@ -129,7 +131,9 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 	if config.Seed > 0 {
 		rand.Seed(config.Seed)
 	} else {
-		rand.Seed(time.Now().Unix())
+		timeBasedSeed.Do(func() {
+			rand.Seed(time.Now().Unix())
+		})
 	}
 
 	return probability.Sample(uniform.New(0, 1), sc*ic), nil
