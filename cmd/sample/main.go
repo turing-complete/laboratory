@@ -121,20 +121,52 @@ func predict(config internal.Config, input *mat.File) ([]float64, *adhier.Surrog
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
 	config := &problem.Config.Assessment
 
-	ic := target.Inputs()
-
-	sc := config.Samples
-	if sc == 0 {
-		return nil, errors.New("the number of samples is zero")
-	}
-
 	if config.Seed > 0 {
 		rand.Seed(config.Seed)
 	} else {
 		rand.Seed(startTime)
 	}
 
-	return probability.Sample(uniform.New(0, 1), sc*ic), nil
+	lc := config.Slices
+	if lc == 0 {
+		lc = 1
+	}
+
+	sc := config.Samples
+	if sc == 0 {
+		return nil, errors.New("the number of samples is zero")
+	}
+
+	distribution := uniform.New(0, 1)
+
+	ic, pc := target.Inputs(), target.Pseudos()
+
+	var fixed []float64
+
+	if pc > 0 {
+		// If there are deterministic dimensions like time, we need to fix them
+		// in order to generate comparable datasets. These dimensions are fixed
+		// to randomly generated numbers, and this procedure is repeated
+		// multiple times (specified by Slices) for a more comprehensive
+		// assessment later on. The following line should be executed after the
+		// seeding above and before the actual sampling below to ensure that it
+		// chooses the same values each time this function is called.
+		fixed = probability.Sample(distribution, lc*pc)
+	}
+
+	samples := probability.Sample(distribution, lc*sc*ic)
+
+	if pc > 0 {
+		for i := uint32(0); i < lc; i++ {
+			for j := uint32(0); j < sc; j++ {
+				for k := uint32(0); k < pc; k++ {
+					samples[i*sc*ic+j*ic+k] = fixed[i*pc+k]
+				}
+			}
+		}
+	}
+
+	return samples, nil
 }
 
 func invoke(target internal.Target, points []float64) []float64 {

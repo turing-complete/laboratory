@@ -48,6 +48,8 @@ type Config struct {
 	Assessment struct {
 		// The seed for random number generation.
 		Seed int64
+		// The number of slices to check for dynamic quantities.
+		Slices uint32
 		// The number of samples to take.
 		Samples uint32
 	}
