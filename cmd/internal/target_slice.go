@@ -142,12 +142,11 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 
 func (t *sliceTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
 	if level == 0 {
-		t.problem.Printf("%10s %15s %15s %15s\n",
-			"Level", "Passive Nodes", "Evaluations", "Active Nodes")
+		fmt.Printf("%10s %15s %15s %15s\n", "Level", "Passive Nodes", "Evaluations", "Active Nodes")
 	}
 
 	passiveNodes := totalNodes - activeNodes
-	t.problem.Printf("%10d %15d %15d %15d\n", level, passiveNodes, t.ec, activeNodes)
+	fmt.Printf("%10d %15d %15d %15d\n", level, passiveNodes, t.ec, activeNodes)
 }
 
 func makeString(index []uint64) string {

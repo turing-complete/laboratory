@@ -43,10 +43,9 @@ func (t *energyTarget) Evaluate(node, value []float64, _ []uint64) {
 
 func (t *energyTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
 	if level == 0 {
-		t.problem.Printf("%10s %15s %15s\n",
-			"Level", "Passive Nodes", "Active Nodes")
+		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
 
 	passiveNodes := totalNodes - activeNodes
-	t.problem.Printf("%10d %15d %15d\n", level, passiveNodes, activeNodes)
+	fmt.Printf("%10d %15d %15d\n", level, passiveNodes, activeNodes)
 }

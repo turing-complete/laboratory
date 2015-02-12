@@ -1,7 +1,10 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/numeric/interpolation/adhier"
 
 	"../internal"
 )
@@ -26,13 +29,20 @@ func command(config internal.Config, _ *mat.File, output *mat.File) error {
 		return err
 	}
 
-	problem.Println(problem)
-	problem.Println(target)
+	var surrogate *adhier.Surrogate
 
-	problem.Println("Constructing a surrogate...")
-	surrogate := interpolator.Compute(target.Evaluate, target.Progress)
-	target.Progress(surrogate.Level, 0, surrogate.Nodes)
-	problem.Println(surrogate)
+	if config.Verbose {
+		fmt.Println(problem)
+		fmt.Println(target)
+		fmt.Println("Constructing a surrogate...")
+
+		surrogate = interpolator.Compute(target.Evaluate, target.Progress)
+		target.Progress(surrogate.Level, 0, surrogate.Nodes)
+
+		fmt.Println(surrogate)
+	} else {
+		surrogate = interpolator.Compute(target.Evaluate)
+	}
 
 	if output == nil {
 		return nil

@@ -2,6 +2,7 @@ package main
 
 import (
 	"errors"
+	"fmt"
 	"math/rand"
 	"runtime"
 	"sync"
@@ -26,14 +27,26 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return errors.New("an input file is required")
 	}
 
-	observed, err := observe(config)
+	if config.Verbose {
+		fmt.Println("Processing the original model...")
+	}
+	observed, _, err := observe(config)
 	if err != nil {
 		return err
 	}
+	if config.Verbose {
+		fmt.Println("Done.")
+	}
 
-	predicted, surrogate, err := predict(config, input)
+	if config.Verbose {
+		fmt.Println("Processing the surrogate model...")
+	}
+	predicted, _, surrogate, err := predict(config, input)
 	if err != nil {
 		return err
+	}
+	if config.Verbose {
+		fmt.Println("Done.")
 	}
 
 	if output == nil {
@@ -57,65 +70,67 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	return nil
 }
 
-func observe(config internal.Config) ([]float64, error) {
+func observe(config internal.Config) ([]float64, []float64, error) {
 	config.ProbModel.VarThreshold = 42
 
 	problem, err := internal.NewProblem(config)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	target, err := internal.NewTarget(problem)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
 	points, err := generate(problem, target)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	problem.Println("Processing the original model...")
+	if config.Verbose {
+		fmt.Println(problem)
+		fmt.Println(target)
+	}
 
-	problem.Println(problem)
-	problem.Println(target)
-
-	return invoke(target, points), nil
+	return invoke(target, points), points, nil
 }
 
-func predict(config internal.Config, input *mat.File) ([]float64, *adhier.Surrogate, error) {
+func predict(config internal.Config, input *mat.File) (
+	[]float64, []float64, *adhier.Surrogate, error) {
+
 	problem, err := internal.NewProblem(config)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	target, err := internal.NewTarget(problem)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	interpolator, err := internal.NewInterpolator(problem, target)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
 	surrogate := new(adhier.Surrogate)
 	if err = input.Get("surrogate", surrogate); err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	problem.Println("Processing the surrogate model...")
-
-	problem.Println(problem)
-	problem.Println(target)
-	problem.Println(surrogate)
+	if config.Verbose {
+		fmt.Println(problem)
+		fmt.Println(target)
+		fmt.Println(surrogate)
+	}
 
 	points, err := generate(problem, target)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	return interpolator.Evaluate(surrogate, points), surrogate, nil
+	return interpolator.Evaluate(surrogate, points), points, surrogate, nil
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {

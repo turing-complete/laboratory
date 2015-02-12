@@ -133,15 +133,3 @@ func (p *Problem) transform(node []float64) []float64 {
 
 	return d
 }
-
-func (p *Problem) Printf(format string, arguments ...interface{}) {
-	if p.Config.Verbose {
-		fmt.Printf(format, arguments...)
-	}
-}
-
-func (p *Problem) Println(arguments ...interface{}) {
-	if p.Config.Verbose {
-		fmt.Println(arguments...)
-	}
-}
