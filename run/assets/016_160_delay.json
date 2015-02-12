@@ -21,7 +21,7 @@
 
 	"assessment": {
 		"seed": 1,
-		"samples": 10000
+		"samples": 100000
 	},
 
 	"verbose": false
