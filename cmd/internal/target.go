@@ -7,6 +7,7 @@ import (
 type Target interface {
 	Inputs() uint32
 	Outputs() uint32
+	Pseudos() uint32
 	Evaluate([]float64, []float64, []uint64)
 	Progress(uint8, uint32, uint32)
 }

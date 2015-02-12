@@ -17,6 +17,7 @@ import (
 type sliceTarget struct {
 	problem *Problem
 
+	pc uint32
 	sc uint32
 	ec uint32
 
@@ -56,6 +57,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 	target := &sliceTarget{
 		problem: p,
 
+		pc: 1, // +1 for time
 		sc: sc,
 
 		power:       power,
@@ -74,11 +76,15 @@ func newSliceTarget(p *Problem) (Target, error) {
 }
 
 func (t *sliceTarget) Inputs() uint32 {
-	return 1 + t.problem.zc // +1 for time
+	return t.pc + t.problem.zc
 }
 
 func (t *sliceTarget) Outputs() uint32 {
 	return uint32(len(t.problem.Config.CoreIndex))
+}
+
+func (t *sliceTarget) Pseudos() uint32 {
+	return t.pc
 }
 
 func (t *sliceTarget) String() string {
@@ -88,13 +94,13 @@ func (t *sliceTarget) String() string {
 func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	p := t.problem
 
-	cc, sc := p.cc, t.sc
+	cc, pc, sc := p.cc, t.pc, t.sc
 
 	var Q []float64
 	var key string
 
 	if index != nil {
-		key = makeString(index[1:]) // +1 for time
+		key = makeString(index[pc:])
 		if result, ok := t.cache.Get(key); ok {
 			Q = result.([]float64)
 		}
@@ -103,7 +109,7 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	if Q == nil {
 		data := t.pool.Get().(*sliceData)
 
-		u := p.transform(node[1:]) // +1 for time
+		u := p.transform(node[pc:])
 		t.power.Compute(p.time.Recompute(p.schedule, u), data.P, sc)
 
 		Q = make([]float64, cc*sc)

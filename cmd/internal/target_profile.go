@@ -79,6 +79,10 @@ func (t *profileTarget) Outputs() uint32 {
 	return t.sc * uint32(len(t.problem.Config.CoreIndex))
 }
 
+func (t *profileTarget) Pseudos() uint32 {
+	return 0
+}
+
 func (t *profileTarget) String() string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }

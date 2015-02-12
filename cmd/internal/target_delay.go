@@ -20,6 +20,10 @@ func (t *delayTarget) Outputs() uint32 {
 	return 1
 }
 
+func (t *delayTarget) Pseudos() uint32 {
+	return 0
+}
+
 func (t *delayTarget) String() string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
