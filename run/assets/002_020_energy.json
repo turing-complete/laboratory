@@ -5,7 +5,7 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.9
+		"varThreshold": 0.95
 	},
 
 	"target": "total-energy",
@@ -15,13 +15,13 @@
 		"minLevel": 1,
 		"maxLevel": 10,
 		"maxNodes": 100000,
-		"absError": 1e-2,
-		"relError": 1e-2
+		"absError": 1e-3,
+		"relError": 1e-3
 	},
 
 	"assessment": {
 		"seed": 1,
-		"samples": 10000
+		"samples": 100000
 	},
 
 	"verbose": false
