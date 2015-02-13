@@ -103,7 +103,7 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 
 	for i := uint32(0); i < sc; i++ {
 		for j := uint32(0); j < occ; j++ {
-			value[i*cc+j] = Q[i*cc+uint32(coreIndex[j])]
+			value[i*occ+j] = Q[i*cc+uint32(coreIndex[j])]
 		}
 	}
 
