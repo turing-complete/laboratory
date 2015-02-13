@@ -54,6 +54,9 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	}
 
 	lc, sc := config.Assessment.Slices, config.Assessment.Samples
+	if lc == 0 {
+		lc = 1
+	}
 
 	oc := uint(len(observations)) / (lc * sc)
 	ic := uint(len(observationPoints)) / (lc * sc)
