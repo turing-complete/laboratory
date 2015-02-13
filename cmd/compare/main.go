@@ -27,13 +27,13 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	observed := []float64{}
-	if err := input.Get("observed", &observed); err != nil {
+	observations := []float64{}
+	if err := input.Get("observations", &observations); err != nil {
 		return err
 	}
 
-	predicted := []float64{}
-	if err := input.Get("predicted", &predicted); err != nil {
+	predictions := []float64{}
+	if err := input.Get("predictions", &predictions); err != nil {
 		return err
 	}
 
@@ -42,41 +42,37 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		lc = 1
 	}
 	sc := config.Assessment.Samples
-	oc := surrogate.Outputs
-
-	if uint32(len(observed)) != lc*sc*oc || uint32(len(predicted)) != lc*sc*oc {
-		return errors.New("an invalid dimensionality of the data")
-	}
+	oc := uint(len(observations)) / (lc * sc)
 
 	εμ, εv, εp := 0.0, 0.0, 0.0
 
-	cut := func(data []float64, i, k uint32) []float64 {
+	cut := func(data []float64, i, k uint) []float64 {
 		piece := make([]float64, sc)
-		for j := uint32(0); j < sc; j++ {
+		for j := uint(0); j < sc; j++ {
 			piece[j] = data[i*sc*oc+j*oc+k]
 		}
 		return piece
 	}
 
 	// Find the maximal errors across all slices and outputs.
-	for i := uint32(0); i < lc; i++ {
-		for k := uint32(0); k < oc; k++ {
-			observed := cut(observed, i, k)
-			predicted := cut(predicted, i, k)
+	for i := uint(0); i < lc; i++ {
+		for k := uint(0); k < oc; k++ {
+			observations := cut(observations, i, k)
+			predictions := cut(predictions, i, k)
 
-			μ1 := statistics.Mean(observed)
-			μ2 := statistics.Mean(predicted)
+			μ1 := statistics.Mean(observations)
+			μ2 := statistics.Mean(predictions)
 			if ε := math.Abs((μ1 - μ2) / μ1); ε > εμ {
 				εμ = ε
 			}
 
-			v1 := statistics.Variance(observed)
-			v2 := statistics.Variance(predicted)
+			v1 := statistics.Variance(observations)
+			v2 := statistics.Variance(predictions)
 			if ε := math.Abs((v1 - v2) / v1); ε > εv {
 				εv = ε
 			}
 
-			if _, _, ε := test.KolmogorovSmirnov(observed, predicted, 0); ε > εp {
+			if _, _, ε := test.KolmogorovSmirnov(observations, predictions, 0); ε > εp {
 				εp = ε
 			}
 		}

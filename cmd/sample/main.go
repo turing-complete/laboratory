@@ -30,7 +30,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	if config.Verbose {
 		fmt.Println("Processing the original model...")
 	}
-	observed, _, err := observe(config)
+	observations, observationPoints, err := observe(config)
 	if err != nil {
 		return err
 	}
@@ -41,7 +41,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	if config.Verbose {
 		fmt.Println("Processing the surrogate model...")
 	}
-	predicted, _, surrogate, err := predict(config, input)
+	predictions, predictionPoints, surrogate, err := predict(config, input)
 	if err != nil {
 		return err
 	}
@@ -53,17 +53,28 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return nil
 	}
 
+	lc, sc := config.Assessment.Slices, config.Assessment.Samples
+
+	oc := uint(len(observations)) / (lc * sc)
+	ic := uint(len(observationPoints)) / (lc * sc)
+
+	if err := output.PutArray("observations", observations, oc, sc, lc); err != nil {
+		return err
+	}
+	if err := output.PutArray("observationPoints", observationPoints, ic, sc, lc); err != nil {
+		return err
+	}
+
+	ic = uint(len(predictionPoints)) / (lc * sc)
+
+	if err := output.PutArray("predictions", predictions, oc, sc, lc); err != nil {
+		return err
+	}
+	if err := output.PutArray("predictionPoints", predictionPoints, ic, sc, lc); err != nil {
+		return err
+	}
+
 	if err := output.Put("surrogate", *surrogate); err != nil {
-		return err
-	}
-
-	oc := surrogate.Outputs
-	sc := uint32(len(predicted)) / oc
-
-	if err := output.PutMatrix("predicted", predicted, oc, sc); err != nil {
-		return err
-	}
-	if err := output.PutMatrix("observed", observed, oc, sc); err != nil {
 		return err
 	}
 
@@ -137,24 +148,22 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 	config := &problem.Config.Assessment
 
 	if config.Seed > 0 {
-		rand.Seed(config.Seed)
+		rand.Seed(int64(config.Seed))
 	} else {
 		rand.Seed(startTime)
 	}
 
-	lc := config.Slices
+	lc, sc := config.Slices, config.Samples
 	if lc == 0 {
 		lc = 1
 	}
-
-	sc := config.Samples
 	if sc == 0 {
 		return nil, errors.New("the number of samples is zero")
 	}
 
 	distribution := uniform.New(0, 1)
 
-	ic, pc := target.Inputs(), target.Pseudos()
+	ic, pc := uint(target.Inputs()), uint(target.Pseudos())
 
 	var fixed []float64
 
@@ -172,9 +181,9 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 	samples := probability.Sample(distribution, lc*sc*ic)
 
 	if pc > 0 {
-		for i := uint32(0); i < lc; i++ {
-			for j := uint32(0); j < sc; j++ {
-				for k := uint32(0); k < pc; k++ {
+		for i := uint(0); i < lc; i++ {
+			for j := uint(0); j < sc; j++ {
+				for k := uint(0); k < pc; k++ {
 					samples[i*sc*ic+j*ic+k] = fixed[i*pc+k]
 				}
 			}

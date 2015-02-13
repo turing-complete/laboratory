@@ -47,11 +47,11 @@ type Config struct {
 
 	Assessment struct {
 		// The seed for random number generation.
-		Seed int64
+		Seed int
 		// The number of slices to check for dynamic quantities.
-		Slices uint32
+		Slices uint
 		// The number of samples to take.
-		Samples uint32
+		Samples uint
 	}
 
 	// A flag for displaying progress information.
