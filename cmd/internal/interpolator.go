@@ -10,13 +10,12 @@ import (
 )
 
 func NewInterpolator(problem *Problem, target Target) (*adhier.Interpolator, error) {
-	config := &problem.Config.Interpolation
 	ic, oc := uint16(target.Inputs()), uint16(target.Outputs())
 
 	var grid adhier.Grid
 	var basis adhier.Basis
 
-	switch strings.ToLower(config.Rule) {
+	switch strings.ToLower(problem.Config.Interpolation.Rule) {
 	case "open":
 		grid, basis = newcot.NewOpen(ic), linhat.NewOpen(ic)
 	case "closed":
@@ -25,8 +24,8 @@ func NewInterpolator(problem *Problem, target Target) (*adhier.Interpolator, err
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	// FIXME: Altering the problem’s data might not be a good idea.
+	config := (adhier.Config)(problem.Config.Interpolation.Config)
 	config.Inputs, config.Outputs = ic, oc
 
-	return adhier.New(grid, basis, (*adhier.Config)(&config.Config))
+	return adhier.New(grid, basis, &config)
 }
