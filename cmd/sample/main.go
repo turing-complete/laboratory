@@ -53,27 +53,27 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return nil
 	}
 
-	lc, sc := config.Assessment.Slices, config.Assessment.Samples
-	if lc == 0 {
-		lc = 1
+	tc, sc := config.Assessment.Times, config.Assessment.Samples
+	if tc == 0 {
+		tc = 1
 	}
 
-	oc := uint(len(observations)) / (lc * sc)
-	ic := uint(len(observationPoints)) / (lc * sc)
+	oc := uint(len(observations)) / (tc * sc)
+	ic := uint(len(observationPoints)) / (tc * sc)
 
-	if err := output.PutArray("observations", observations, oc, sc, lc); err != nil {
+	if err := output.PutArray("observations", observations, oc, sc, tc); err != nil {
 		return err
 	}
-	if err := output.PutArray("observationPoints", observationPoints, ic, sc, lc); err != nil {
+	if err := output.PutArray("observationPoints", observationPoints, ic, sc, tc); err != nil {
 		return err
 	}
 
-	ic = uint(len(predictionPoints)) / (lc * sc)
+	ic = uint(len(predictionPoints)) / (tc * sc)
 
-	if err := output.PutArray("predictions", predictions, oc, sc, lc); err != nil {
+	if err := output.PutArray("predictions", predictions, oc, sc, tc); err != nil {
 		return err
 	}
-	if err := output.PutArray("predictionPoints", predictionPoints, ic, sc, lc); err != nil {
+	if err := output.PutArray("predictionPoints", predictionPoints, ic, sc, tc); err != nil {
 		return err
 	}
 
@@ -156,9 +156,9 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		rand.Seed(startTime)
 	}
 
-	lc, sc := config.Slices, config.Samples
-	if lc == 0 {
-		lc = 1
+	tc, sc := config.Times, config.Samples
+	if tc == 0 {
+		tc = 1
 	}
 	if sc == 0 {
 		return nil, errors.New("the number of samples is zero")
@@ -174,17 +174,17 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		// If there are deterministic dimensions like time, we need to fix them
 		// in order to generate comparable datasets. These dimensions are fixed
 		// to randomly generated numbers, and this procedure is repeated
-		// multiple times (specified by Slices) for a more comprehensive
+		// multiple times (specified by Times) for a more comprehensive
 		// assessment later on. The following line should be executed after the
 		// seeding above and before the actual sampling below to ensure that it
 		// chooses the same values each time this function is called.
-		fixed = probability.Sample(distribution, lc*pc)
+		fixed = probability.Sample(distribution, tc*pc)
 	}
 
-	samples := probability.Sample(distribution, lc*sc*ic)
+	samples := probability.Sample(distribution, tc*sc*ic)
 
 	if pc > 0 {
-		for i := uint(0); i < lc; i++ {
+		for i := uint(0); i < tc; i++ {
 			for j := uint(0); j < sc; j++ {
 				for k := uint(0); k < pc; k++ {
 					samples[i*sc*ic+j*ic+k] = fixed[i*pc+k]

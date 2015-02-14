@@ -37,12 +37,12 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	lc := config.Assessment.Slices
-	if lc == 0 {
-		lc = 1
+	tc := config.Assessment.Times
+	if tc == 0 {
+		tc = 1
 	}
 	sc := config.Assessment.Samples
-	oc := uint(len(observations)) / (lc * sc)
+	oc := uint(len(observations)) / (tc * sc)
 
 	εμ, εv, εp := 0.0, 0.0, 0.0
 
@@ -54,8 +54,8 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return piece
 	}
 
-	// Find the maximal errors across all slices and outputs.
-	for i := uint(0); i < lc; i++ {
+	// Find the maximal errors across all time moments and outputs.
+	for i := uint(0); i < tc; i++ {
 		for k := uint(0); k < oc; k++ {
 			observations := cut(observations, i, k)
 			predictions := cut(predictions, i, k)
