@@ -56,7 +56,7 @@ type Config struct {
 		Seed int
 		// The number of time moments to consider. Specific to the
 		// temperature-slice target.
-		Times uint
+		Steps uint
 		// The number of samples to take.
 		Samples uint
 	}

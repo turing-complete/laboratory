@@ -53,7 +53,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return nil
 	}
 
-	tc, sc := config.Assessment.Times, config.Assessment.Samples
+	tc, sc := config.Assessment.Steps, config.Assessment.Samples
 	if tc == 0 {
 		tc = 1
 	}
@@ -156,7 +156,7 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		rand.Seed(startTime)
 	}
 
-	tc, sc := config.Times, config.Samples
+	tc, sc := config.Steps, config.Samples
 	if tc == 0 {
 		tc = 1
 	}
@@ -174,7 +174,7 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		// If there are deterministic dimensions like time, we need to fix them
 		// in order to generate comparable datasets. These dimensions are fixed
 		// to randomly generated numbers, and this procedure is repeated
-		// multiple times (specified by Times) for a more comprehensive
+		// multiple times (specified by Steps) for a more comprehensive
 		// assessment later on. The following line should be executed after the
 		// seeding above and before the actual sampling below to ensure that it
 		// chooses the same values each time this function is called.

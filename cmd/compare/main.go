@@ -37,7 +37,7 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	tc := config.Assessment.Times
+	tc := config.Assessment.Steps
 	if tc == 0 {
 		tc = 1
 	}
