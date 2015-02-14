@@ -90,7 +90,7 @@ func (t *profileTarget) Inputs() uint {
 }
 
 func (t *profileTarget) Outputs() uint {
-	return t.sc * uint(len(t.problem.Config.CoreIndex))
+	return uint(len(t.stepIndex) * len(t.problem.Config.CoreIndex))
 }
 
 func (t *profileTarget) Pseudos() uint {
