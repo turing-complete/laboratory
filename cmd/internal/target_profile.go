@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/ready-steady/simulation/power"
@@ -12,7 +13,8 @@ import (
 type profileTarget struct {
 	problem *Problem
 
-	sc uint
+	sc        uint
+	stepIndex []uint
 
 	power       *power.Power
 	temperature *temperature.Temperature
@@ -46,10 +48,27 @@ func newProfileTarget(p *Problem) (Target, error) {
 	cc, sc := p.cc, uint(p.schedule.Span/c.TempAnalysis.TimeStep)
 	nc := temperature.Nodes
 
+	var stepIndex []uint
+	if len(c.StepIndex) == 0 {
+		stepIndex = make([]uint, sc)
+		for i := uint(0); i < sc; i++ {
+			stepIndex[i] = i
+		}
+	} else {
+		stepIndex = make([]uint, len(c.StepIndex))
+		for i := range stepIndex {
+			stepIndex[i] = c.StepIndex[i]
+			if stepIndex[i] > sc {
+				return nil, errors.New("the step index is invalid")
+			}
+		}
+	}
+
 	target := &profileTarget{
 		problem: p,
 
-		sc: sc,
+		sc:        sc,
+		stepIndex: stepIndex,
 
 		power:       power,
 		temperature: temperature,
@@ -85,9 +104,9 @@ func (t *profileTarget) String() string {
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	p := t.problem
 
-	coreIndex := p.Config.CoreIndex
+	coreIndex, stepIndex := p.Config.CoreIndex, t.stepIndex
 
-	cc, occ, sc := p.cc, uint(len(coreIndex)), t.sc
+	cc, cci, sc, sci := p.cc, uint(len(coreIndex)), t.sc, uint(len(stepIndex))
 
 	data := t.pool.Get().(*profileData)
 
@@ -96,9 +115,9 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), data.P, sc)
 	t.temperature.ComputeTransient(data.P, Q, data.S, sc)
 
-	for i := uint(0); i < sc; i++ {
-		for j := uint(0); j < occ; j++ {
-			value[i*occ+j] = Q[i*cc+coreIndex[j]]
+	for i := uint(0); i < sci; i++ {
+		for j := uint(0); j < cci; j++ {
+			value[i*cci+j] = Q[stepIndex[i]*cc+coreIndex[j]]
 		}
 	}
 

@@ -19,6 +19,10 @@ type Config struct {
 	// The indices of the tasks whose execution times should be considered as
 	// uncertain; if empty, the parameter is set to all tasks.
 	TaskIndex []uint
+	// The indices of the time moments that should be considered when analyzing
+	// dynamic quantities; if empty, the parameter is set to all time moments.
+	// Specific to the temperature-profile target.
+	StepIndex []uint
 
 	ProbModel struct {
 		// The multiplier used to calculate the maximal delay of a task.
