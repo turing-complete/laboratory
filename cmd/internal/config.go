@@ -31,8 +31,8 @@ type Config struct {
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The quantity of interest. Available targets are “end-to-end-delay” and
-	// “temperature-profile.”
+	// The quantity of interest. Available targets are “end-to-end-delay,”
+	// “total-energy,” “temperature-slice,” and “temperature-profile.”
 	Target string
 
 	// The configuration of the algorithm for temperature analysis. Specific to
