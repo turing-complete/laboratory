@@ -67,13 +67,13 @@ func NewProblem(config Config) (*Problem, error) {
 
 	if len(c.CoreIndex) == 0 {
 		c.CoreIndex = make([]uint, p.cc)
-		for i := uint(0); i < uint(p.cc); i++ {
+		for i := uint(0); i < p.cc; i++ {
 			c.CoreIndex[i] = i
 		}
 	}
 	if len(c.TaskIndex) == 0 {
 		c.TaskIndex = make([]uint, p.tc)
-		for i := uint(0); i < uint(p.tc); i++ {
+		for i := uint(0); i < p.tc; i++ {
 			c.TaskIndex[i] = i
 		}
 	}
