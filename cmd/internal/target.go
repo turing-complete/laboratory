@@ -5,11 +5,11 @@ import (
 )
 
 type Target interface {
-	Inputs() uint32
-	Outputs() uint32
-	Pseudos() uint32
+	Inputs() uint
+	Outputs() uint
+	Pseudos() uint
 	Evaluate([]float64, []float64, []uint64)
-	Progress(uint8, uint32, uint32)
+	Progress(uint32, uint, uint)
 }
 
 func NewTarget(problem *Problem) (Target, error) {

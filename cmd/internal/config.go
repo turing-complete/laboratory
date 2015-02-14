@@ -12,12 +12,13 @@ type Config struct {
 	// The TGFF file of the system to analyze.
 	TGFF string
 
-	// The cores that should be considered when analyzing dynamic quantities
-	// such as temperature profiles; if empty, the variable is set to all cores.
-	CoreIndex []uint16
-	// The tasks whose execution times should be considered as uncertain; if
-	// empty, the variable is set to all tasks.
-	TaskIndex []uint16
+	// The indices of the cores that should be considered when analyzing dynamic
+	// quantities; if empty, the parameter is set to all cores. Specific to the
+	// temperature-* targets.
+	CoreIndex []uint
+	// The indices of the tasks whose execution times should be considered as
+	// uncertain; if empty, the parameter is set to all tasks.
+	TaskIndex []uint
 
 	ProbModel struct {
 		// The multiplier used to calculate the maximal delay of a task.
@@ -31,12 +32,13 @@ type Config struct {
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The quantity of interest. Available targets are “end-to-end-delay,”
-	// “total-energy,” “temperature-slice,” and “temperature-profile.”
+	// The quantity of interest. Static targets are “end-to-end-delay” and
+	// “total-energy,” and dynamic targets are “temperature-slice” and
+	// “temperature-profile.”
 	Target string
 
 	// The configuration of the algorithm for temperature analysis. Specific to
-	// the temperature-profile target.
+	// the temperature-* targets.
 	TempAnalysis temperature.Config
 
 	// The configuration of the interpolation algorithm.
@@ -48,7 +50,8 @@ type Config struct {
 	Assessment struct {
 		// The seed for random number generation.
 		Seed int
-		// The number of slices to check for dynamic quantities.
+		// The number of time moments to consider. Specific to the
+		// temperature-slice target.
 		Slices uint
 		// The number of samples to take.
 		Samples uint

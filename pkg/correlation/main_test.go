@@ -33,8 +33,8 @@ func TestMeasure(t *testing.T) {
 	distance := measure(application)
 
 	cases := []struct {
-		i uint16
-		j uint16
+		i uint
+		j uint
 		d float64
 	}{
 		{0, 1, 1},
@@ -56,7 +56,7 @@ func TestExplore(t *testing.T) {
 	_, application, _ := system.Load("fixtures/002_020.tgff")
 	depth := explore(application)
 
-	assert.Equal(depth, []uint16{
+	assert.Equal(depth, []uint{
 		0,
 		1,
 		2, 2, 2,
@@ -75,10 +75,10 @@ func BenchmarkCorrelate(b *testing.B) {
 	}
 }
 
-func index(count uint16) []uint16 {
-	index := make([]uint16, count)
+func index(count uint) []uint {
+	index := make([]uint, count)
 
-	for i := uint16(0); i < count; i++ {
+	for i := uint(0); i < count; i++ {
 		index[i] = i
 	}
 

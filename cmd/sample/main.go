@@ -197,16 +197,16 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
-	wc := uint32(runtime.GOMAXPROCS(0))
+	wc := uint(runtime.GOMAXPROCS(0))
 	ic, oc := target.Inputs(), target.Outputs()
-	pc := uint32(len(points)) / ic
+	pc := uint(len(points)) / ic
 
 	values := make([]float64, pc*oc)
-	jobs := make(chan uint32, pc)
+	jobs := make(chan uint, pc)
 	group := sync.WaitGroup{}
 	group.Add(int(pc))
 
-	for i := uint32(0); i < wc; i++ {
+	for i := uint(0); i < wc; i++ {
 		go func() {
 			for j := range jobs {
 				target.Evaluate(points[j*ic:(j+1)*ic], values[j*oc:(j+1)*oc], nil)
@@ -215,7 +215,7 @@ func invoke(target internal.Target, points []float64) []float64 {
 		}()
 	}
 
-	for i := uint32(0); i < pc; i++ {
+	for i := uint(0); i < pc; i++ {
 		jobs <- i
 	}
 

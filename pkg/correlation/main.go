@@ -6,16 +6,16 @@ import (
 	"github.com/ready-steady/simulation/system"
 )
 
-func Compute(application *system.Application, index []uint16, length float64) []float64 {
-	tc, dc := uint32(len(application.Tasks)), uint32(len(index))
+func Compute(application *system.Application, index []uint, length float64) []float64 {
+	tc, dc := uint(len(application.Tasks)), uint(len(index))
 
 	distance := measure(application)
 	C := make([]float64, dc*dc)
 
-	for i := uint32(0); i < dc; i++ {
+	for i := uint(0); i < dc; i++ {
 		C[i*dc+i] = 1
 		for j := i + 1; j < dc; j++ {
-			d := distance[uint32(index[i])*tc+uint32(index[j])]
+			d := distance[index[i]*tc+index[j]]
 			C[j*dc+i] = math.Exp(-d * d / (length * length))
 			C[i*dc+j] = C[j*dc+i]
 		}
@@ -25,12 +25,12 @@ func Compute(application *system.Application, index []uint16, length float64) []
 }
 
 func measure(application *system.Application) []float64 {
-	tc := uint32(len(application.Tasks))
+	tc := uint(len(application.Tasks))
 
 	depth := explore(application)
 
-	index := make([]uint16, tc)
-	count := make([]uint16, tc)
+	index := make([]uint, tc)
+	count := make([]uint, tc)
 	for i, d := range depth {
 		index[i] = count[d]
 		count[d]++
@@ -38,7 +38,7 @@ func measure(application *system.Application) []float64 {
 
 	distance := make([]float64, tc*tc)
 
-	for i := uint32(0); i < tc; i++ {
+	for i := uint(0); i < tc; i++ {
 		for j := i + 1; j < tc; j++ {
 			xi := float64(index[i]) - float64(count[depth[i]])/2.0
 			yi := float64(depth[i])
@@ -54,9 +54,9 @@ func measure(application *system.Application) []float64 {
 	return distance
 }
 
-func explore(application *system.Application) []uint16 {
-	tc := uint16(len(application.Tasks))
-	depth := make([]uint16, tc)
+func explore(application *system.Application) []uint {
+	tc := uint(len(application.Tasks))
+	depth := make([]uint, tc)
 
 	for _, l := range application.Leafs() {
 		ascend(application, depth, l)
@@ -65,8 +65,8 @@ func explore(application *system.Application) []uint16 {
 	return depth
 }
 
-func ascend(application *system.Application, depth []uint16, f uint16) {
-	max := uint16(0)
+func ascend(application *system.Application, depth []uint, f uint) {
+	max := uint(0)
 
 	for _, p := range application.Tasks[f].Parents {
 		if depth[p] == 0 {

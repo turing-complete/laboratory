@@ -1,6 +1,7 @@
 package internal
 
 import (
+	"errors"
 	"fmt"
 
 	"github.com/ready-steady/simulation/power"
@@ -12,7 +13,7 @@ import (
 type profileTarget struct {
 	problem *Problem
 
-	sc uint32
+	sc uint
 
 	power       *power.Power
 	temperature *temperature.Temperature
@@ -29,7 +30,7 @@ type profileData struct {
 func newProfileTarget(p *Problem) (Target, error) {
 	const (
 		poolCapacity = 100
-		MaxUInt16    = ^uint16(0)
+		MaxUint16    = ^uint16(0)
 	)
 
 	c := &p.Config
@@ -44,11 +45,11 @@ func newProfileTarget(p *Problem) (Target, error) {
 		return nil, err
 	}
 
-	cc, sc := p.cc, uint32(p.schedule.Span/c.TempAnalysis.TimeStep)
+	cc, sc := p.cc, uint(p.schedule.Span/c.TempAnalysis.TimeStep)
 	nc := temperature.Nodes
 
-	if cc*sc > uint32(MaxUInt16) {
-		panic("The number of outputs is too large.")
+	if cc*sc > uint(MaxUint16) {
+		return nil, errors.New("the number of outputs is too large")
 	}
 
 	target := &profileTarget{
@@ -71,15 +72,15 @@ func newProfileTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *profileTarget) Inputs() uint32 {
+func (t *profileTarget) Inputs() uint {
 	return t.problem.zc
 }
 
-func (t *profileTarget) Outputs() uint32 {
-	return t.sc * uint32(len(t.problem.Config.CoreIndex))
+func (t *profileTarget) Outputs() uint {
+	return t.sc * uint(len(t.problem.Config.CoreIndex))
 }
 
-func (t *profileTarget) Pseudos() uint32 {
+func (t *profileTarget) Pseudos() uint {
 	return 0
 }
 
@@ -92,7 +93,7 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 
 	coreIndex := p.Config.CoreIndex
 
-	cc, occ, sc := p.cc, uint32(len(coreIndex)), t.sc
+	cc, occ, sc := p.cc, uint(len(coreIndex)), t.sc
 
 	data := t.pool.Get().(*profileData)
 
@@ -101,16 +102,16 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), data.P, sc)
 	t.temperature.ComputeTransient(data.P, Q, data.S, sc)
 
-	for i := uint32(0); i < sc; i++ {
-		for j := uint32(0); j < occ; j++ {
-			value[i*occ+j] = Q[i*cc+uint32(coreIndex[j])]
+	for i := uint(0); i < sc; i++ {
+		for j := uint(0); j < occ; j++ {
+			value[i*occ+j] = Q[i*cc+coreIndex[j]]
 		}
 	}
 
 	t.pool.Put(data)
 }
 
-func (t *profileTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+func (t *profileTarget) Progress(level uint32, activeNodes, totalNodes uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n",
 			"Level", "Passive Nodes", "Active Nodes")

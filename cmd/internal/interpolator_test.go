@@ -17,13 +17,13 @@ func TestInterpolatorCompute(t *testing.T) {
 	ic, oc := target.Inputs(), target.Outputs()
 	nc := surrogate.Nodes
 
-	assert.Equal(nc, uint32(4127), t)
+	assert.Equal(nc, uint(4127), t)
 
-	grid := newcot.NewOpen(uint16(ic))
+	grid := newcot.NewOpen(ic)
 	nodes := grid.ComputeNodes(surrogate.Indices)
 
 	values := make([]float64, nc*oc)
-	for i := uint32(0); i < nc; i++ {
+	for i := uint(0); i < nc; i++ {
 		target.Evaluate(nodes[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc], nil)
 	}
 

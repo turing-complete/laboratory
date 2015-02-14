@@ -17,8 +17,8 @@ import (
 type sliceTarget struct {
 	problem *Problem
 
-	pc uint32
-	sc uint32
+	pc uint
+	sc uint
 	ec uint32
 
 	power       *power.Power
@@ -51,7 +51,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 		return nil, err
 	}
 
-	cc, sc := p.cc, uint32(p.schedule.Span/c.TempAnalysis.TimeStep)
+	cc, sc := p.cc, uint(p.schedule.Span/c.TempAnalysis.TimeStep)
 	nc := temperature.Nodes
 
 	target := &sliceTarget{
@@ -75,15 +75,15 @@ func newSliceTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *sliceTarget) Inputs() uint32 {
+func (t *sliceTarget) Inputs() uint {
 	return t.pc + t.problem.zc
 }
 
-func (t *sliceTarget) Outputs() uint32 {
-	return uint32(len(t.problem.Config.CoreIndex))
+func (t *sliceTarget) Outputs() uint {
+	return uint(len(t.problem.Config.CoreIndex))
 }
 
-func (t *sliceTarget) Pseudos() uint32 {
+func (t *sliceTarget) Pseudos() uint {
 	return t.pc
 }
 
@@ -125,22 +125,22 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	}
 
 	sid := node[0] * float64(sc-1)
-	lid, rid := uint32(math.Floor(sid)), uint32(math.Ceil(sid))
+	lid, rid := uint(math.Floor(sid)), uint(math.Ceil(sid))
 
 	if lid == rid {
 		for i, cid := range p.Config.CoreIndex {
-			value[i] = Q[lid*cc+uint32(cid)]
+			value[i] = Q[lid*cc+cid]
 		}
 	} else {
 		fraction := (sid - float64(lid)) / (float64(rid) - float64(lid))
 		for i, cid := range p.Config.CoreIndex {
-			left, right := Q[lid*cc+uint32(cid)], Q[rid*cc+uint32(cid)]
+			left, right := Q[lid*cc+cid], Q[rid*cc+cid]
 			value[i] = fraction*(right-left) + left
 		}
 	}
 }
 
-func (t *sliceTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+func (t *sliceTarget) Progress(level uint32, activeNodes, totalNodes uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s %15s\n", "Level", "Passive Nodes", "Evaluations", "Active Nodes")
 	}

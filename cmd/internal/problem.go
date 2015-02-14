@@ -23,10 +23,10 @@ type Problem struct {
 	platform    *system.Platform
 	application *system.Application
 
-	cc uint32
-	tc uint32
-	uc uint32
-	zc uint32
+	cc uint
+	tc uint
+	uc uint
+	zc uint
 
 	marginals  []probability.Inverter
 	multiplier []float64
@@ -62,23 +62,23 @@ func NewProblem(config Config) (*Problem, error) {
 	p.platform = platform
 	p.application = application
 
-	p.cc = uint32(len(platform.Cores))
-	p.tc = uint32(len(application.Tasks))
+	p.cc = uint(len(platform.Cores))
+	p.tc = uint(len(application.Tasks))
 
 	if len(c.CoreIndex) == 0 {
-		c.CoreIndex = make([]uint16, p.cc)
-		for i := uint16(0); i < uint16(p.cc); i++ {
+		c.CoreIndex = make([]uint, p.cc)
+		for i := uint(0); i < uint(p.cc); i++ {
 			c.CoreIndex[i] = i
 		}
 	}
 	if len(c.TaskIndex) == 0 {
-		c.TaskIndex = make([]uint16, p.tc)
-		for i := uint16(0); i < uint16(p.tc); i++ {
+		c.TaskIndex = make([]uint, p.tc)
+		for i := uint(0); i < uint(p.tc); i++ {
 			c.TaskIndex[i] = i
 		}
 	}
 
-	p.uc = uint32(len(c.TaskIndex))
+	p.uc = uint(len(c.TaskIndex))
 
 	p.time = time.NewList(platform, application)
 	p.schedule = p.time.Compute(system.NewProfile(platform, application).Mobility)

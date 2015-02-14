@@ -38,13 +38,13 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 
 func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
 	ic, oc := target.Inputs(), target.Outputs()
-	pc := uint32(len(points)) / ic
+	pc := uint(len(points)) / ic
 
 	values := make([]float64, pc*oc)
 	group := sync.WaitGroup{}
 	group.Add(int(pc))
 
-	for i := uint32(0); i < pc; i++ {
+	for i := uint(0); i < pc; i++ {
 		go func(point, value []float64) {
 			target.Evaluate(point, value, nil)
 			group.Done()

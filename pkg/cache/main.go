@@ -9,7 +9,7 @@ type Cache struct {
 	mapping map[string]interface{}
 }
 
-func New(capacity uint32) *Cache {
+func New(capacity uint) *Cache {
 	return &Cache{
 		mapping: make(map[string]interface{}, capacity),
 	}

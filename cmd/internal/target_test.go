@@ -13,5 +13,5 @@ func TestNewTarget(t *testing.T) {
 	target, _ := NewTarget(problem)
 	sliceTarget := target.(*sliceTarget)
 
-	assert.Equal(sliceTarget.sc, uint32(29100), t)
+	assert.Equal(sliceTarget.sc, uint(29100), t)
 }

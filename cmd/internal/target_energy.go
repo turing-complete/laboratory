@@ -12,15 +12,15 @@ func newEnergyTarget(p *Problem) Target {
 	return &energyTarget{problem: p}
 }
 
-func (t *energyTarget) Inputs() uint32 {
+func (t *energyTarget) Inputs() uint {
 	return t.problem.zc
 }
 
-func (t *energyTarget) Outputs() uint32 {
+func (t *energyTarget) Outputs() uint {
 	return 1
 }
 
-func (t *energyTarget) Pseudos() uint32 {
+func (t *energyTarget) Pseudos() uint {
 	return 0
 }
 
@@ -37,11 +37,11 @@ func (t *energyTarget) Evaluate(node, value []float64, _ []uint64) {
 	value[0] = 0
 	for i := range tasks {
 		value[0] += (schedule.Finish[i] - schedule.Start[i]) *
-			cores[uint32(schedule.Mapping[i])].Power[tasks[i].Type]
+			cores[schedule.Mapping[i]].Power[tasks[i].Type]
 	}
 }
 
-func (t *energyTarget) Progress(level uint8, activeNodes, totalNodes uint32) {
+func (t *energyTarget) Progress(level uint32, activeNodes, totalNodes uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
