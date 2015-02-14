@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ready-steady/simulation/power"
@@ -30,7 +29,6 @@ type profileData struct {
 func newProfileTarget(p *Problem) (Target, error) {
 	const (
 		poolCapacity = 100
-		MaxUint16    = ^uint16(0)
 	)
 
 	c := &p.Config
@@ -47,10 +45,6 @@ func newProfileTarget(p *Problem) (Target, error) {
 
 	cc, sc := p.cc, uint(p.schedule.Span/c.TempAnalysis.TimeStep)
 	nc := temperature.Nodes
-
-	if cc*sc > uint(MaxUint16) {
-		return nil, errors.New("the number of outputs is too large")
-	}
 
 	target := &profileTarget{
 		problem: p,
