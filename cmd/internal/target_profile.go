@@ -103,7 +103,8 @@ func (t *profileTarget) Pseudos() uint {
 }
 
 func (t *profileTarget) String() string {
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d, steps: %d}",
+		t.Inputs(), t.Outputs(), t.sc)
 }
 
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {

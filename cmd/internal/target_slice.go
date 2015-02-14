@@ -88,7 +88,8 @@ func (t *sliceTarget) Pseudos() uint {
 }
 
 func (t *sliceTarget) String() string {
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d, steps: %d}",
+		t.Inputs(), t.Outputs(), t.sc)
 }
 
 func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
