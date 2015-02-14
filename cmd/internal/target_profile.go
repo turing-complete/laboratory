@@ -56,12 +56,17 @@ func newProfileTarget(p *Problem) (Target, error) {
 		}
 	} else {
 		stepIndex = make([]uint, len(c.StepIndex))
+		max := uint(0)
 		for i := range stepIndex {
 			stepIndex[i] = c.StepIndex[i]
-			if stepIndex[i] > sc {
+			if stepIndex[i] >= sc {
 				return nil, errors.New("the step index is invalid")
 			}
+			if stepIndex[i] > max {
+				max = stepIndex[i]
+			}
 		}
+		sc = max + 1
 	}
 
 	target := &profileTarget{
