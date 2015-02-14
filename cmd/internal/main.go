@@ -24,8 +24,7 @@ func Run(command func(Config, *mat.File, *mat.File) error) {
 	if len(*profileFile) > 0 {
 		profile, err := os.Create(*profileFile)
 		if err != nil {
-			printError(errors.New("cannot enable profiling"))
-			return
+			fail(errors.New("cannot enable profiling"))
 		}
 		pprof.StartCPUProfile(profile)
 		defer pprof.StopCPUProfile()
@@ -36,38 +35,33 @@ func Run(command func(Config, *mat.File, *mat.File) error) {
 	var input, output *mat.File
 
 	if len(*configFile) == 0 {
-		printError(errors.New("a configuration file is required"))
-		return
+		fail(errors.New("a configuration file is required"))
 	}
 	config, err := NewConfig(*configFile)
 	if err != nil {
-		printError(err)
-		return
+		fail(err)
 	}
 
 	if len(*inputFile) > 0 {
 		if input, err = mat.Open(*inputFile, "r"); err != nil {
-			printError(err)
-			return
+			fail(err)
 		}
 		defer input.Close()
 	}
 
 	if len(*outputFile) > 0 {
 		if output, err = mat.Open(*outputFile, "w7.3"); err != nil {
-			printError(err)
-			return
+			fail(err)
 		}
 		defer output.Close()
 	}
 
 	if err := command(config, input, output); err != nil {
-		printError(err)
-		return
+		fail(err)
 	}
 }
 
-func printError(err error) {
+func fail(err error) {
 	fmt.Printf("Error: %s.\n\n", err)
 
 	fmt.Printf("Usage: %s [options]", os.Args[0])
@@ -78,4 +72,6 @@ Options:
     -i <FILE.mat>   - an input file
     -o <FILE.mat>   - an output file
 `)
+
+	os.Exit(1)
 }
