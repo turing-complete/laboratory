@@ -4,14 +4,13 @@ import (
 	"fmt"
 	"math"
 	"reflect"
+	"sync"
 	"sync/atomic"
 	"unsafe"
 
 	"camlistore.org/pkg/lru"
 	"github.com/ready-steady/simulation/power"
 	"github.com/ready-steady/simulation/temperature"
-
-	"../../pkg/pool"
 )
 
 type sliceTarget struct {
@@ -25,7 +24,7 @@ type sliceTarget struct {
 	temperature *temperature.Temperature
 
 	cache *lru.Cache
-	pool  *pool.Pool
+	pool  *sync.Pool
 }
 
 type sliceData struct {
@@ -36,7 +35,6 @@ type sliceData struct {
 func newSliceTarget(p *Problem) (Target, error) {
 	const (
 		cacheCapacity = 1000
-		poolCapacity  = 100
 	)
 
 	c := &p.Config
@@ -64,12 +62,14 @@ func newSliceTarget(p *Problem) (Target, error) {
 		temperature: temperature,
 
 		cache: lru.New(cacheCapacity),
-		pool: pool.New(poolCapacity, func() interface{} {
-			return &sliceData{
-				P: make([]float64, cc*sc),
-				S: make([]float64, nc*sc),
-			}
-		}),
+		pool: &sync.Pool{
+			New: func() interface{} {
+				return &sliceData{
+					P: make([]float64, cc*sc),
+					S: make([]float64, nc*sc),
+				}
+			},
+		},
 	}
 
 	return target, nil
