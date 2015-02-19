@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"reflect"
-	"sync"
 	"sync/atomic"
 	"unsafe"
 
@@ -24,12 +23,6 @@ type sliceTarget struct {
 	temperature *temperature.Temperature
 
 	cache *lru.Cache
-	pool  *sync.Pool
-}
-
-type sliceData struct {
-	P []float64
-	S []float64
 }
 
 func newSliceTarget(p *Problem) (Target, error) {
@@ -49,8 +42,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 		return nil, err
 	}
 
-	cc, sc := p.cc, uint(p.schedule.Span/c.TempAnalysis.TimeStep)
-	nc := temperature.Nodes
+	sc := uint(p.schedule.Span / c.TempAnalysis.TimeStep)
 
 	target := &sliceTarget{
 		problem: p,
@@ -62,14 +54,6 @@ func newSliceTarget(p *Problem) (Target, error) {
 		temperature: temperature,
 
 		cache: lru.New(cacheCapacity),
-		pool: &sync.Pool{
-			New: func() interface{} {
-				return &sliceData{
-					P: make([]float64, cc*sc),
-					S: make([]float64, nc*sc),
-				}
-			},
-		},
 	}
 
 	return target, nil
@@ -108,21 +92,17 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	}
 
 	if Q == nil {
-		data := t.pool.Get().(*sliceData)
-
-		u := p.transform(node[pc:])
-		t.power.Compute(p.time.Recompute(p.schedule, u), data.P, sc)
-
+		P := make([]float64, cc*sc)
 		Q = make([]float64, cc*sc)
-		t.temperature.ComputeTransient(data.P, Q, data.S, sc)
 
-		t.pool.Put(data)
+		t.power.Compute(p.time.Recompute(p.schedule, p.transform(node[pc:])), P, sc)
+		t.temperature.ComputeTransient(P, Q, nil, sc)
+
+		atomic.AddUint32(&t.ec, 1)
 
 		if index != nil {
 			t.cache.Add(key, Q)
 		}
-
-		atomic.AddUint32(&t.ec, 1)
 	}
 
 	sid := node[0] * float64(sc-1)

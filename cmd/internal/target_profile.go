@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"sync"
 
 	"github.com/ready-steady/simulation/power"
 	"github.com/ready-steady/simulation/temperature"
@@ -17,14 +16,6 @@ type profileTarget struct {
 
 	power       *power.Power
 	temperature *temperature.Temperature
-
-	pool *sync.Pool
-}
-
-type profileData struct {
-	P []float64
-	S []float64
-	Q []float64
 }
 
 func newProfileTarget(p *Problem) (Target, error) {
@@ -40,8 +31,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 		return nil, err
 	}
 
-	cc, sc := p.cc, uint(p.schedule.Span/c.TempAnalysis.TimeStep)
-	nc := temperature.Nodes
+	sc := uint(p.schedule.Span / c.TempAnalysis.TimeStep)
 
 	var stepIndex []uint
 	if len(c.StepIndex) == 0 {
@@ -72,16 +62,6 @@ func newProfileTarget(p *Problem) (Target, error) {
 
 		power:       power,
 		temperature: temperature,
-
-		pool: &sync.Pool{
-			New: func() interface{} {
-				return &profileData{
-					P: make([]float64, cc*sc),
-					S: make([]float64, nc*sc),
-					Q: make([]float64, cc*sc),
-				}
-			},
-		},
 	}
 
 	return target, nil
@@ -111,18 +91,17 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 
 	cc, cci, sc, sci := p.cc, uint(len(coreIndex)), t.sc, uint(len(stepIndex))
 
-	data := t.pool.Get().(*profileData)
+	Q := make([]float64, cc*sc)
+	P := make([]float64, cc*sc)
 
-	t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), data.P, sc)
-	t.temperature.ComputeTransient(data.P, data.Q, data.S, sc)
+	t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), P, sc)
+	t.temperature.ComputeTransient(P, Q, nil, sc)
 
 	for i := uint(0); i < sci; i++ {
 		for j := uint(0); j < cci; j++ {
-			value[i*cci+j] = data.Q[stepIndex[i]*cc+coreIndex[j]]
+			value[i*cci+j] = Q[stepIndex[i]*cc+coreIndex[j]]
 		}
 	}
-
-	t.pool.Put(data)
 }
 
 func (t *profileTarget) Progress(level uint32, activeNodes, totalNodes uint) {
