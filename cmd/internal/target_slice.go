@@ -92,11 +92,8 @@ func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	}
 
 	if Q == nil {
-		P := make([]float64, cc*sc)
-		Q = make([]float64, cc*sc)
-
-		t.power.Compute(p.time.Recompute(p.schedule, p.transform(node[pc:])), P, sc)
-		t.temperature.ComputeTransient(P, Q, nil, sc)
+		P := t.power.Compute(p.time.Recompute(p.schedule, p.transform(node[pc:])), sc)
+		Q = t.temperature.ComputeTransient(P, sc)
 
 		atomic.AddUint32(&t.ec, 1)
 

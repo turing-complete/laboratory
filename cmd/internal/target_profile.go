@@ -91,11 +91,8 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 
 	cc, cci, sc, sci := p.cc, uint(len(coreIndex)), t.sc, uint(len(stepIndex))
 
-	Q := make([]float64, cc*sc)
-	P := make([]float64, cc*sc)
-
-	t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), P, sc)
-	t.temperature.ComputeTransient(P, Q, nil, sc)
+	P := t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), sc)
+	Q := t.temperature.ComputeTransient(P, sc)
 
 	for i := uint(0); i < sci; i++ {
 		for j := uint(0); j < cci; j++ {
