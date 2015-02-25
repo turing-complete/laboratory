@@ -1,0 +1,38 @@
+{
+	"tgff": "assets/002_020.tgff",
+
+	"coreIndex": [0],
+	"stepIndex": [130],
+
+	"probModel": {
+		"maxDelay": 0.2,
+		"marginal": "Beta(2, 5)",
+		"corrLength": 5,
+		"varThreshold": 0.95
+	},
+
+	"target": "temperature-profile",
+
+	"tempAnalysis": {
+		"floorplan": "assets/002.flp",
+		"configuration": "assets/hotspot.config",
+		"timeStep": 1e-3,
+		"ambience": 318.15
+	},
+
+	"interpolation": {
+		"rule": "open",
+		"minLevel": 1,
+		"maxLevel": 15,
+		"maxNodes": 1000000,
+		"absError": 1e-2,
+		"relError": 1e-2
+	},
+
+	"assessment": {
+		"seed": 1,
+		"samples": 10000
+	},
+
+	"verbose": true
+}
