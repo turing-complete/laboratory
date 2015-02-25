@@ -44,7 +44,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 		for i := range stepIndex {
 			stepIndex[i] = c.StepIndex[i]
 			if stepIndex[i] >= sc {
-				return nil, errors.New("the step index is invalid")
+				return nil, errors.New(fmt.Sprintf("step indices should be less than %d", sc))
 			}
 			if stepIndex[i] > max {
 				max = stepIndex[i]
