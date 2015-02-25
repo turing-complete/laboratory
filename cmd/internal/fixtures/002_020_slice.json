@@ -12,12 +12,9 @@
 
 	"tempAnalysis": {
 		"floorplan": "fixtures/002.flp",
-		"hotspot": {
-			"config": "fixtures/hotspot.config",
-			"params": ""
-		},
+		"configuration": "fixtures/hotspot.config",
 		"timeStep": 1e-5,
-		"ambientTemp": 318.15
+		"ambience": 318.15
 	},
 
 	"interpolation": {

@@ -5,33 +5,32 @@ import (
 	"fmt"
 
 	"github.com/ready-steady/simulation/power"
-	"github.com/ready-steady/simulation/temperature"
+	"github.com/ready-steady/simulation/temperature/analytic"
 )
 
 type profileTarget struct {
 	problem *Problem
 
-	sc        uint
+	sc uint
+	Δt float64
+
 	stepIndex []uint
 
 	power       *power.Power
-	temperature *temperature.Temperature
+	temperature *analytic.Temperature
 }
 
 func newProfileTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
-	power, err := power.New(p.platform, p.application, c.TempAnalysis.TimeStep)
+	power := power.New(p.platform, p.application)
+	temperature, err := analytic.New((*analytic.Config)(&c.TempAnalysis))
 	if err != nil {
 		return nil, err
 	}
 
-	temperature, err := temperature.New(temperature.Config(c.TempAnalysis))
-	if err != nil {
-		return nil, err
-	}
-
-	sc := uint(p.schedule.Span / c.TempAnalysis.TimeStep)
+	Δt := c.TempAnalysis.TimeStep
+	sc := uint(p.schedule.Span / Δt)
 
 	var stepIndex []uint
 	if len(c.StepIndex) == 0 {
@@ -57,7 +56,9 @@ func newProfileTarget(p *Problem) (Target, error) {
 	target := &profileTarget{
 		problem: p,
 
-		sc:        sc,
+		sc: sc,
+		Δt: Δt,
+
 		stepIndex: stepIndex,
 
 		power:       power,
@@ -91,8 +92,9 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 
 	cc, cci, sc, sci := p.cc, uint(len(coreIndex)), t.sc, uint(len(stepIndex))
 
-	P := t.power.Compute(p.time.Recompute(p.schedule, p.transform(node)), sc)
-	Q := t.temperature.ComputeTransient(P, sc)
+	schedule := p.time.Recompute(p.schedule, p.transform(node))
+	P := t.power.Compute(schedule, t.Δt, sc)
+	Q := t.temperature.Compute(P, sc)
 
 	for i := uint(0); i < sci; i++ {
 		for j := uint(0); j < cci; j++ {

@@ -27,7 +27,7 @@ func TestInterpolatorCompute(t *testing.T) {
 		target.Evaluate(nodes[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc], nil)
 	}
 
-	assert.AlmostEqual(values, interpolator.Evaluate(surrogate, nodes), t)
+	assert.EqualWithin(values, interpolator.Evaluate(surrogate, nodes), 1e-15, t)
 }
 
 func BenchmarkInterpolatorCompute(b *testing.B) {
