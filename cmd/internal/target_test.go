@@ -13,5 +13,5 @@ func TestNewTarget(t *testing.T) {
 	target, _ := NewTarget(problem)
 	sliceTarget := target.(*sliceTarget)
 
-	assert.Equal(sliceTarget.sc, uint(29100), t)
+	assert.Equal(sliceTarget.interval, []float64{0, 0.291}, t)
 }

@@ -24,7 +24,8 @@ type Config struct {
 	// Specific to the temperature-profile target.
 	StepIndex []uint
 
-	ProbModel struct {
+	// The probability model.
+	Probability struct {
 		// The multiplier used to calculate the maximal delay of a task.
 		MaxDelay float64 // ∈ [0, 1)
 		// The marginal distributions of tasks’ delays.
@@ -36,16 +37,21 @@ type Config struct {
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The quantity of interest. Static targets are “end-to-end-delay” and
-	// “total-energy,” and dynamic targets are “temperature-slice” and
-	// “temperature-profile.”
-	Target string
+	// The quantity of interest.
+	Target struct {
+		// Static targets are “end-to-end-delay” and “total-energy,” and dynamic
+		// targets are “temperature-slice” and “temperature-profile.”
+		Name string
+		// The time step of temperature profiles. Specific to the
+		// temperature-profile target.
+		TimeStep float64
+	}
 
-	// The configuration of the algorithm for temperature analysis. Specific to
-	// the temperature-* targets.
-	TempAnalysis numeric.Config
+	// The configuration of temperature analysis. Specific to the temperature-*
+	// targets.
+	Temperature numeric.Config
 
-	// The configuration of the interpolation algorithm.
+	// The configuration of interpolation.
 	Interpolation struct {
 		Rule string
 		adhier.Config

@@ -33,7 +33,7 @@ func newSliceTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
 	power := power.New(p.platform, p.application)
-	temperature, err := numeric.New((*numeric.Config)(&c.TempAnalysis))
+	temperature, err := numeric.New((*numeric.Config)(&c.Temperature))
 	if err != nil {
 		return nil, err
 	}

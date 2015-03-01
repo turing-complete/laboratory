@@ -1,19 +1,21 @@
 {
 	"tgff": "fixtures/002_020.tgff",
 
-	"probModel": {
+	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(1, 1)",
 		"corrLength": 5,
 		"varThreshold": 0.999
 	},
 
-	"target": "temperature-profile",
+	"target": {
+		"name": "temperature-profile",
+		"timeStep": 1e-3
+	},
 
-	"tempAnalysis": {
+	"temperature": {
 		"floorplan": "fixtures/002.flp",
 		"configuration": "fixtures/hotspot.config",
-		"timeStep": 1e-3,
 		"ambience": 318.15
 	},
 

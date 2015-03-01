@@ -1,14 +1,16 @@
 {
 	"tgff": "assets/008_080.tgff",
 
-	"probModel": {
+	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},
 
-	"target": "total-energy",
+	"target": {
+		"name": "total-energy"
+	},
 
 	"interpolation": {
 		"rule": "open",

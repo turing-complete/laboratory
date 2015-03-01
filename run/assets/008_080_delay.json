@@ -1,14 +1,16 @@
 {
 	"tgff": "assets/008_080.tgff",
 
-	"probModel": {
+	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},
 
-	"target": "end-to-end-delay",
+	"target": {
+		"name": "end-to-end-delay"
+	},
 
 	"interpolation": {
 		"rule": "open",

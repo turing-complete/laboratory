@@ -23,12 +23,15 @@ func newProfileTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
 	power := power.New(p.platform, p.application)
-	temperature, err := numeric.New((*numeric.Config)(&c.TempAnalysis))
+	temperature, err := numeric.New((*numeric.Config)(&c.Temperature))
 	if err != nil {
 		return nil, err
 	}
 
-	Δt := c.TempAnalysis.TimeStep
+	Δt := c.Target.TimeStep
+	if Δt <= 0 {
+		return nil, errors.New("the time step should be positive")
+	}
 
 	stepIndex := c.StepIndex
 	sc := uint(len(stepIndex))

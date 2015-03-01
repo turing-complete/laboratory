@@ -1,19 +1,20 @@
 {
 	"tgff": "assets/008_080.tgff",
 
-	"probModel": {
+	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
 		"varThreshold": 0.9
 	},
 
-	"target": "temperature-slice",
+	"target": {
+		"name": "temperature-slice"
+	},
 
-    "tempAnalysis": {
+    "temperature": {
 		"floorplan": "assets/008.flp",
 		"configuration": "assets/hotspot.config",
-		"timeStep": 1e-4,
 		"ambience": 318.15
 	},
 

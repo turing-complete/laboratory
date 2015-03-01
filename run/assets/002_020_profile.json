@@ -4,19 +4,21 @@
 	"coreIndex": [0],
 	"stepIndex": [130],
 
-	"probModel": {
+	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},
 
-	"target": "temperature-profile",
+	"target": {
+		"name": "temperature-profile",
+		"timeStep": 1e-3
+	},
 
-	"tempAnalysis": {
+	"temperature": {
 		"floorplan": "assets/002.flp",
 		"configuration": "assets/hotspot.config",
-		"timeStep": 1e-3,
 		"ambience": 318.15
 	},
 

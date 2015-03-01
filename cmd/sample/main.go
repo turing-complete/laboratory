@@ -85,7 +85,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 }
 
 func observe(config internal.Config) ([]float64, []float64, error) {
-	config.ProbModel.VarThreshold = 42
+	config.Probability.VarThreshold = 42
 
 	problem, err := internal.NewProblem(config)
 	if err != nil {

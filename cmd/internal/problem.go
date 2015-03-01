@@ -44,13 +44,13 @@ func NewProblem(config Config) (*Problem, error) {
 	p := &Problem{Config: config}
 	c := &p.Config
 
-	if c.ProbModel.MaxDelay < 0 || 1 <= c.ProbModel.MaxDelay {
+	if c.Probability.MaxDelay < 0 || 1 <= c.Probability.MaxDelay {
 		return nil, errors.New("the delay rate is invalid")
 	}
-	if c.ProbModel.CorrLength <= 0 {
+	if c.Probability.CorrLength <= 0 {
 		return nil, errors.New("the correlation length is invalid")
 	}
-	if c.ProbModel.VarThreshold <= 0 {
+	if c.Probability.VarThreshold <= 0 {
 		return nil, errors.New("the variance-reduction threshold is invalid")
 	}
 
@@ -83,20 +83,20 @@ func NewProblem(config Config) (*Problem, error) {
 	p.time = time.NewList(platform, application)
 	p.schedule = p.time.Compute(system.NewProfile(platform, application).Mobility)
 
-	C := acorrelation.Compute(application, c.TaskIndex, c.ProbModel.CorrLength)
-	p.multiplier, p.zc, err = correlation.Decompose(C, p.uc, c.ProbModel.VarThreshold)
+	C := acorrelation.Compute(application, c.TaskIndex, c.Probability.CorrLength)
+	p.multiplier, p.zc, err = correlation.Decompose(C, p.uc, c.Probability.VarThreshold)
 	if err != nil {
 		return nil, err
 	}
 
 	p.marginals = make([]probability.Inverter, p.uc)
-	marginalizer := aprobability.ParseInverter(c.ProbModel.Marginal)
+	marginalizer := aprobability.ParseInverter(c.Probability.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
 	}
 	for i, tid := range c.TaskIndex {
 		duration := platform.Cores[p.schedule.Mapping[tid]].Time[application.Tasks[tid].Type]
-		p.marginals[i] = marginalizer(0, c.ProbModel.MaxDelay*duration)
+		p.marginals[i] = marginalizer(0, c.Probability.MaxDelay*duration)
 	}
 
 	return p, nil
