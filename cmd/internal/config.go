@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/ready-steady/numeric/interpolation/adhier"
-	"github.com/ready-steady/simulation/temperature/analytic"
+	"github.com/ready-steady/simulation/temperature/numeric"
 )
 
 type Config struct {
@@ -43,7 +43,7 @@ type Config struct {
 
 	// The configuration of the algorithm for temperature analysis. Specific to
 	// the temperature-* targets.
-	TempAnalysis analytic.Config
+	TempAnalysis numeric.Config
 
 	// The configuration of the interpolation algorithm.
 	Interpolation struct {

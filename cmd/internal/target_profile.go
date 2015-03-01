@@ -5,61 +5,65 @@ import (
 	"fmt"
 
 	"github.com/ready-steady/simulation/power"
-	"github.com/ready-steady/simulation/temperature/analytic"
+	"github.com/ready-steady/simulation/temperature/numeric"
 )
 
 type profileTarget struct {
 	problem *Problem
 
-	sc uint
-	Δt float64
-
-	stepIndex []uint
+	Δt       float64
+	shift    bool
+	timeline []float64
 
 	power       *power.Power
-	temperature *analytic.Temperature
+	temperature *numeric.Temperature
 }
 
 func newProfileTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
 	power := power.New(p.platform, p.application)
-	temperature, err := analytic.New((*analytic.Config)(&c.TempAnalysis))
+	temperature, err := numeric.New((*numeric.Config)(&c.TempAnalysis))
 	if err != nil {
 		return nil, err
 	}
 
 	Δt := c.TempAnalysis.TimeStep
-	sc := uint(p.schedule.Span / Δt)
 
-	var stepIndex []uint
-	if len(c.StepIndex) == 0 {
+	stepIndex := c.StepIndex
+	sc := uint(len(stepIndex))
+
+	if sc == 0 {
+		sc = uint(p.schedule.Span / Δt)
 		stepIndex = make([]uint, sc)
 		for i := uint(0); i < sc; i++ {
 			stepIndex[i] = i
 		}
-	} else {
-		stepIndex = make([]uint, len(c.StepIndex))
-		max := uint(0)
-		for i := range stepIndex {
-			stepIndex[i] = c.StepIndex[i]
-			if stepIndex[i] >= sc {
-				return nil, errors.New(fmt.Sprintf("step indices should be less than %d", sc))
-			}
-			if stepIndex[i] > max {
-				max = stepIndex[i]
-			}
+	}
+
+	// Force the first index to be zero.
+	shift := stepIndex[0] != 0
+	if shift {
+		newIndex := make([]uint, sc+1)
+		copy(newIndex[1:], stepIndex)
+		stepIndex = newIndex
+		sc++
+	}
+
+	timeline := make([]float64, sc)
+	for i, max := uint(0), uint(p.schedule.Span/Δt)-1; i < sc; i++ {
+		if stepIndex[i] > max {
+			return nil, errors.New(fmt.Sprintf("the step indices should not exceed %d", max))
 		}
-		sc = max + 1
+		timeline[i] = float64(stepIndex[i]) * Δt
 	}
 
 	target := &profileTarget{
 		problem: p,
 
-		sc: sc,
-		Δt: Δt,
-
-		stepIndex: stepIndex,
+		Δt:       Δt,
+		shift:    shift,
+		timeline: timeline,
 
 		power:       power,
 		temperature: temperature,
@@ -73,7 +77,11 @@ func (t *profileTarget) Inputs() uint {
 }
 
 func (t *profileTarget) Outputs() uint {
-	return uint(len(t.stepIndex) * len(t.problem.Config.CoreIndex))
+	cci, sc := uint(len(t.problem.Config.CoreIndex)), uint(len(t.timeline))
+	if t.shift {
+		sc--
+	}
+	return sc * cci
 }
 
 func (t *profileTarget) Pseudos() uint {
@@ -81,24 +89,29 @@ func (t *profileTarget) Pseudos() uint {
 }
 
 func (t *profileTarget) String() string {
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d, steps: %d}",
-		t.Inputs(), t.Outputs(), t.sc)
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
 func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	p := t.problem
 
-	coreIndex, stepIndex := p.Config.CoreIndex, t.stepIndex
-
-	cc, cci, sc, sci := p.cc, uint(len(coreIndex)), t.sc, uint(len(stepIndex))
-
 	schedule := p.time.Recompute(p.schedule, p.transform(node))
-	P := t.power.Compute(schedule, t.Δt, sc)
-	Q := t.temperature.Compute(P, sc)
+	Q, _, err := t.temperature.Compute(t.power.Process(schedule), t.timeline)
+	if err != nil {
+		panic("cannot compute a temperature profile")
+	}
 
-	for i := uint(0); i < sci; i++ {
+	coreIndex := p.Config.CoreIndex
+	cc, cci, sc := p.cc, uint(len(coreIndex)), uint(len(t.timeline))
+
+	if t.shift {
+		Q = Q[cc:]
+		sc--
+	}
+
+	for i := uint(0); i < sc; i++ {
 		for j := uint(0); j < cci; j++ {
-			value[i*cci+j] = Q[stepIndex[i]*cc+coreIndex[j]]
+			value[i*cci+j] = Q[i*cc+coreIndex[j]]
 		}
 	}
 }

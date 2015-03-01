@@ -2,26 +2,25 @@ package internal
 
 import (
 	"fmt"
-	"math"
 	"reflect"
 	"sync/atomic"
 	"unsafe"
 
 	"camlistore.org/pkg/lru"
+	"github.com/ready-steady/numeric/interpolation/spline"
 	"github.com/ready-steady/simulation/power"
-	"github.com/ready-steady/simulation/temperature/analytic"
+	"github.com/ready-steady/simulation/temperature/numeric"
 )
 
 type sliceTarget struct {
 	problem *Problem
 
 	pc uint
-	sc uint
 	ec uint32
-	Δt float64
 
+	interval    []float64
 	power       *power.Power
-	temperature *analytic.Temperature
+	temperature *numeric.Temperature
 
 	cache *lru.Cache
 }
@@ -34,21 +33,17 @@ func newSliceTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
 	power := power.New(p.platform, p.application)
-	temperature, err := analytic.New((*analytic.Config)(&c.TempAnalysis))
+	temperature, err := numeric.New((*numeric.Config)(&c.TempAnalysis))
 	if err != nil {
 		return nil, err
 	}
-
-	Δt := c.TempAnalysis.TimeStep
-	sc := uint(p.schedule.Span / Δt)
 
 	target := &sliceTarget{
 		problem: p,
 
 		pc: 1, // +1 for time
-		sc: sc,
-		Δt: Δt,
 
+		interval:    []float64{0, p.schedule.Span},
 		power:       power,
 		temperature: temperature,
 
@@ -71,50 +66,43 @@ func (t *sliceTarget) Pseudos() uint {
 }
 
 func (t *sliceTarget) String() string {
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d, steps: %d}",
-		t.Inputs(), t.Outputs(), t.sc)
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
 func (t *sliceTarget) Evaluate(node, value []float64, index []uint64) {
 	p := t.problem
 
-	cc, pc, sc := p.cc, t.pc, t.sc
+	pc := t.pc
 
-	var Q []float64
+	var interpolant *spline.Cubic
 	var key string
 
 	if index != nil {
 		key = makeString(index[pc:])
 		if result, ok := t.cache.Get(key); ok {
-			Q = result.([]float64)
+			interpolant = result.(*spline.Cubic)
 		}
 	}
 
-	if Q == nil {
+	if interpolant == nil {
 		schedule := p.time.Recompute(p.schedule, p.transform(node[pc:]))
-		P := t.power.Compute(schedule, t.Δt, sc)
-		Q = t.temperature.Compute(P, sc)
+		Q, time, err := t.temperature.Compute(t.power.Process(schedule), t.interval)
+		if err != nil {
+			panic("cannot compute a temperature profile")
+		}
+
+		interpolant = spline.NewCubic(time, Q)
 
 		atomic.AddUint32(&t.ec, 1)
 
 		if index != nil {
-			t.cache.Add(key, Q)
+			t.cache.Add(key, interpolant)
 		}
 	}
 
-	sid := node[0] * float64(sc-1)
-	lid, rid := uint(math.Floor(sid)), uint(math.Ceil(sid))
-
-	if lid == rid {
-		for i, cid := range p.Config.CoreIndex {
-			value[i] = Q[lid*cc+cid]
-		}
-	} else {
-		fraction := (sid - float64(lid)) / (float64(rid) - float64(lid))
-		for i, cid := range p.Config.CoreIndex {
-			left, right := Q[lid*cc+cid], Q[rid*cc+cid]
-			value[i] = fraction*(right-left) + left
-		}
+	Q := interpolant.Compute([]float64{node[0] * t.interval[1]})
+	for i, cid := range p.Config.CoreIndex {
+		value[i] = Q[cid]
 	}
 }
 
