@@ -17,7 +17,7 @@ func TestInterpolatorCompute(t *testing.T) {
 	ni, no := target.Inputs(), target.Outputs()
 	nc := surrogate.Nodes
 
-	assert.Equal(nc, uint(4127), t)
+	assert.Equal(nc, uint(4159), t)
 
 	grid := newcot.NewOpen(ni)
 	nodes := grid.ComputeNodes(surrogate.Indices)
@@ -28,15 +28,4 @@ func TestInterpolatorCompute(t *testing.T) {
 	}
 
 	assert.EqualWithin(values, interpolator.Evaluate(surrogate, nodes), 1e-15, t)
-}
-
-func BenchmarkInterpolatorCompute(b *testing.B) {
-	config, _ := NewConfig("fixtures/002_020_slice.json")
-	problem, _ := NewProblem(config)
-
-	for i := 0; i < b.N; i++ {
-		target, _ := NewTarget(problem)
-		interpolator, _ := NewInterpolator(problem, target)
-		interpolator.Compute(target.Evaluate)
-	}
 }
