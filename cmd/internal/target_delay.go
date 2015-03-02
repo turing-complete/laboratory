@@ -13,7 +13,7 @@ func newDelayTarget(p *Problem) Target {
 }
 
 func (t *delayTarget) Inputs() uint {
-	return t.problem.zc
+	return t.problem.nz
 }
 
 func (t *delayTarget) Outputs() uint {
@@ -33,11 +33,9 @@ func (t *delayTarget) Evaluate(node []float64, value []float64, _ []uint64) {
 	value[0] = p.time.Recompute(p.schedule, p.transform(node)).Span
 }
 
-func (t *delayTarget) Progress(level uint32, activeNodes, totalNodes uint) {
+func (t *delayTarget) Progress(level uint32, na, nt uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
-
-	passiveNodes := totalNodes - activeNodes
-	fmt.Printf("%10d %15d %15d\n", level, passiveNodes, activeNodes)
+	fmt.Printf("%10d %15d %15d\n", level, nt-na, na)
 }

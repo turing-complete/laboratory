@@ -7,17 +7,17 @@ import (
 )
 
 func Compute(application *system.Application, index []uint, length float64) []float64 {
-	tc, dc := uint(len(application.Tasks)), uint(len(index))
+	nt, nd := uint(len(application.Tasks)), uint(len(index))
 
 	distance := measure(application)
-	C := make([]float64, dc*dc)
+	C := make([]float64, nd*nd)
 
-	for i := uint(0); i < dc; i++ {
-		C[i*dc+i] = 1
-		for j := i + 1; j < dc; j++ {
-			d := distance[index[i]*tc+index[j]]
-			C[j*dc+i] = math.Exp(-d * d / (length * length))
-			C[i*dc+j] = C[j*dc+i]
+	for i := uint(0); i < nd; i++ {
+		C[i*nd+i] = 1
+		for j := i + 1; j < nd; j++ {
+			d := distance[index[i]*nt+index[j]]
+			C[j*nd+i] = math.Exp(-d * d / (length * length))
+			C[i*nd+j] = C[j*nd+i]
 		}
 	}
 
@@ -25,29 +25,29 @@ func Compute(application *system.Application, index []uint, length float64) []fl
 }
 
 func measure(application *system.Application) []float64 {
-	tc := uint(len(application.Tasks))
+	nt := uint(len(application.Tasks))
 
 	depth := explore(application)
 
-	index := make([]uint, tc)
-	count := make([]uint, tc)
+	index := make([]uint, nt)
+	count := make([]uint, nt)
 	for i, d := range depth {
 		index[i] = count[d]
 		count[d]++
 	}
 
-	distance := make([]float64, tc*tc)
+	distance := make([]float64, nt*nt)
 
-	for i := uint(0); i < tc; i++ {
-		for j := i + 1; j < tc; j++ {
+	for i := uint(0); i < nt; i++ {
+		for j := i + 1; j < nt; j++ {
 			xi := float64(index[i]) - float64(count[depth[i]])/2.0
 			yi := float64(depth[i])
 
 			xj := float64(index[j]) - float64(count[depth[j]])/2.0
 			yj := float64(depth[j])
 
-			distance[j*tc+i] = math.Sqrt((xi-xj)*(xi-xj) + (yi-yj)*(yi-yj))
-			distance[i*tc+j] = distance[j*tc+i]
+			distance[j*nt+i] = math.Sqrt((xi-xj)*(xi-xj) + (yi-yj)*(yi-yj))
+			distance[i*nt+j] = distance[j*nt+i]
 		}
 	}
 
@@ -55,8 +55,8 @@ func measure(application *system.Application) []float64 {
 }
 
 func explore(application *system.Application) []uint {
-	tc := uint(len(application.Tasks))
-	depth := make([]uint, tc)
+	nt := uint(len(application.Tasks))
+	depth := make([]uint, nt)
 
 	for _, l := range application.Leafs() {
 		ascend(application, depth, l)

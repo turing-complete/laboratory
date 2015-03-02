@@ -23,10 +23,10 @@ type Problem struct {
 	platform    *system.Platform
 	application *system.Application
 
-	cc uint
-	tc uint
-	uc uint
-	zc uint
+	nc uint
+	nt uint
+	nu uint
+	nz uint
 
 	marginals  []probability.Inverter
 	multiplier []float64
@@ -37,7 +37,7 @@ type Problem struct {
 
 func (p *Problem) String() string {
 	return fmt.Sprintf("Problem{cores: %d, tasks: %d, dvars: %d, ivars: %d}",
-		p.cc, p.tc, p.uc, p.zc)
+		p.nc, p.nt, p.nu, p.nz)
 }
 
 func NewProblem(config Config) (*Problem, error) {
@@ -62,34 +62,34 @@ func NewProblem(config Config) (*Problem, error) {
 	p.platform = platform
 	p.application = application
 
-	p.cc = uint(len(platform.Cores))
-	p.tc = uint(len(application.Tasks))
+	p.nc = uint(len(platform.Cores))
+	p.nt = uint(len(application.Tasks))
 
 	if len(c.CoreIndex) == 0 {
-		c.CoreIndex = make([]uint, p.cc)
-		for i := uint(0); i < p.cc; i++ {
+		c.CoreIndex = make([]uint, p.nc)
+		for i := uint(0); i < p.nc; i++ {
 			c.CoreIndex[i] = i
 		}
 	}
 	if len(c.TaskIndex) == 0 {
-		c.TaskIndex = make([]uint, p.tc)
-		for i := uint(0); i < p.tc; i++ {
+		c.TaskIndex = make([]uint, p.nt)
+		for i := uint(0); i < p.nt; i++ {
 			c.TaskIndex[i] = i
 		}
 	}
 
-	p.uc = uint(len(c.TaskIndex))
+	p.nu = uint(len(c.TaskIndex))
 
 	p.time = time.NewList(platform, application)
 	p.schedule = p.time.Compute(system.NewProfile(platform, application).Mobility)
 
 	C := acorrelation.Compute(application, c.TaskIndex, c.Probability.CorrLength)
-	p.multiplier, p.zc, err = correlation.Decompose(C, p.uc, c.Probability.VarThreshold)
+	p.multiplier, p.nz, err = correlation.Decompose(C, p.nu, c.Probability.VarThreshold)
 	if err != nil {
 		return nil, err
 	}
 
-	p.marginals = make([]probability.Inverter, p.uc)
+	p.marginals = make([]probability.Inverter, p.nu)
 	marginalizer := aprobability.ParseInverter(c.Probability.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
@@ -107,9 +107,9 @@ func (p *Problem) transform(node []float64) []float64 {
 		offset = 1e-8
 	)
 
-	z := make([]float64, p.zc)
-	u := make([]float64, p.uc)
-	d := make([]float64, p.tc)
+	z := make([]float64, p.nz)
+	u := make([]float64, p.nu)
+	d := make([]float64, p.nt)
 
 	// Independent uniform to independent Gaussian
 	for i := range z {
@@ -124,7 +124,7 @@ func (p *Problem) transform(node []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	matrix.Multiply(p.multiplier, z, u, p.uc, p.zc, 1)
+	matrix.Multiply(p.multiplier, z, u, p.nu, p.nz, 1)
 
 	// Dependent Gaussian to dependent uniform to dependent target
 	for i, tid := range p.Config.TaskIndex {

@@ -41,17 +41,17 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	tc := config.Assessment.Steps
-	if tc == 0 {
-		tc = 1
+	nt := config.Assessment.Steps
+	if nt == 0 {
+		nt = 1
 	}
-	sc := config.Assessment.Samples
-	oc := uint(len(observations)) / (tc * sc)
+	ns := config.Assessment.Samples
+	no := uint(len(observations)) / (nt * ns)
 
 	cut := func(data []float64, i, j uint) []float64 {
-		piece := make([]float64, sc)
-		for k := uint(0); k < sc; k++ {
-			piece[k] = data[i*sc*oc+k*oc+j]
+		piece := make([]float64, ns)
+		for k := uint(0); k < ns; k++ {
+			piece[k] = data[i*ns*no+k*no+j]
 		}
 		return piece
 	}
@@ -59,14 +59,14 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 	fmt.Printf("Surrogate: inputs %d, outputs %d, level %d, nodes %d\n",
 		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes)
 
-	εμ := make([]float64, tc*oc)
-	εσ := make([]float64, tc*oc)
-	εp := make([]float64, tc*oc)
+	εμ := make([]float64, nt*no)
+	εσ := make([]float64, nt*no)
+	εp := make([]float64, nt*no)
 
 	// Compute errors across all time moments and outputs.
-	for i := uint(0); i < tc; i++ {
-		for j := uint(0); j < oc; j++ {
-			k := i * oc + j
+	for i := uint(0); i < nt; i++ {
+		for j := uint(0); j < no; j++ {
+			k := i*no + j
 
 			observations := cut(observations, i, j)
 			predictions := cut(predictions, i, j)
@@ -83,7 +83,7 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 
 			if config.Verbose {
 				fmt.Printf("%9d: μ %10.4f ±%10.4f, σ %10.4f ±%10.4f, p %.2e\n",
-					k, μ1 - deltaCensiusKelvin, εμ[k], σ1, εσ[k], εp[k])
+					k, μ1-deltaCensiusKelvin, εμ[k], σ1, εσ[k], εp[k])
 			}
 		}
 	}

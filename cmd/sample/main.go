@@ -53,27 +53,27 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return nil
 	}
 
-	tc, sc := config.Assessment.Steps, config.Assessment.Samples
-	if tc == 0 {
-		tc = 1
+	nt, ns := config.Assessment.Steps, config.Assessment.Samples
+	if nt == 0 {
+		nt = 1
 	}
 
-	oc := uint(len(observations)) / (tc * sc)
-	ic := uint(len(observationPoints)) / (tc * sc)
+	no := uint(len(observations)) / (nt * ns)
+	ni := uint(len(observationPoints)) / (nt * ns)
 
-	if err := output.PutArray("observations", observations, oc, sc, tc); err != nil {
+	if err := output.PutArray("observations", observations, no, ns, nt); err != nil {
 		return err
 	}
-	if err := output.PutArray("observationPoints", observationPoints, ic, sc, tc); err != nil {
+	if err := output.PutArray("observationPoints", observationPoints, ni, ns, nt); err != nil {
 		return err
 	}
 
-	ic = uint(len(predictionPoints)) / (tc * sc)
+	ni = uint(len(predictionPoints)) / (nt * ns)
 
-	if err := output.PutArray("predictions", predictions, oc, sc, tc); err != nil {
+	if err := output.PutArray("predictions", predictions, no, ns, nt); err != nil {
 		return err
 	}
-	if err := output.PutArray("predictionPoints", predictionPoints, ic, sc, tc); err != nil {
+	if err := output.PutArray("predictionPoints", predictionPoints, ni, ns, nt); err != nil {
 		return err
 	}
 
@@ -156,21 +156,21 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		rand.Seed(startTime)
 	}
 
-	tc, sc := config.Steps, config.Samples
-	if tc == 0 {
-		tc = 1
+	nt, ns := config.Steps, config.Samples
+	if nt == 0 {
+		nt = 1
 	}
-	if sc == 0 {
+	if ns == 0 {
 		return nil, errors.New("the number of samples is zero")
 	}
 
 	distribution := uniform.New(0, 1)
 
-	ic, pc := uint(target.Inputs()), uint(target.Pseudos())
+	ni, np := uint(target.Inputs()), uint(target.Pseudos())
 
 	var fixed []float64
 
-	if pc > 0 {
+	if np > 0 {
 		// If there are deterministic dimensions like time, we need to fix them
 		// in order to generate comparable datasets. These dimensions are fixed
 		// to randomly generated numbers, and this procedure is repeated
@@ -178,16 +178,16 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		// assessment later on. The following line should be executed after the
 		// seeding above and before the actual sampling below to ensure that it
 		// chooses the same values each time this function is called.
-		fixed = probability.Sample(distribution, tc*pc)
+		fixed = probability.Sample(distribution, nt*np)
 	}
 
-	samples := probability.Sample(distribution, tc*sc*ic)
+	samples := probability.Sample(distribution, nt*ns*ni)
 
-	if pc > 0 {
-		for i := uint(0); i < tc; i++ {
-			for j := uint(0); j < sc; j++ {
-				for k := uint(0); k < pc; k++ {
-					samples[i*sc*ic+j*ic+k] = fixed[i*pc+k]
+	if np > 0 {
+		for i := uint(0); i < nt; i++ {
+			for j := uint(0); j < ns; j++ {
+				for k := uint(0); k < np; k++ {
+					samples[i*ns*ni+j*ni+k] = fixed[i*np+k]
 				}
 			}
 		}
@@ -197,25 +197,25 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
-	wc := uint(runtime.GOMAXPROCS(0))
-	ic, oc := target.Inputs(), target.Outputs()
-	pc := uint(len(points)) / ic
+	nw := uint(runtime.GOMAXPROCS(0))
+	ni, no := target.Inputs(), target.Outputs()
+	np := uint(len(points)) / ni
 
-	values := make([]float64, pc*oc)
-	jobs := make(chan uint, pc)
+	values := make([]float64, np*no)
+	jobs := make(chan uint, np)
 	group := sync.WaitGroup{}
-	group.Add(int(pc))
+	group.Add(int(np))
 
-	for i := uint(0); i < wc; i++ {
+	for i := uint(0); i < nw; i++ {
 		go func() {
 			for j := range jobs {
-				target.Evaluate(points[j*ic:(j+1)*ic], values[j*oc:(j+1)*oc], nil)
+				target.Evaluate(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no], nil)
 				group.Done()
 			}
 		}()
 	}
 
-	for i := uint(0); i < pc; i++ {
+	for i := uint(0); i < np; i++ {
 		jobs <- i
 	}
 

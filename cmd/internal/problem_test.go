@@ -10,10 +10,10 @@ func TestNewProblem(t *testing.T) {
 	config, _ := NewConfig("fixtures/002_020_slice.json")
 	problem, _ := NewProblem(config)
 
-	assert.Equal(problem.cc, uint(2), t)
-	assert.Equal(problem.tc, uint(20), t)
-	assert.Equal(problem.uc, uint(20), t)
-	assert.Equal(problem.zc, uint(3), t)
+	assert.Equal(problem.nc, uint(2), t)
+	assert.Equal(problem.nt, uint(20), t)
+	assert.Equal(problem.nu, uint(20), t)
+	assert.Equal(problem.nz, uint(3), t)
 
 	delay := make([]float64, 20)
 	for i := 0; i < 20; i++ {

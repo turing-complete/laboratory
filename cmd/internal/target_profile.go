@@ -34,12 +34,12 @@ func newProfileTarget(p *Problem) (Target, error) {
 	}
 
 	stepIndex := c.StepIndex
-	sc := uint(len(stepIndex))
+	ns := uint(len(stepIndex))
 
-	if sc == 0 {
-		sc = uint(p.schedule.Span / Δt)
-		stepIndex = make([]uint, sc)
-		for i := uint(0); i < sc; i++ {
+	if ns == 0 {
+		ns = uint(p.schedule.Span / Δt)
+		stepIndex = make([]uint, ns)
+		for i := uint(0); i < ns; i++ {
 			stepIndex[i] = i
 		}
 	}
@@ -47,14 +47,14 @@ func newProfileTarget(p *Problem) (Target, error) {
 	// Force the first index to be zero.
 	shift := stepIndex[0] != 0
 	if shift {
-		newIndex := make([]uint, sc+1)
+		newIndex := make([]uint, ns+1)
 		copy(newIndex[1:], stepIndex)
 		stepIndex = newIndex
-		sc++
+		ns++
 	}
 
-	timeline := make([]float64, sc)
-	for i, max := uint(0), uint(p.schedule.Span/Δt)-1; i < sc; i++ {
+	timeline := make([]float64, ns)
+	for i, max := uint(0), uint(p.schedule.Span/Δt)-1; i < ns; i++ {
 		if stepIndex[i] > max {
 			return nil, errors.New(fmt.Sprintf("the step indices should not exceed %d", max))
 		}
@@ -76,15 +76,15 @@ func newProfileTarget(p *Problem) (Target, error) {
 }
 
 func (t *profileTarget) Inputs() uint {
-	return t.problem.zc
+	return t.problem.nz
 }
 
 func (t *profileTarget) Outputs() uint {
-	cci, sc := uint(len(t.problem.Config.CoreIndex)), uint(len(t.timeline))
+	nci, ns := uint(len(t.problem.Config.CoreIndex)), uint(len(t.timeline))
 	if t.shift {
-		sc--
+		ns--
 	}
-	return sc * cci
+	return ns * nci
 }
 
 func (t *profileTarget) Pseudos() uint {
@@ -105,26 +105,23 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	}
 
 	coreIndex := p.Config.CoreIndex
-	cc, cci, sc := p.cc, uint(len(coreIndex)), uint(len(t.timeline))
+	nc, nci, ns := p.nc, uint(len(coreIndex)), uint(len(t.timeline))
 
 	if t.shift {
-		Q = Q[cc:]
-		sc--
+		Q = Q[nc:]
+		ns--
 	}
 
-	for i := uint(0); i < sc; i++ {
-		for j := uint(0); j < cci; j++ {
-			value[i*cci+j] = Q[i*cc+coreIndex[j]]
+	for i := uint(0); i < ns; i++ {
+		for j := uint(0); j < nci; j++ {
+			value[i*nci+j] = Q[i*nc+coreIndex[j]]
 		}
 	}
 }
 
-func (t *profileTarget) Progress(level uint32, activeNodes, totalNodes uint) {
+func (t *profileTarget) Progress(level uint32, na, nt uint) {
 	if level == 0 {
-		fmt.Printf("%10s %15s %15s\n",
-			"Level", "Passive Nodes", "Active Nodes")
+		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
-
-	passiveNodes := totalNodes - activeNodes
-	fmt.Printf("%10d %15d %15d\n", level, passiveNodes, activeNodes)
+	fmt.Printf("%10d %15d %15d\n", level, nt-na, na)
 }

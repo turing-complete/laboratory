@@ -13,7 +13,7 @@ func newEnergyTarget(p *Problem) Target {
 }
 
 func (t *energyTarget) Inputs() uint {
-	return t.problem.zc
+	return t.problem.nz
 }
 
 func (t *energyTarget) Outputs() uint {
@@ -41,11 +41,9 @@ func (t *energyTarget) Evaluate(node, value []float64, _ []uint64) {
 	}
 }
 
-func (t *energyTarget) Progress(level uint32, activeNodes, totalNodes uint) {
+func (t *energyTarget) Progress(level uint32, na, nt uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
-
-	passiveNodes := totalNodes - activeNodes
-	fmt.Printf("%10d %15d %15d\n", level, passiveNodes, activeNodes)
+	fmt.Printf("%10d %15d %15d\n", level, nt-na, na)
 }
