@@ -60,9 +60,6 @@ type Config struct {
 	Assessment struct {
 		// The seed for random number generation.
 		Seed int
-		// The number of time moments to consider. Specific to the
-		// temperature-slice target.
-		Steps uint
 		// The number of samples to take.
 		Samples uint
 	}

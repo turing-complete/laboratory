@@ -53,27 +53,23 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return nil
 	}
 
-	nt, ns := config.Assessment.Steps, config.Assessment.Samples
-	if nt == 0 {
-		nt = 1
-	}
+	ns := config.Assessment.Samples
+	no := uint(len(observations)) / ns
+	ni := uint(len(observationPoints)) / ns
 
-	no := uint(len(observations)) / (nt * ns)
-	ni := uint(len(observationPoints)) / (nt * ns)
-
-	if err := output.PutArray("observations", observations, no, ns, nt); err != nil {
+	if err := output.PutArray("observations", observations, no, ns); err != nil {
 		return err
 	}
-	if err := output.PutArray("observationPoints", observationPoints, ni, ns, nt); err != nil {
+	if err := output.PutArray("observationPoints", observationPoints, ni, ns); err != nil {
 		return err
 	}
 
-	ni = uint(len(predictionPoints)) / (nt * ns)
+	ni = uint(len(predictionPoints)) / ns
 
-	if err := output.PutArray("predictions", predictions, no, ns, nt); err != nil {
+	if err := output.PutArray("predictions", predictions, no, ns); err != nil {
 		return err
 	}
-	if err := output.PutArray("predictionPoints", predictionPoints, ni, ns, nt); err != nil {
+	if err := output.PutArray("predictionPoints", predictionPoints, ni, ns); err != nil {
 		return err
 	}
 
@@ -156,44 +152,14 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		rand.Seed(startTime)
 	}
 
-	nt, ns := config.Steps, config.Samples
-	if nt == 0 {
-		nt = 1
-	}
+	ns := config.Samples
 	if ns == 0 {
-		return nil, errors.New("the number of samples is zero")
+		return nil, errors.New("the number of samples should be positive")
 	}
 
-	distribution := uniform.New(0, 1)
+	ni := uint(target.Inputs())
 
-	ni, np := uint(target.Inputs()), uint(target.Pseudos())
-
-	var fixed []float64
-
-	if np > 0 {
-		// If there are deterministic dimensions like time, we need to fix them
-		// in order to generate comparable datasets. These dimensions are fixed
-		// to randomly generated numbers, and this procedure is repeated
-		// multiple times (specified by Steps) for a more comprehensive
-		// assessment later on. The following line should be executed after the
-		// seeding above and before the actual sampling below to ensure that it
-		// chooses the same values each time this function is called.
-		fixed = probability.Sample(distribution, nt*np)
-	}
-
-	samples := probability.Sample(distribution, nt*ns*ni)
-
-	if np > 0 {
-		for i := uint(0); i < nt; i++ {
-			for j := uint(0); j < ns; j++ {
-				for k := uint(0); k < np; k++ {
-					samples[i*ns*ni+j*ni+k] = fixed[i*np+k]
-				}
-			}
-		}
-	}
-
-	return samples, nil
+	return probability.Sample(uniform.New(0, 1), ns*ni), nil
 }
 
 func invoke(target internal.Target, points []float64) []float64 {

@@ -20,10 +20,6 @@ func (t *energyTarget) Outputs() uint {
 	return 1
 }
 
-func (t *energyTarget) Pseudos() uint {
-	return 0
-}
-
 func (t *energyTarget) String() string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }

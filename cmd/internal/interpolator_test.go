@@ -8,7 +8,7 @@ import (
 )
 
 func TestInterpolatorCompute(t *testing.T) {
-	config, _ := NewConfig("fixtures/002_020_profile.json")
+	config, _ := NewConfig("fixtures/002_020_temperature.json")
 	problem, _ := NewProblem(config)
 	target, _ := NewTarget(problem)
 	interpolator, _ := NewInterpolator(problem, target)

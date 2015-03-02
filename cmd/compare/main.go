@@ -41,17 +41,13 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return err
 	}
 
-	nt := config.Assessment.Steps
-	if nt == 0 {
-		nt = 1
-	}
-	ns := config.Assessment.Samples
-	no := uint(len(observations)) / (nt * ns)
+	ns := int(config.Assessment.Samples)
+	no := len(observations) / ns
 
-	cut := func(data []float64, i, j uint) []float64 {
+	cut := func(data []float64, i int) []float64 {
 		piece := make([]float64, ns)
-		for k := uint(0); k < ns; k++ {
-			piece[k] = data[i*ns*no+k*no+j]
+		for j := 0; j < ns; j++ {
+			piece[j] = data[j*no+i]
 		}
 		return piece
 	}
@@ -59,32 +55,28 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 	fmt.Printf("Surrogate: inputs %d, outputs %d, level %d, nodes %d\n",
 		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes)
 
-	εμ := make([]float64, nt*no)
-	εσ := make([]float64, nt*no)
-	εp := make([]float64, nt*no)
+	εμ := make([]float64, no)
+	εσ := make([]float64, no)
+	εp := make([]float64, no)
 
-	// Compute errors across all time moments and outputs.
-	for i := uint(0); i < nt; i++ {
-		for j := uint(0); j < no; j++ {
-			k := i*no + j
+	// Compute errors across all outputs.
+	for i := 0; i < no; i++ {
+		observations := cut(observations, i)
+		predictions := cut(predictions, i)
 
-			observations := cut(observations, i, j)
-			predictions := cut(predictions, i, j)
+		μ1 := statistics.Mean(observations)
+		μ2 := statistics.Mean(predictions)
+		εμ[i] = math.Abs(μ1 - μ2)
 
-			μ1 := statistics.Mean(observations)
-			μ2 := statistics.Mean(predictions)
-			εμ[k] = math.Abs(μ1 - μ2)
+		σ1 := math.Sqrt(statistics.Variance(observations))
+		σ2 := math.Sqrt(statistics.Variance(predictions))
+		εσ[i] = math.Abs(σ1 - σ2)
 
-			σ1 := math.Sqrt(statistics.Variance(observations))
-			σ2 := math.Sqrt(statistics.Variance(predictions))
-			εσ[k] = math.Abs(σ1 - σ2)
+		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
 
-			_, _, εp[k] = test.KolmogorovSmirnov(observations, predictions, 0)
-
-			if config.Verbose {
-				fmt.Printf("%9d: μ %10.4f ±%10.4f, σ %10.4f ±%10.4f, p %.2e\n",
-					k, μ1-deltaCensiusKelvin, εμ[k], σ1, εσ[k], εp[k])
-			}
+		if config.Verbose {
+			fmt.Printf("%9d: μ %10.4f ±%10.4f, σ %10.4f ±%10.4f, p %.2e\n",
+				i, μ1-deltaCensiusKelvin, εμ[i], σ1, εσ[i], εp[i])
 		}
 	}
 

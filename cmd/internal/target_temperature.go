@@ -8,7 +8,7 @@ import (
 	"github.com/ready-steady/simulation/temperature/numeric"
 )
 
-type profileTarget struct {
+type temperatureTarget struct {
 	problem *Problem
 
 	Δt       float64
@@ -19,7 +19,7 @@ type profileTarget struct {
 	temperature *numeric.Temperature
 }
 
-func newProfileTarget(p *Problem) (Target, error) {
+func newTemperatureTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
 	power := power.New(p.platform, p.application)
@@ -61,7 +61,7 @@ func newProfileTarget(p *Problem) (Target, error) {
 		timeline[i] = float64(stepIndex[i]) * Δt
 	}
 
-	target := &profileTarget{
+	target := &temperatureTarget{
 		problem: p,
 
 		Δt:       Δt,
@@ -75,11 +75,11 @@ func newProfileTarget(p *Problem) (Target, error) {
 	return target, nil
 }
 
-func (t *profileTarget) Inputs() uint {
+func (t *temperatureTarget) Inputs() uint {
 	return t.problem.nz
 }
 
-func (t *profileTarget) Outputs() uint {
+func (t *temperatureTarget) Outputs() uint {
 	nci, ns := uint(len(t.problem.Config.CoreIndex)), uint(len(t.timeline))
 	if t.shift {
 		ns--
@@ -87,15 +87,11 @@ func (t *profileTarget) Outputs() uint {
 	return ns * nci
 }
 
-func (t *profileTarget) Pseudos() uint {
-	return 0
-}
-
-func (t *profileTarget) String() string {
+func (t *temperatureTarget) String() string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
 }
 
-func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
+func (t *temperatureTarget) Evaluate(node, value []float64, _ []uint64) {
 	p := t.problem
 
 	schedule := p.time.Recompute(p.schedule, p.transform(node))
@@ -119,7 +115,7 @@ func (t *profileTarget) Evaluate(node, value []float64, _ []uint64) {
 	}
 }
 
-func (t *profileTarget) Progress(level uint32, na, nt uint) {
+func (t *temperatureTarget) Progress(level uint32, na, nt uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
