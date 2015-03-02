@@ -17,7 +17,7 @@ func TestInterpolatorCompute(t *testing.T) {
 	ni, no := target.Inputs(), target.Outputs()
 	nc := surrogate.Nodes
 
-	assert.Equal(nc, uint(4159), t)
+	assert.Equal(nc, uint(111), t)
 
 	grid := newcot.NewOpen(ni)
 	nodes := grid.ComputeNodes(surrogate.Indices)
