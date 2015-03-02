@@ -13,6 +13,10 @@ import (
 	"../internal"
 )
 
+const (
+	deltaCensiusKelvin = 273.15
+)
+
 func main() {
 	internal.Run(command)
 }
@@ -44,42 +48,63 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 	sc := config.Assessment.Samples
 	oc := uint(len(observations)) / (tc * sc)
 
-	εμ, εv, εp := 0.0, 0.0, 0.0
-
-	cut := func(data []float64, i, k uint) []float64 {
+	cut := func(data []float64, i, j uint) []float64 {
 		piece := make([]float64, sc)
-		for j := uint(0); j < sc; j++ {
-			piece[j] = data[i*sc*oc+j*oc+k]
+		for k := uint(0); k < sc; k++ {
+			piece[k] = data[i*sc*oc+k*oc+j]
 		}
 		return piece
 	}
 
-	// Find the maximal errors across all time moments and outputs.
+	fmt.Printf("Surrogate: inputs %d, outputs %d, level %d, nodes %d\n",
+		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes)
+
+	εμ := make([]float64, tc*oc)
+	εσ := make([]float64, tc*oc)
+	εp := make([]float64, tc*oc)
+
+	// Compute errors across all time moments and outputs.
 	for i := uint(0); i < tc; i++ {
-		for k := uint(0); k < oc; k++ {
-			observations := cut(observations, i, k)
-			predictions := cut(predictions, i, k)
+		for j := uint(0); j < oc; j++ {
+			k := i * oc + j
+
+			observations := cut(observations, i, j)
+			predictions := cut(predictions, i, j)
 
 			μ1 := statistics.Mean(observations)
 			μ2 := statistics.Mean(predictions)
-			if ε := math.Abs((μ1 - μ2) / μ1); ε > εμ {
-				εμ = ε
-			}
+			εμ[k] = math.Abs(μ1 - μ2)
 
-			v1 := statistics.Variance(observations)
-			v2 := statistics.Variance(predictions)
-			if ε := math.Abs((v1 - v2) / v1); ε > εv {
-				εv = ε
-			}
+			σ1 := math.Sqrt(statistics.Variance(observations))
+			σ2 := math.Sqrt(statistics.Variance(predictions))
+			εσ[k] = math.Abs(σ1 - σ2)
 
-			if _, _, ε := test.KolmogorovSmirnov(observations, predictions, 0); ε > εp {
-				εp = ε
+			_, _, εp[k] = test.KolmogorovSmirnov(observations, predictions, 0)
+
+			if config.Verbose {
+				fmt.Printf("%9d: μ %10.4f ±%10.4f, σ %10.4f ±%10.4f, p %.2e\n",
+					k, μ1 - deltaCensiusKelvin, εμ[k], σ1, εσ[k], εp[k])
 			}
 		}
 	}
 
-	fmt.Printf("Inputs: %2d, outputs: %4d, level: %2d, nodes: %7d, μ %.2e, v %.2e, p %.2e\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes, εμ, εv, εp)
+	fmt.Printf("Average error: μ ±%10.4f, σ ±%10.4f, p %.2e\n",
+		statistics.Mean(εμ), statistics.Mean(εσ), statistics.Mean(εp))
+
+	fmt.Printf("Maximal error: μ ±%10.4f, σ ±%10.4f, p %.2e\n",
+		max(εμ), max(εσ), max(εp))
 
 	return nil
+}
+
+func max(data []float64) float64 {
+	max := math.Inf(-1)
+
+	for _, x := range data {
+		if x > max {
+			max = x
+		}
+	}
+
+	return max
 }
