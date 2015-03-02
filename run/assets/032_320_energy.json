@@ -8,9 +8,7 @@
 		"varThreshold": 0.7
 	},
 
-	"target": {
-		"name": "total-energy"
-	},
+	"target": "total-energy",
 
 	"interpolation": {
 		"rule": "open",

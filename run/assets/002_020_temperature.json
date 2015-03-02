@@ -11,15 +11,13 @@
 		"varThreshold": 0.95
 	},
 
-	"target": {
-		"name": "temperature-profile",
-		"timeStep": 1e-3
-	},
+	"target": "temperature-profile",
 
 	"temperature": {
 		"floorplan": "assets/002.flp",
 		"configuration": "assets/hotspot.config",
-		"ambience": 318.15
+		"ambience": 318.15,
+		"timeStep": 1e-3
 	},
 
 	"interpolation": {

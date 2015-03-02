@@ -23,12 +23,12 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 	c := &p.Config
 
 	power := power.New(p.platform, p.application)
-	temperature, err := numeric.New((*numeric.Config)(&c.Temperature))
+	temperature, err := numeric.New(&c.Temperature.Config)
 	if err != nil {
 		return nil, err
 	}
 
-	Δt := c.Target.TimeStep
+	Δt := c.Temperature.TimeStep
 	if Δt <= 0 {
 		return nil, errors.New("the time step should be positive")
 	}

@@ -8,9 +8,7 @@
 		"varThreshold": 0.95
 	},
 
-	"target": {
-		"name": "end-to-end-delay"
-	},
+	"target": "end-to-end-delay",
 
 	"interpolation": {
 		"rule": "open",

@@ -14,7 +14,7 @@ type Config struct {
 
 	// The indices of the cores that should be considered when analyzing dynamic
 	// quantities; if empty, the parameter is set to all cores. Specific to the
-	// temperature-* targets.
+	// temperature-profile target.
 	CoreIndex []uint
 	// The indices of the tasks whose execution times should be considered as
 	// uncertain; if empty, the parameter is set to all tasks.
@@ -37,19 +37,17 @@ type Config struct {
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The quantity of interest.
-	Target struct {
-		// Static targets are “end-to-end-delay” and “total-energy,” and dynamic
-		// targets are “temperature-slice” and “temperature-profile.”
-		Name string
-		// The time step of temperature profiles. Specific to the
-		// temperature-profile target.
+	// The quantity of interest. The static quantities are “end-to-end-delay”
+	// and “total-energy,” and the dynamic one is “temperature-profile.”
+	Target string
+
+	// The configuration of temperature analysis. Specific to the
+	// temperature-profile target.
+	Temperature struct {
+		numeric.Config
+		// The time step of temperature profiles.
 		TimeStep float64
 	}
-
-	// The configuration of temperature analysis. Specific to the temperature-*
-	// targets.
-	Temperature numeric.Config
 
 	// The configuration of interpolation.
 	Interpolation struct {
