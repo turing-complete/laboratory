@@ -11,9 +11,9 @@
 	"target": "temperature-profile",
 
 	"temperature": {
-		"cores": [0],
+		"coreIndex": [0],
 		"timeStep": 1e-3,
-		"steps": [],
+		"timeInterval": [],
 		"floorplan": "assets/002.flp",
 		"configuration": "assets/hotspot.config",
 		"ambience": 318.15

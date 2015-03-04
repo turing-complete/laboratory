@@ -43,32 +43,29 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 		return nil, errors.New("the time step should be positive")
 	}
 
-	steps := c.StepIndex
-	ns := uint(len(steps))
-
-	if ns == 0 {
-		ns = uint(p.schedule.Span / Δt)
-		steps = make([]uint, ns)
-		for i := uint(0); i < ns; i++ {
-			steps[i] = i
-		}
+	// The time moments of interest.
+	interval := c.TimeInterval
+	switch len(interval) {
+	case 0:
+		interval = []float64{0, p.schedule.Span}
+	case 1:
+		interval = []float64{interval[0], interval[0]}
+	default:
+	}
+	if interval[0] < 0 || interval[0] > interval[1] || interval[1] > p.schedule.Span {
+		return nil, errors.New(fmt.Sprintf(
+			"the time interval should be between 0 and %g seconds", p.schedule.Span))
 	}
 
-	// Force the first index to be zero.
-	shift := steps[0] != 0
+	timeline := []float64{}
+	for t := interval[0]; t <= interval[1]; t += Δt {
+		timeline = append(timeline, t)
+	}
+
+	// Force the first time moment to be zero.
+	shift := timeline[0] != 0
 	if shift {
-		newSteps := make([]uint, ns+1)
-		copy(newSteps[1:], steps)
-		steps = newSteps
-		ns++
-	}
-
-	timeline := make([]float64, ns)
-	for i, max := uint(0), uint(p.schedule.Span/Δt)-1; i < ns; i++ {
-		if steps[i] > max {
-			return nil, errors.New(fmt.Sprintf("the step indices should not exceed %d", max))
-		}
-		timeline[i] = float64(steps[i]) * Δt
+		timeline = append([]float64{0}, timeline...)
 	}
 
 	target := &temperatureTarget{

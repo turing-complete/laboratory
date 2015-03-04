@@ -40,9 +40,9 @@ type Config struct {
 		CoreIndex []uint
 		// The time step of temperature profiles.
 		TimeStep float64
-		// The indices of the time moments that should be considered; if empty,
-		// the parameter is set to all time moments.
-		StepIndex []uint
+		// The time interval that should be considered; if empty, the parameter
+		// is set the entire span of the application.
+		TimeInterval []float64
 
 		numeric.Config
 	}
