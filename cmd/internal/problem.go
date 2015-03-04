@@ -64,7 +64,7 @@ func NewProblem(config Config) (*Problem, error) {
 		return nil, errors.New("the variance-reduction threshold is invalid")
 	}
 
-	tasks := c.Tasks
+	tasks := c.TaskIndex
 	if len(tasks) == 0 {
 		tasks = make([]uint, nt)
 		for i := uint(0); i < nt; i++ {

@@ -16,7 +16,7 @@ type Config struct {
 	Probability struct {
 		// The indices of the tasks whose execution times should be considered
 		// as uncertain; if empty, the parameter is set to all tasks.
-		Tasks []uint
+		TaskIndex []uint
 		// The multiplier used to calculate the maximal delay of a task.
 		MaxDelay float64 // ∈ [0, 1)
 		// The marginal distributions of tasks’ delays.
@@ -37,12 +37,13 @@ type Config struct {
 	Temperature struct {
 		// The indices of the cores that should be considered; if empty, the
 		// parameter is set to all cores.
-		Cores []uint
-		// The time step.
+		CoreIndex []uint
+		// The time step of temperature profiles.
 		TimeStep float64
 		// The indices of the time moments that should be considered; if empty,
 		// the parameter is set to all time moments.
-		Steps []uint
+		StepIndex []uint
+
 		numeric.Config
 	}
 

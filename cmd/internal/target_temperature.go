@@ -30,7 +30,7 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 	}
 
 	// The cores of interest.
-	cores := c.Cores
+	cores := c.CoreIndex
 	if len(cores) == 0 {
 		cores = make([]uint, p.nc)
 		for i := uint(0); i < p.nc; i++ {
@@ -43,7 +43,7 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 		return nil, errors.New("the time step should be positive")
 	}
 
-	steps := c.Steps
+	steps := c.StepIndex
 	ns := uint(len(steps))
 
 	if ns == 0 {
