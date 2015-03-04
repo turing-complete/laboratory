@@ -1,9 +1,6 @@
 {
 	"tgff": "assets/002_020.tgff",
 
-	"coreIndex": [0],
-	"stepIndex": [130],
-
 	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
@@ -14,19 +11,21 @@
 	"target": "temperature-profile",
 
 	"temperature": {
+		"cores": [0],
+		"timeStep": 1e-3,
+		"steps": [],
 		"floorplan": "assets/002.flp",
 		"configuration": "assets/hotspot.config",
-		"ambience": 318.15,
-		"timeStep": 1e-3
+		"ambience": 318.15
 	},
 
 	"interpolation": {
 		"rule": "open",
 		"minLevel": 1,
-		"maxLevel": 15,
-		"maxNodes": 1000000,
-		"absError": 1e-2,
-		"relError": 1e-2
+		"maxLevel": 10,
+		"maxNodes": 10000,
+		"absError": 0.5,
+		"relError": 1e10
 	},
 
 	"assessment": {

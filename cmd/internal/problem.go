@@ -23,16 +23,17 @@ type Problem struct {
 	platform    *system.Platform
 	application *system.Application
 
+	time     *time.List
+	schedule *time.Schedule
+
+	tasks      []uint
+	multiplier []float64
+	marginals  []probability.Inverter
+
 	nc uint
 	nt uint
 	nu uint
 	nz uint
-
-	marginals  []probability.Inverter
-	multiplier []float64
-
-	time     *time.List
-	schedule *time.Schedule
 }
 
 func (p *Problem) String() string {
@@ -41,65 +42,74 @@ func (p *Problem) String() string {
 }
 
 func NewProblem(config Config) (*Problem, error) {
-	p := &Problem{Config: config}
-	c := &p.Config
+	platform, application, err := system.Load(config.TGFF)
+	if err != nil {
+		return nil, err
+	}
 
-	if c.Probability.MaxDelay < 0 || 1 <= c.Probability.MaxDelay {
+	nc, nt := uint(len(platform.Cores)), uint(len(application.Tasks))
+
+	time := time.NewList(platform, application)
+	schedule := time.Compute(system.NewProfile(platform, application).Mobility)
+
+	c := &config.Probability
+
+	if c.MaxDelay < 0 || 1 <= c.MaxDelay {
 		return nil, errors.New("the delay rate is invalid")
 	}
-	if c.Probability.CorrLength <= 0 {
+	if c.CorrLength <= 0 {
 		return nil, errors.New("the correlation length is invalid")
 	}
-	if c.Probability.VarThreshold <= 0 {
+	if c.VarThreshold <= 0 {
 		return nil, errors.New("the variance-reduction threshold is invalid")
 	}
 
-	platform, application, err := system.Load(c.TGFF)
+	tasks := c.Tasks
+	if len(tasks) == 0 {
+		tasks = make([]uint, nt)
+		for i := uint(0); i < nt; i++ {
+			tasks[i] = i
+		}
+	}
+
+	nu := uint(len(tasks))
+
+	C := acorrelation.Compute(application, tasks, c.CorrLength)
+	multiplier, nz, err := correlation.Decompose(C, nu, c.VarThreshold)
 	if err != nil {
 		return nil, err
 	}
 
-	p.platform = platform
-	p.application = application
-
-	p.nc = uint(len(platform.Cores))
-	p.nt = uint(len(application.Tasks))
-
-	if len(c.CoreIndex) == 0 {
-		c.CoreIndex = make([]uint, p.nc)
-		for i := uint(0); i < p.nc; i++ {
-			c.CoreIndex[i] = i
-		}
-	}
-	if len(c.TaskIndex) == 0 {
-		c.TaskIndex = make([]uint, p.nt)
-		for i := uint(0); i < p.nt; i++ {
-			c.TaskIndex[i] = i
-		}
-	}
-
-	p.nu = uint(len(c.TaskIndex))
-
-	p.time = time.NewList(platform, application)
-	p.schedule = p.time.Compute(system.NewProfile(platform, application).Mobility)
-
-	C := acorrelation.Compute(application, c.TaskIndex, c.Probability.CorrLength)
-	p.multiplier, p.nz, err = correlation.Decompose(C, p.nu, c.Probability.VarThreshold)
-	if err != nil {
-		return nil, err
-	}
-
-	p.marginals = make([]probability.Inverter, p.nu)
-	marginalizer := aprobability.ParseInverter(c.Probability.Marginal)
+	marginalizer := aprobability.ParseInverter(c.Marginal)
 	if marginalizer == nil {
 		return nil, errors.New("invalid marginal distributions")
 	}
-	for i, tid := range c.TaskIndex {
-		duration := platform.Cores[p.schedule.Mapping[tid]].Time[application.Tasks[tid].Type]
-		p.marginals[i] = marginalizer(0, c.Probability.MaxDelay*duration)
+	marginals := make([]probability.Inverter, nu)
+	for i, tid := range tasks {
+		duration := platform.Cores[schedule.Mapping[tid]].Time[application.Tasks[tid].Type]
+		marginals[i] = marginalizer(0, c.MaxDelay*duration)
 	}
 
-	return p, nil
+	problem := &Problem{
+		Config: config,
+
+		platform:    platform,
+		application: application,
+
+		time:     time,
+		schedule: schedule,
+
+		tasks:      tasks,
+		multiplier: multiplier,
+		marginals:  marginals,
+
+		nc: nc,
+		nt: nt,
+		nu: nu,
+		nz: nz,
+	}
+
+	return problem, nil
 }
 
 func (p *Problem) transform(node []float64) []float64 {
@@ -127,7 +137,7 @@ func (p *Problem) transform(node []float64) []float64 {
 	matrix.Multiply(p.multiplier, z, u, p.nu, p.nz, 1)
 
 	// Dependent Gaussian to dependent uniform to dependent target
-	for i, tid := range p.Config.TaskIndex {
+	for i, tid := range p.tasks {
 		d[tid] = p.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 

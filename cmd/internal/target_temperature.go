@@ -11,6 +11,7 @@ import (
 type temperatureTarget struct {
 	problem *Problem
 
+	cores    []uint
 	Δt       float64
 	shift    bool
 	timeline []float64
@@ -20,53 +21,63 @@ type temperatureTarget struct {
 }
 
 func newTemperatureTarget(p *Problem) (Target, error) {
-	c := &p.Config
+	c := &p.Config.Temperature
 
 	power := power.New(p.platform, p.application)
-	temperature, err := numeric.New(&c.Temperature.Config)
+	temperature, err := numeric.New(&c.Config)
 	if err != nil {
 		return nil, err
 	}
 
-	Δt := c.Temperature.TimeStep
+	// The cores of interest.
+	cores := c.Cores
+	if len(cores) == 0 {
+		cores = make([]uint, p.nc)
+		for i := uint(0); i < p.nc; i++ {
+			cores[i] = i
+		}
+	}
+
+	Δt := c.TimeStep
 	if Δt <= 0 {
 		return nil, errors.New("the time step should be positive")
 	}
 
-	stepIndex := c.StepIndex
-	ns := uint(len(stepIndex))
+	steps := c.Steps
+	ns := uint(len(steps))
 
 	if ns == 0 {
 		ns = uint(p.schedule.Span / Δt)
-		stepIndex = make([]uint, ns)
+		steps = make([]uint, ns)
 		for i := uint(0); i < ns; i++ {
-			stepIndex[i] = i
+			steps[i] = i
 		}
 	}
 
 	// Force the first index to be zero.
-	shift := stepIndex[0] != 0
+	shift := steps[0] != 0
 	if shift {
-		newIndex := make([]uint, ns+1)
-		copy(newIndex[1:], stepIndex)
-		stepIndex = newIndex
+		newSteps := make([]uint, ns+1)
+		copy(newSteps[1:], steps)
+		steps = newSteps
 		ns++
 	}
 
 	timeline := make([]float64, ns)
 	for i, max := uint(0), uint(p.schedule.Span/Δt)-1; i < ns; i++ {
-		if stepIndex[i] > max {
+		if steps[i] > max {
 			return nil, errors.New(fmt.Sprintf("the step indices should not exceed %d", max))
 		}
-		timeline[i] = float64(stepIndex[i]) * Δt
+		timeline[i] = float64(steps[i]) * Δt
 	}
 
 	target := &temperatureTarget{
 		problem: p,
 
+		cores:    cores,
 		Δt:       Δt,
-		shift:    shift,
 		timeline: timeline,
+		shift:    shift,
 
 		power:       power,
 		temperature: temperature,
@@ -80,7 +91,7 @@ func (t *temperatureTarget) Inputs() uint {
 }
 
 func (t *temperatureTarget) Outputs() uint {
-	nci, ns := uint(len(t.problem.Config.CoreIndex)), uint(len(t.timeline))
+	nci, ns := uint(len(t.cores)), uint(len(t.timeline))
 	if t.shift {
 		ns--
 	}
@@ -100,8 +111,8 @@ func (t *temperatureTarget) Evaluate(node, value []float64, _ []uint64) {
 		panic("cannot compute a temperature profile")
 	}
 
-	coreIndex := p.Config.CoreIndex
-	nc, nci, ns := p.nc, uint(len(coreIndex)), uint(len(t.timeline))
+	cores := t.cores
+	nc, nci, ns := p.nc, uint(len(cores)), uint(len(t.timeline))
 
 	if t.shift {
 		Q = Q[nc:]
@@ -110,7 +121,7 @@ func (t *temperatureTarget) Evaluate(node, value []float64, _ []uint64) {
 
 	for i := uint(0); i < ns; i++ {
 		for j := uint(0); j < nci; j++ {
-			value[i*nci+j] = Q[i*nc+coreIndex[j]]
+			value[i*nci+j] = Q[i*nc+cores[j]]
 		}
 	}
 }

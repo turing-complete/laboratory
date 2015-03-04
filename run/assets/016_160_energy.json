@@ -1,7 +1,7 @@
 {
 	"tgff": "assets/016_160.tgff",
 
-	"probModel": {
+	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,

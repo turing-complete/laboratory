@@ -12,20 +12,11 @@ type Config struct {
 	// The TGFF file of the system to analyze.
 	TGFF string
 
-	// The indices of the cores that should be considered when analyzing dynamic
-	// quantities; if empty, the parameter is set to all cores. Specific to the
-	// temperature-profile target.
-	CoreIndex []uint
-	// The indices of the tasks whose execution times should be considered as
-	// uncertain; if empty, the parameter is set to all tasks.
-	TaskIndex []uint
-	// The indices of the time moments that should be considered when analyzing
-	// dynamic quantities; if empty, the parameter is set to all time moments.
-	// Specific to the temperature-profile target.
-	StepIndex []uint
-
 	// The probability model.
 	Probability struct {
+		// The indices of the tasks whose execution times should be considered
+		// as uncertain; if empty, the parameter is set to all tasks.
+		Tasks []uint
 		// The multiplier used to calculate the maximal delay of a task.
 		MaxDelay float64 // ∈ [0, 1)
 		// The marginal distributions of tasks’ delays.
@@ -37,16 +28,22 @@ type Config struct {
 		VarThreshold float64 // ∈ (0, 1]
 	}
 
-	// The quantity of interest. The static quantities are “end-to-end-delay”
-	// and “total-energy,” and the dynamic one is “temperature-profile.”
+	// The quantities of interest are “end-to-end-delay,” “total-energy,” and
+	// “temperature-profile.”
 	Target string
 
 	// The configuration of temperature analysis. Specific to the
 	// temperature-profile target.
 	Temperature struct {
-		numeric.Config
-		// The time step of temperature profiles.
+		// The indices of the cores that should be considered; if empty, the
+		// parameter is set to all cores.
+		Cores []uint
+		// The time step.
 		TimeStep float64
+		// The indices of the time moments that should be considered; if empty,
+		// the parameter is set to all time moments.
+		Steps []uint
+		numeric.Config
 	}
 
 	// The configuration of interpolation.
