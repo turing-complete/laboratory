@@ -13,10 +13,6 @@ import (
 	"../internal"
 )
 
-const (
-	deltaCensiusKelvin = 273.15
-)
-
 func main() {
 	internal.Run(command)
 }
@@ -74,15 +70,16 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 
 		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
 
-		if no > 1 && config.Verbose {
+		if no == 1 {
+			fmt.Printf("Error: μ %10.2e ±%10.2e, σ %10.2e ±%10.2e, p %.2e\n",
+				μ1, εμ[i], σ1, εσ[i], εp[i])
+		} else if config.Verbose {
 			fmt.Printf("%9d: μ %10.2e ±%10.2e, σ %10.2e ±%10.2e, p %.2e\n",
-				i, μ1-deltaCensiusKelvin, εμ[i], σ1, εσ[i], εp[i])
+				i, μ1, εμ[i], σ1, εσ[i], εp[i])
 		}
 	}
 
-	if no == 1 {
-		fmt.Printf("Error: μ ±%.2e, σ ±%.2e, p %.2e\n", εμ[0], εσ[0], εp[0])
-	} else {
+	if no > 1 {
 		fmt.Printf("Average error: μ ±%10.2e, σ ±%10.2e, p %.2e\n",
 			statistics.Mean(εμ), statistics.Mean(εσ), statistics.Mean(εp))
 
