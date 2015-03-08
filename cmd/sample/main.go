@@ -157,14 +157,14 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		return nil, errors.New("the number of samples should be positive")
 	}
 
-	ni := uint(target.Inputs())
+	ni, _ := target.Dimensions()
 
 	return probability.Sample(uniform.New(0, 1), ns*ni), nil
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
 	nw := uint(runtime.GOMAXPROCS(0))
-	ni, no := target.Inputs(), target.Outputs()
+	ni, no := target.Dimensions()
 	np := uint(len(points)) / ni
 
 	values := make([]float64, np*no)
@@ -175,7 +175,7 @@ func invoke(target internal.Target, points []float64) []float64 {
 	for i := uint(0); i < nw; i++ {
 		go func() {
 			for j := range jobs {
-				target.Evaluate(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no], nil)
+				target.Compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
 				group.Done()
 			}
 		}()

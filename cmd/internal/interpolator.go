@@ -10,7 +10,7 @@ import (
 )
 
 func NewInterpolator(problem *Problem, target Target) (*adhier.Interpolator, error) {
-	ni, no := target.Inputs(), target.Outputs()
+	ni, _ := target.Dimensions()
 
 	var grid adhier.Grid
 	var basis adhier.Basis
@@ -24,8 +24,5 @@ func NewInterpolator(problem *Problem, target Target) (*adhier.Interpolator, err
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	config := (adhier.Config)(problem.Config.Interpolation.Config)
-	config.Inputs, config.Outputs = ni, no
-
-	return adhier.New(grid, basis, &config)
+	return adhier.New(grid, basis, (*adhier.Config)(&problem.Config.Interpolation.Config)), nil
 }

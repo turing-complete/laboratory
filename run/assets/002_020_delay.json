@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/002_020.tgff",
+	"system": "assets/002_020.tgff",
 
 	"probability": {
 		"maxDelay": 0.2,
@@ -8,15 +8,16 @@
 		"varThreshold": 0.95
 	},
 
-	"target": "end-to-end-delay",
+	"target": {
+		"name": "end-to-end-delay",
+		"tolerance": 1e-3
+	},
 
 	"interpolation": {
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 10,
-		"maxNodes": 100000,
-		"absError": 1e-3,
-		"relError": 1e-3
+		"maxNodes": 100000
 	},
 
 	"assessment": {

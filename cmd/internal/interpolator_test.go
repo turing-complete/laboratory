@@ -12,19 +12,19 @@ func TestInterpolatorCompute(t *testing.T) {
 	problem, _ := NewProblem(config)
 	target, _ := NewTarget(problem)
 	interpolator, _ := NewInterpolator(problem, target)
-	surrogate := interpolator.Compute(target.Evaluate)
+	surrogate := interpolator.Compute(target)
 
-	ni, no := target.Inputs(), target.Outputs()
+	ni, no := target.Dimensions()
 	nc := surrogate.Nodes
 
-	assert.Equal(nc, uint(111), t)
+	assert.Equal(nc, uint(89), t)
 
 	grid := newcot.NewOpen(ni)
-	nodes := grid.ComputeNodes(surrogate.Indices)
+	nodes := grid.Compute(surrogate.Indices)
 
 	values := make([]float64, nc*no)
 	for i := uint(0); i < nc; i++ {
-		target.Evaluate(nodes[i*ni:(i+1)*ni], values[i*no:(i+1)*no], nil)
+		target.Compute(nodes[i*ni:(i+1)*ni], values[i*no:(i+1)*no])
 	}
 
 	assert.EqualWithin(values, interpolator.Evaluate(surrogate, nodes), 1e-15, t)

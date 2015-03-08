@@ -1,5 +1,5 @@
 {
-	"tgff": "fixtures/002_020.tgff",
+	"system": "fixtures/002_020.tgff",
 
 	"probability": {
 		"maxDelay": 0.2,
@@ -8,22 +8,23 @@
 		"varThreshold": 0.95
 	},
 
-	"target": "temperature-profile",
+	"target": {
+		"name": "temperature-profile",
+		"tolerance": 1e-1,
+		"timeStep": 1e-3
+	},
 
 	"temperature": {
 		"floorplan": "fixtures/002.flp",
 		"configuration": "fixtures/hotspot.config",
-		"ambience": 318.15,
-		"timeStep": 1e-3
+		"ambience": 318.15
 	},
 
 	"interpolation": {
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 3,
-		"maxNodes": 10000,
-		"absError": 1e-1,
-		"relError": 1e10
+		"maxNodes": 10000
 	},
 
 	"assessment": {

@@ -10,27 +10,27 @@ import (
 
 type temperatureTarget struct {
 	problem *Problem
-
-	cores    []uint
-	Δt       float64
-	shift    bool
-	timeline []float64
+	config  *TargetConfig
 
 	power       *power.Power
 	temperature *numeric.Temperature
+
+	cores    []uint
+	timeline []float64
+	shift    bool
 }
 
-func newTemperatureTarget(p *Problem) (Target, error) {
-	c := &p.Config.Temperature
+func newTemperatureTarget(p *Problem, tac *TargetConfig,
+	tec *TemperatureConfig) (*temperatureTarget, error) {
 
 	power := power.New(p.platform, p.application)
-	temperature, err := numeric.New(&c.Config)
+	temperature, err := numeric.New(&tec.Config)
 	if err != nil {
 		return nil, err
 	}
 
 	// The cores of interest.
-	cores := c.CoreIndex
+	cores := tac.CoreIndex
 	if len(cores) == 0 {
 		cores = make([]uint, p.nc)
 		for i := uint(0); i < p.nc; i++ {
@@ -38,13 +38,13 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 		}
 	}
 
-	Δt := c.TimeStep
+	Δt := tac.TimeStep
 	if Δt <= 0 {
 		return nil, errors.New("the time step should be positive")
 	}
 
 	// The time moments of interest.
-	interval := c.TimeInterval
+	interval := tac.TimeInterval
 	switch len(interval) {
 	case 0:
 		interval = []float64{0, p.schedule.Span}
@@ -70,36 +70,33 @@ func newTemperatureTarget(p *Problem) (Target, error) {
 
 	target := &temperatureTarget{
 		problem: p,
-
-		cores:    cores,
-		Δt:       Δt,
-		timeline: timeline,
-		shift:    shift,
+		config:  tac,
 
 		power:       power,
 		temperature: temperature,
+
+		cores:    cores,
+		timeline: timeline,
+		shift:    shift,
 	}
 
 	return target, nil
 }
 
-func (t *temperatureTarget) Inputs() uint {
-	return t.problem.nz
+func (t *temperatureTarget) String() string {
+	ni, no := t.Dimensions()
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func (t *temperatureTarget) Outputs() uint {
+func (t *temperatureTarget) Dimensions() (uint, uint) {
 	nci, ns := uint(len(t.cores)), uint(len(t.timeline))
 	if t.shift {
 		ns--
 	}
-	return ns * nci
+	return t.problem.nz, ns * nci
 }
 
-func (t *temperatureTarget) String() string {
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
-}
-
-func (t *temperatureTarget) Evaluate(node, value []float64, _ []uint64) {
+func (t *temperatureTarget) Compute(node, value []float64) {
 	p := t.problem
 
 	schedule := p.time.Recompute(p.schedule, p.transform(node))
@@ -123,9 +120,33 @@ func (t *temperatureTarget) Evaluate(node, value []float64, _ []uint64) {
 	}
 }
 
-func (t *temperatureTarget) Progress(level uint32, na, nt uint) {
+func (t *temperatureTarget) Refine(surplus []float64) bool {
+	no, nci := uint(len(surplus)), uint(len(t.cores))
+	ε := t.config.Tolerance
+
+	// The beginning.
+	for i := uint(0); i < nci; i++ {
+		if surplus[i] > ε || -surplus[i] > ε {
+			return true
+		}
+	}
+
+	// The ending.
+	for i := no - nci; i < no; i++ {
+		if surplus[i] > ε || -surplus[i] > ε {
+			return true
+		}
+	}
+
+	return false
+}
+
+func (t *temperatureTarget) Monitor(level, np, na uint) {
+	if !t.config.Verbose {
+		return
+	}
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
-	fmt.Printf("%10d %15d %15d\n", level, nt-na, na)
+	fmt.Printf("%10d %15d %15d\n", level, np, na)
 }

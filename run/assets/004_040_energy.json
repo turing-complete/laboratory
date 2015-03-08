@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/004_040.tgff",
+	"system": "assets/004_040.tgff",
 
 	"probability": {
 		"maxDelay": 0.2,
@@ -8,15 +8,16 @@
 		"varThreshold": 0.95
 	},
 
-	"target": "total-energy",
+	"target": {
+		"name": "total-energy",
+		"tolerance": 1e-2
+	},
 
 	"interpolation": {
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 10,
-		"maxNodes": 100000,
-		"absError": 1e-2,
-		"relError": 1e-2
+		"maxNodes": 100000
 	},
 
 	"assessment": {

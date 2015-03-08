@@ -36,12 +36,12 @@ func command(config internal.Config, _ *mat.File, output *mat.File) error {
 		fmt.Println(target)
 		fmt.Println("Constructing a surrogate...")
 
-		surrogate = interpolator.Compute(target.Evaluate, target.Progress)
-		target.Progress(surrogate.Level, 0, surrogate.Nodes)
+		surrogate = interpolator.Compute(target)
+		target.Monitor(surrogate.Level, 0, surrogate.Nodes)
 
 		fmt.Println(surrogate)
 	} else {
-		surrogate = interpolator.Compute(target.Evaluate)
+		surrogate = interpolator.Compute(target)
 	}
 
 	if output == nil {

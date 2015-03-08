@@ -1,5 +1,5 @@
 {
-	"tgff": "assets/002_020.tgff",
+	"system": "assets/002_020.tgff",
 
 	"probability": {
 		"maxDelay": 0.2,
@@ -8,12 +8,15 @@
 		"varThreshold": 0.95
 	},
 
-	"target": "temperature-profile",
-
-	"temperature": {
+	"target": {
+		"name": "temperature-profile",
+		"tolerance": 0.5,
 		"coreIndex": [0],
 		"timeStep": 1e-3,
-		"timeInterval": [],
+		"timeInterval": []
+	},
+
+	"temperature": {
 		"floorplan": "assets/002.flp",
 		"configuration": "assets/hotspot.config",
 		"ambience": 318.15
@@ -23,9 +26,7 @@
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 10,
-		"maxNodes": 10000,
-		"absError": 0.5,
-		"relError": 1e10
+		"maxNodes": 10000
 	},
 
 	"assessment": {

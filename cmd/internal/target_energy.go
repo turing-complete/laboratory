@@ -6,25 +6,26 @@ import (
 
 type energyTarget struct {
 	problem *Problem
+	config  *TargetConfig
 }
 
-func newEnergyTarget(p *Problem) Target {
-	return &energyTarget{problem: p}
-}
-
-func (t *energyTarget) Inputs() uint {
-	return t.problem.nz
-}
-
-func (t *energyTarget) Outputs() uint {
-	return 1
+func newEnergyTarget(p *Problem, c *TargetConfig) *energyTarget {
+	return &energyTarget{
+		problem: p,
+		config:  c,
+	}
 }
 
 func (t *energyTarget) String() string {
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", t.Inputs(), t.Outputs())
+	ni, no := t.Dimensions()
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func (t *energyTarget) Evaluate(node, value []float64, _ []uint64) {
+func (t *energyTarget) Dimensions() (uint, uint) {
+	return t.problem.nz, 1
+}
+
+func (t *energyTarget) Compute(node, value []float64) {
 	p := t.problem
 
 	cores, tasks := p.platform.Cores, p.application.Tasks
@@ -37,9 +38,16 @@ func (t *energyTarget) Evaluate(node, value []float64, _ []uint64) {
 	}
 }
 
-func (t *energyTarget) Progress(level uint32, na, nt uint) {
+func (t *energyTarget) Refine(surplus []float64) bool {
+	return surplus[0] > t.config.Tolerance || -surplus[0] > t.config.Tolerance
+}
+
+func (t *energyTarget) Monitor(level, np, na uint) {
+	if !t.config.Verbose {
+		return
+	}
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
-	fmt.Printf("%10d %15d %15d\n", level, nt-na, na)
+	fmt.Printf("%10d %15d %15d\n", level, np, na)
 }

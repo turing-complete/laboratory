@@ -5,20 +5,21 @@ import (
 )
 
 type Target interface {
-	Inputs() uint
-	Outputs() uint
-	Evaluate([]float64, []float64, []uint64)
-	Progress(uint32, uint, uint)
+	Dimensions() (uint, uint)
+	Compute([]float64, []float64)
+	Refine([]float64) bool
+	Monitor(uint, uint, uint)
 }
 
 func NewTarget(problem *Problem) (Target, error) {
-	switch problem.Config.Target {
+	config := &problem.Config.Target
+	switch config.Name {
 	case "end-to-end-delay":
-		return newDelayTarget(problem), nil
+		return newDelayTarget(problem, config), nil
 	case "total-energy":
-		return newEnergyTarget(problem), nil
+		return newEnergyTarget(problem, config), nil
 	case "temperature-profile":
-		return newTemperatureTarget(problem)
+		return newTemperatureTarget(problem, config, &problem.Config.Temperature)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

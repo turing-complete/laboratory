@@ -42,7 +42,7 @@ func (p *Problem) String() string {
 }
 
 func NewProblem(config Config) (*Problem, error) {
-	platform, application, err := system.Load(config.TGFF)
+	platform, application, err := system.Load(config.System)
 	if err != nil {
 		return nil, err
 	}
