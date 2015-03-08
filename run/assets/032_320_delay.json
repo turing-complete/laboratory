@@ -5,12 +5,12 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.95
+		"varThreshold": 0.8
 	},
 
 	"target": {
 		"name": "end-to-end-delay",
-		"tolerance": 1e-2
+		"tolerance": 1e-3
 	},
 
 	"interpolation": {
