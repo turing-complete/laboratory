@@ -72,11 +72,11 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
 
 		if nm == 1 {
-			fmt.Printf("Error: μ %.2e ± %.2e, v %.2e ± %.2e, p %.2e\n",
-				μ1, εμ[i], v1, εv[i], εp[i])
+			fmt.Printf("Error: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+				μ1, εμ[i], εμ[i]/μ1, v1, εv[i], εv[i]/v1, εp[i])
 		} else if config.Verbose {
-			fmt.Printf("%9d: μ %.2e ± %.2e, v %.2e ± %.2e, p %.2e\n",
-				i, μ1, εμ[i], v1, εv[i], εp[i])
+			fmt.Printf("%9d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+				i, μ1, εμ[i], εμ[i]/μ1, v1, εv[i], εv[i]/v1, εp[i])
 		}
 	}
 
