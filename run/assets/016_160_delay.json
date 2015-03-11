@@ -5,7 +5,7 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.8
+		"varThreshold": 0.9
 	},
 
 	"target": {
@@ -15,7 +15,7 @@
 
 	"interpolation": {
 		"rule": "open",
-		"minLevel": 1,
+		"minLevel": 2,
 		"maxLevel": 10,
 		"maxNodes": 100000
 	},
