@@ -14,6 +14,11 @@ func Compute(application *system.Application, index []uint, length float64) []fl
 
 	for i := uint(0); i < nd; i++ {
 		C[i*nd+i] = 1
+
+		if length == 0 {
+			continue
+		}
+
 		for j := i + 1; j < nd; j++ {
 			d := distance[index[i]*nt+index[j]]
 			C[j*nd+i] = math.Exp(-d * d / (length * length))
