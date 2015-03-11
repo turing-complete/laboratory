@@ -22,12 +22,13 @@ func (t *delayTarget) String() string {
 }
 
 func (t *delayTarget) Dimensions() (uint, uint) {
-	return t.problem.nz, 1
+	return t.problem.nz, 2
 }
 
 func (t *delayTarget) Compute(node []float64, value []float64) {
 	p := t.problem
 	value[0] = p.time.Recompute(p.schedule, p.transform(node)).Span
+	value[1] = value[0] * value[0]
 }
 
 func (t *delayTarget) Refine(surplus []float64) bool {

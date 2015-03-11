@@ -13,7 +13,7 @@ func TestSolverCompute(t *testing.T) {
 	target, _ := NewTarget(problem)
 	solver, _ := NewSolver(problem, target)
 	solution := solver.Compute(target)
-	surrogate := &solution.surrogate
+	surrogate := &solution.Surrogate
 
 	ni, no := target.Dimensions()
 	nc := surrogate.Nodes

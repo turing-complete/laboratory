@@ -22,7 +22,7 @@ func (t *energyTarget) String() string {
 }
 
 func (t *energyTarget) Dimensions() (uint, uint) {
-	return t.problem.nz, 1
+	return t.problem.nz, 2
 }
 
 func (t *energyTarget) Compute(node, value []float64) {
@@ -36,6 +36,8 @@ func (t *energyTarget) Compute(node, value []float64) {
 		value[0] += (schedule.Finish[i] - schedule.Start[i]) *
 			cores[schedule.Mapping[i]].Power[tasks[i].Type]
 	}
+
+	value[1] = value[0] * value[0]
 }
 
 func (t *energyTarget) Refine(surplus []float64) bool {

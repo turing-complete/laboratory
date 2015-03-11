@@ -93,7 +93,7 @@ func (t *temperatureTarget) Dimensions() (uint, uint) {
 	if t.shift {
 		ns--
 	}
-	return t.problem.nz, ns * nci
+	return t.problem.nz, ns * nci * 2
 }
 
 func (t *temperatureTarget) Compute(node, value []float64) {
@@ -113,9 +113,11 @@ func (t *temperatureTarget) Compute(node, value []float64) {
 		ns--
 	}
 
-	for i := uint(0); i < ns; i++ {
+	for i, k := uint(0), uint(0); i < ns; i++ {
 		for j := uint(0); j < nci; j++ {
-			value[i*nci+j] = Q[i*nc+cores[j]]
+			value[k] = Q[i*nc+cores[j]]
+			value[k+1] = value[k] * value[k]
+			k += 2
 		}
 	}
 }
@@ -126,14 +128,16 @@ func (t *temperatureTarget) Refine(surplus []float64) bool {
 
 	// The beginning.
 	for i := uint(0); i < nci; i++ {
-		if surplus[i] > ε || -surplus[i] > ε {
+		if surplus[i*2] > ε || -surplus[i*2] > ε {
 			return true
 		}
 	}
 
+	surplus = surplus[no-nci*2:]
+
 	// The ending.
-	for i := no - nci; i < no; i++ {
-		if surplus[i] > ε || -surplus[i] > ε {
+	for i := uint(0); i < nci; i++ {
+		if surplus[i*2] > ε || -surplus[i*2] > ε {
 			return true
 		}
 	}

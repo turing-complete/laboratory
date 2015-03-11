@@ -38,6 +38,7 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 
 	ns := int(config.Assessment.Samples)
 	no := len(observations) / ns
+	nm := no / 2
 
 	cut := func(data []float64, i int) []float64 {
 		piece := make([]float64, ns)
@@ -49,40 +50,42 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 
 	fmt.Println(solution)
 
-	εμ := make([]float64, no)
-	εσ := make([]float64, no)
-	εp := make([]float64, no)
+	εμ := make([]float64, nm)
+	εv := make([]float64, nm)
+	εp := make([]float64, nm)
 
 	// Compute errors across all outputs.
-	for i := 0; i < no; i++ {
-		observations := cut(observations, i)
-		predictions := cut(predictions, i)
+	for i := 0; i < nm; i++ {
+		j := i * 2
+
+		observations := cut(observations, j)
+		predictions := cut(predictions, j)
 
 		μ1 := statistics.Mean(observations)
-		μ2 := statistics.Mean(predictions)
+		μ2 := solution.Expectation[j]
 		εμ[i] = math.Abs(μ1 - μ2)
 
-		σ1 := math.Sqrt(statistics.Variance(observations))
-		σ2 := math.Sqrt(statistics.Variance(predictions))
-		εσ[i] = math.Abs(σ1 - σ2)
+		v1 := statistics.Variance(observations)
+		v2 := solution.Expectation[j+1] - μ2*μ2
+		εv[i] = math.Abs(v1 - v2)
 
 		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
 
-		if no == 1 {
-			fmt.Printf("Error: μ %.2e ± %.2e, σ %.2e ± %.2e, p %.2e\n",
-				μ1, εμ[i], σ1, εσ[i], εp[i])
+		if nm == 1 {
+			fmt.Printf("Error: μ %.2e ± %.2e, v %.2e ± %.2e, p %.2e\n",
+				μ1, εμ[i], v1, εv[i], εp[i])
 		} else if config.Verbose {
-			fmt.Printf("%9d: μ %.2e ± %.2e, σ %.2e ± %.2e, p %.2e\n",
-				i, μ1, εμ[i], σ1, εσ[i], εp[i])
+			fmt.Printf("%9d: μ %.2e ± %.2e, v %.2e ± %.2e, p %.2e\n",
+				i, μ1, εμ[i], v1, εv[i], εp[i])
 		}
 	}
 
-	if no > 1 {
-		fmt.Printf("Average error: μ ± %.2e, σ ± %.2e, p %.2e\n",
-			statistics.Mean(εμ), statistics.Mean(εσ), statistics.Mean(εp))
+	if nm > 1 {
+		fmt.Printf("Average error: μ ± %.2e, v ± %.2e, p %.2e\n",
+			statistics.Mean(εμ), statistics.Mean(εv), statistics.Mean(εp))
 
-		fmt.Printf("Maximal error: μ ± %.2e, σ ± %.2e, p %.2e\n",
-			max(εμ), max(εσ), max(εp))
+		fmt.Printf("Maximal error: μ ± %.2e, v ± %.2e, p %.2e\n",
+			max(εμ), max(εv), max(εp))
 	}
 
 	return nil
