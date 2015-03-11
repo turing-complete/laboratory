@@ -7,12 +7,13 @@ import (
 	"github.com/ready-steady/support/assert"
 )
 
-func TestInterpolatorCompute(t *testing.T) {
+func TestSolverCompute(t *testing.T) {
 	config, _ := NewConfig("fixtures/002_020_temperature.json")
 	problem, _ := NewProblem(config)
 	target, _ := NewTarget(problem)
-	interpolator, _ := NewInterpolator(problem, target)
-	surrogate := interpolator.Compute(target)
+	solver, _ := NewSolver(problem, target)
+	solution := solver.Compute(target)
+	surrogate := &solution.surrogate
 
 	ni, no := target.Dimensions()
 	nc := surrogate.Nodes
@@ -27,5 +28,5 @@ func TestInterpolatorCompute(t *testing.T) {
 		target.Compute(nodes[i*ni:(i+1)*ni], values[i*no:(i+1)*no])
 	}
 
-	assert.EqualWithin(values, interpolator.Evaluate(surrogate, nodes), 1e-15, t)
+	assert.EqualWithin(values, solver.Evaluate(solution, nodes), 1e-15, t)
 }

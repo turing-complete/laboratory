@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/ready-steady/format/mat"
-	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
 
@@ -41,7 +40,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	if config.Verbose {
 		fmt.Println("Processing the surrogate model...")
 	}
-	predictions, predictionPoints, surrogate, err := predict(config, input)
+	predictions, predictionPoints, solution, err := predict(config, input)
 	if err != nil {
 		return err
 	}
@@ -73,7 +72,7 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 		return err
 	}
 
-	if err := output.Put("surrogate", *surrogate); err != nil {
+	if err := output.Put("solution", *solution); err != nil {
 		return err
 	}
 
@@ -106,8 +105,8 @@ func observe(config internal.Config) ([]float64, []float64, error) {
 	return invoke(target, points), points, nil
 }
 
-func predict(config internal.Config, input *mat.File) (
-	[]float64, []float64, *adhier.Surrogate, error) {
+func predict(config internal.Config,
+	input *mat.File) ([]float64, []float64, *internal.Solution, error) {
 
 	problem, err := internal.NewProblem(config)
 	if err != nil {
@@ -119,20 +118,20 @@ func predict(config internal.Config, input *mat.File) (
 		return nil, nil, nil, err
 	}
 
-	interpolator, err := internal.NewInterpolator(problem, target)
+	solver, err := internal.NewSolver(problem, target)
 	if err != nil {
 		return nil, nil, nil, err
 	}
 
-	surrogate := new(adhier.Surrogate)
-	if err = input.Get("surrogate", surrogate); err != nil {
+	solution := new(internal.Solution)
+	if err = input.Get("solution", solution); err != nil {
 		return nil, nil, nil, err
 	}
 
 	if config.Verbose {
 		fmt.Println(problem)
 		fmt.Println(target)
-		fmt.Println(surrogate)
+		fmt.Println(solution)
 	}
 
 	points, err := generate(problem, target)
@@ -140,7 +139,7 @@ func predict(config internal.Config, input *mat.File) (
 		return nil, nil, nil, err
 	}
 
-	return interpolator.Evaluate(surrogate, points), points, surrogate, nil
+	return solver.Evaluate(solution, points), points, solution, nil
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {

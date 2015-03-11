@@ -6,7 +6,6 @@ import (
 	"math"
 
 	"github.com/ready-steady/format/mat"
-	"github.com/ready-steady/numeric/interpolation/adhier"
 	"github.com/ready-steady/statistics"
 	"github.com/ready-steady/statistics/test"
 
@@ -22,8 +21,8 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return errors.New("an input file is required")
 	}
 
-	surrogate := new(adhier.Surrogate)
-	if err := input.Get("surrogate", surrogate); err != nil {
+	solution := new(internal.Solution)
+	if err := input.Get("solution", solution); err != nil {
 		return err
 	}
 
@@ -48,8 +47,7 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		return piece
 	}
 
-	fmt.Printf("Surrogate: inputs %d, outputs %d, level %d, nodes %d\n",
-		surrogate.Inputs, surrogate.Outputs, surrogate.Level, surrogate.Nodes)
+	fmt.Println(solution)
 
 	εμ := make([]float64, no)
 	εσ := make([]float64, no)
