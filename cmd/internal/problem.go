@@ -54,14 +54,14 @@ func NewProblem(config Config) (*Problem, error) {
 
 	c := &config.Probability
 
-	if c.MaxDelay < 0 || 1 <= c.MaxDelay {
-		return nil, errors.New("the delay rate is invalid")
+	if c.MaxDelay < 0 {
+		return nil, errors.New("the maximal delay should be nonnegative")
 	}
-	if c.CorrLength <= 0 {
-		return nil, errors.New("the correlation length is invalid")
+	if c.CorrLength < 0 {
+		return nil, errors.New("the correlation length should be nonnegative")
 	}
 	if c.VarThreshold <= 0 {
-		return nil, errors.New("the variance-reduction threshold is invalid")
+		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
 	tasks := c.TaskIndex
