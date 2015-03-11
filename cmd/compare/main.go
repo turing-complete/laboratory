@@ -69,19 +69,19 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
 
 		if no == 1 {
-			fmt.Printf("Error: μ %10.2e ±%10.2e, σ %10.2e ±%10.2e, p %.2e\n",
+			fmt.Printf("Error: μ %.2e ± %.2e, σ %.2e ± %.2e, p %.2e\n",
 				μ1, εμ[i], σ1, εσ[i], εp[i])
 		} else if config.Verbose {
-			fmt.Printf("%9d: μ %10.2e ±%10.2e, σ %10.2e ±%10.2e, p %.2e\n",
+			fmt.Printf("%9d: μ %.2e ± %.2e, σ %.2e ± %.2e, p %.2e\n",
 				i, μ1, εμ[i], σ1, εσ[i], εp[i])
 		}
 	}
 
 	if no > 1 {
-		fmt.Printf("Average error: μ ±%10.2e, σ ±%10.2e, p %.2e\n",
+		fmt.Printf("Average error: μ ± %.2e, σ ± %.2e, p %.2e\n",
 			statistics.Mean(εμ), statistics.Mean(εσ), statistics.Mean(εp))
 
-		fmt.Printf("Maximal error: μ ±%10.2e, σ ±%10.2e, p %.2e\n",
+		fmt.Printf("Maximal error: μ ± %.2e, σ ± %.2e, p %.2e\n",
 			max(εμ), max(εσ), max(εp))
 	}
 
