@@ -5,12 +5,12 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.7
+		"varThreshold": 0.9
 	},
 
 	"target": {
 		"name": "total-energy",
-		"tolerance": 1e-1
+		"tolerance": 5e-2
 	},
 
 	"interpolation": {
