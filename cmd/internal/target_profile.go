@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/ready-steady/simulation/power"
@@ -30,36 +29,15 @@ func newProfileTarget(p *Problem, tac *TargetConfig,
 	}
 
 	// The cores of interest.
-	cores := tac.CoreIndex
-	if len(cores) == 0 {
-		cores = make([]uint, p.nc)
-		for i := uint(0); i < p.nc; i++ {
-			cores[i] = i
-		}
-	}
-
-	Δt := tac.TimeStep
-	if Δt <= 0 {
-		return nil, errors.New("the time step should be positive")
+	cores, err := enumerate(p.nc, tac.CoreIndex)
+	if err != nil {
+		return nil, err
 	}
 
 	// The time moments of interest.
-	interval := tac.TimeInterval
-	switch len(interval) {
-	case 0:
-		interval = []float64{0, p.schedule.Span}
-	case 1:
-		interval = []float64{interval[0], interval[0]}
-	default:
-	}
-	if interval[0] < 0 || interval[0] > interval[1] || interval[1] > p.schedule.Span {
-		return nil, errors.New(fmt.Sprintf(
-			"the time interval should be between 0 and %g seconds", p.schedule.Span))
-	}
-
-	timeline := []float64{}
-	for t := interval[0]; t <= interval[1]; t += Δt {
-		timeline = append(timeline, t)
+	timeline, err := subdivide(tac.TimeInterval, tac.TimeStep, p.schedule.Span)
+	if err != nil {
+		return nil, err
 	}
 
 	// Force the first time moment to be zero.

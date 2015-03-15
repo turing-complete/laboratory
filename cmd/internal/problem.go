@@ -64,12 +64,9 @@ func NewProblem(config Config) (*Problem, error) {
 		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
-	tasks := c.TaskIndex
-	if len(tasks) == 0 {
-		tasks = make([]uint, nt)
-		for i := uint(0); i < nt; i++ {
-			tasks[i] = i
-		}
+	tasks, err := enumerate(nt, c.TaskIndex)
+	if err != nil {
+		return nil, err
 	}
 
 	nu := uint(len(tasks))
