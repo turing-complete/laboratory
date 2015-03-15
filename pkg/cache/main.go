@@ -27,3 +27,7 @@ func (c *Cache) Add(key string, value interface{}) {
 	c.mapping[key] = value
 	c.mutex.Unlock()
 }
+
+func (c *Cache) Length() uint {
+	return uint(len(c.mapping))
+}

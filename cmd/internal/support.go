@@ -3,6 +3,8 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"reflect"
+	"unsafe"
 )
 
 func enumerate(count uint, line []uint) ([]uint, error) {
@@ -20,6 +22,56 @@ func enumerate(count uint, line []uint) ([]uint, error) {
 	}
 
 	return line, nil
+}
+
+func locate(l, r float64, line []float64) (uint, uint) {
+	n := len(line)
+
+	i, j := 0, n-1
+
+	for i < j-1 {
+		if l < line[i+1] {
+			break
+		}
+		i++
+	}
+	for j > i+1 {
+		if r > line[j-1] {
+			break
+		}
+		j--
+	}
+
+	return uint(i), uint(j + 1)
+}
+
+func slice(data []float64, index []uint, m uint) []float64 {
+	n := uint(len(data)) / m
+	p := uint(len(index))
+
+	chunk := make([]float64, p*n)
+
+	for i := uint(0); i < p; i++ {
+		for j := uint(0); j < n; j++ {
+			chunk[j*p+i] = data[j*m+index[i]]
+		}
+	}
+
+	return chunk
+}
+
+func stringify(node []float64) string {
+	const (
+		sizeOfFloat64 = 8
+	)
+
+	var bytes []byte
+	header := (*reflect.SliceHeader)(unsafe.Pointer(&bytes))
+	header.Data = ((*reflect.SliceHeader)(unsafe.Pointer(&node))).Data
+	header.Cap = sizeOfFloat64 * len(node)
+	header.Len = header.Cap
+
+	return string(bytes)
 }
 
 func subdivide(interval []float64, Δx, span float64) ([]float64, error) {
