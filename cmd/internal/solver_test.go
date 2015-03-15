@@ -8,7 +8,7 @@ import (
 )
 
 func TestSolverCompute(t *testing.T) {
-	config, _ := NewConfig("fixtures/002_020_temperature.json")
+	config, _ := NewConfig("fixtures/002_020_profile.json")
 	problem, _ := NewProblem(config)
 	target, _ := NewTarget(problem)
 	solver, _ := NewSolver(problem, target)

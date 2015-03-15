@@ -19,7 +19,7 @@ func NewTarget(problem *Problem) (Target, error) {
 	case "total-energy":
 		return newEnergyTarget(problem, config), nil
 	case "temperature-profile":
-		return newTemperatureTarget(problem, config, &problem.Config.Temperature)
+		return newProfileTarget(problem, config, &problem.Config.Temperature)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

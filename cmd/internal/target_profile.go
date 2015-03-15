@@ -8,7 +8,7 @@ import (
 	"github.com/ready-steady/simulation/temperature/numeric"
 )
 
-type temperatureTarget struct {
+type profileTarget struct {
 	problem *Problem
 	config  *TargetConfig
 
@@ -20,8 +20,8 @@ type temperatureTarget struct {
 	shift    bool
 }
 
-func newTemperatureTarget(p *Problem, tac *TargetConfig,
-	tec *TemperatureConfig) (*temperatureTarget, error) {
+func newProfileTarget(p *Problem, tac *TargetConfig,
+	tec *TemperatureConfig) (*profileTarget, error) {
 
 	power := power.New(p.platform, p.application)
 	temperature, err := numeric.New(&tec.Config)
@@ -68,7 +68,7 @@ func newTemperatureTarget(p *Problem, tac *TargetConfig,
 		timeline = append([]float64{0}, timeline...)
 	}
 
-	target := &temperatureTarget{
+	target := &profileTarget{
 		problem: p,
 		config:  tac,
 
@@ -83,12 +83,12 @@ func newTemperatureTarget(p *Problem, tac *TargetConfig,
 	return target, nil
 }
 
-func (t *temperatureTarget) String() string {
+func (t *profileTarget) String() string {
 	ni, no := t.Dimensions()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func (t *temperatureTarget) Dimensions() (uint, uint) {
+func (t *profileTarget) Dimensions() (uint, uint) {
 	nci, ns := uint(len(t.cores)), uint(len(t.timeline))
 	if t.shift {
 		ns--
@@ -96,7 +96,7 @@ func (t *temperatureTarget) Dimensions() (uint, uint) {
 	return t.problem.nz, ns * nci * 2
 }
 
-func (t *temperatureTarget) Compute(node, value []float64) {
+func (t *profileTarget) Compute(node, value []float64) {
 	p := t.problem
 
 	schedule := p.time.Recompute(p.schedule, p.transform(node))
@@ -122,7 +122,7 @@ func (t *temperatureTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *temperatureTarget) Refine(surplus []float64) bool {
+func (t *profileTarget) Refine(surplus []float64) bool {
 	no, nci := uint(len(surplus)), uint(len(t.cores))
 	ε := t.config.Tolerance
 
@@ -145,7 +145,7 @@ func (t *temperatureTarget) Refine(surplus []float64) bool {
 	return false
 }
 
-func (t *temperatureTarget) Monitor(level, np, na uint) {
+func (t *profileTarget) Monitor(level, np, na uint) {
 	if !t.config.Verbose {
 		return
 	}
