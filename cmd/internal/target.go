@@ -16,7 +16,7 @@ type Target interface {
 	Generate(uint) []float64
 }
 
-type TargetExt struct {
+type CommonTarget struct {
 	Target
 }
 
@@ -34,19 +34,19 @@ func NewTarget(problem *Problem) (Target, error) {
 	}
 }
 
-func (t TargetExt) String() string {
+func (t CommonTarget) String() string {
 	ni, no := t.Dimensions()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func (t TargetExt) Monitor(level, np, na uint) {
+func (t CommonTarget) Monitor(level, np, na uint) {
 	if level == 0 {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
 	fmt.Printf("%10d %15d %15d\n", level, np, na)
 }
 
-func (t TargetExt) Generate(ns uint) []float64 {
+func (t CommonTarget) Generate(ns uint) []float64 {
 	ni, _ := t.Dimensions()
 	return probability.Sample(uniform.New(0, 1), ns*ni)
 }

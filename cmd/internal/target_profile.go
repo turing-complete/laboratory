@@ -60,7 +60,7 @@ func newProfileTarget(p *Problem, tac *TargetConfig,
 }
 
 func (t *profileTarget) String() string {
-	return TargetExt{t}.String()
+	return CommonTarget{t}.String()
 }
 
 func (t *profileTarget) Dimensions() (uint, uint) {
@@ -122,10 +122,10 @@ func (t *profileTarget) Refine(surplus []float64) bool {
 
 func (t *profileTarget) Monitor(level, np, na uint) {
 	if t.config.Verbose {
-		TargetExt{t}.Monitor(level, np, na)
+		CommonTarget{t}.Monitor(level, np, na)
 	}
 }
 
 func (t *profileTarget) Generate(ns uint) []float64 {
-	return TargetExt{t}.Generate(ns)
+	return CommonTarget{t}.Generate(ns)
 }

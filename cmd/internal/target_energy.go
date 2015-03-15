@@ -13,7 +13,7 @@ func newEnergyTarget(p *Problem, c *TargetConfig) *energyTarget {
 }
 
 func (t *energyTarget) String() string {
-	return TargetExt{t}.String()
+	return CommonTarget{t}.String()
 }
 
 func (t *energyTarget) Dimensions() (uint, uint) {
@@ -41,10 +41,10 @@ func (t *energyTarget) Refine(surplus []float64) bool {
 
 func (t *energyTarget) Monitor(level, np, na uint) {
 	if t.config.Verbose {
-		TargetExt{t}.Monitor(level, np, na)
+		CommonTarget{t}.Monitor(level, np, na)
 	}
 }
 
 func (t *energyTarget) Generate(ns uint) []float64 {
-	return TargetExt{t}.Generate(ns)
+	return CommonTarget{t}.Generate(ns)
 }

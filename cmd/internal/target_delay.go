@@ -13,7 +13,7 @@ func newDelayTarget(p *Problem, c *TargetConfig) *delayTarget {
 }
 
 func (t *delayTarget) String() string {
-	return TargetExt{t}.String()
+	return CommonTarget{t}.String()
 }
 
 func (t *delayTarget) Dimensions() (uint, uint) {
@@ -32,10 +32,10 @@ func (t *delayTarget) Refine(surplus []float64) bool {
 
 func (t *delayTarget) Monitor(level, np, na uint) {
 	if t.config.Verbose {
-		TargetExt{t}.Monitor(level, np, na)
+		CommonTarget{t}.Monitor(level, np, na)
 	}
 }
 
 func (t *delayTarget) Generate(ns uint) []float64 {
-	return TargetExt{t}.Generate(ns)
+	return CommonTarget{t}.Generate(ns)
 }
