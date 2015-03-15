@@ -1,9 +1,5 @@
 package internal
 
-import (
-	"fmt"
-)
-
 type delayTarget struct {
 	problem *Problem
 	config  *TargetConfig
@@ -17,8 +13,7 @@ func newDelayTarget(p *Problem, c *TargetConfig) *delayTarget {
 }
 
 func (t *delayTarget) String() string {
-	ni, no := t.Dimensions()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
+	return TargetExt{t}.String()
 }
 
 func (t *delayTarget) Dimensions() (uint, uint) {
@@ -36,11 +31,7 @@ func (t *delayTarget) Refine(surplus []float64) bool {
 }
 
 func (t *delayTarget) Monitor(level, np, na uint) {
-	if !t.config.Verbose {
-		return
+	if t.config.Verbose {
+		TargetExt{t}.Monitor(level, np, na)
 	}
-	if level == 0 {
-		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
-	}
-	fmt.Printf("%10d %15d %15d\n", level, np, na)
 }

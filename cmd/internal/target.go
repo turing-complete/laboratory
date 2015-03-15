@@ -2,6 +2,7 @@ package internal
 
 import (
 	"errors"
+	"fmt"
 )
 
 type Target interface {
@@ -9,6 +10,10 @@ type Target interface {
 	Compute([]float64, []float64)
 	Refine([]float64) bool
 	Monitor(uint, uint, uint)
+}
+
+type TargetExt struct {
+	Target
 }
 
 func NewTarget(problem *Problem) (Target, error) {
@@ -23,4 +28,16 @@ func NewTarget(problem *Problem) (Target, error) {
 	default:
 		return nil, errors.New("the target is unknown")
 	}
+}
+
+func (t TargetExt) String() string {
+	ni, no := t.Dimensions()
+	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
+}
+
+func (t TargetExt) Monitor(level, np, na uint) {
+	if level == 0 {
+		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
+	}
+	fmt.Printf("%10d %15d %15d\n", level, np, na)
 }
