@@ -26,8 +26,11 @@ func (t *delayTarget) Compute(node []float64, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *delayTarget) Refine(surplus []float64) bool {
-	return surplus[0] > t.config.Tolerance || -surplus[0] > t.config.Tolerance
+func (t *delayTarget) Refine(surplus []float64, dimensions []bool) {
+	refine := surplus[0] > t.config.Tolerance || -surplus[0] > t.config.Tolerance
+	for i := range dimensions {
+		dimensions[i] = refine
+	}
 }
 
 func (t *delayTarget) Monitor(level, np, na uint) {

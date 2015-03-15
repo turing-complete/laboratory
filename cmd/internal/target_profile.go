@@ -97,27 +97,21 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Refine(surplus []float64) bool {
-	no, nci := uint(len(surplus)), uint(len(t.cores))
-	ε := t.config.Tolerance
+func (t *profileTarget) Refine(surplus []float64, dimensions []bool) {
+	nm, ε := uint(len(surplus))/2, t.config.Tolerance
 
-	// The beginning.
-	for i := uint(0); i < nci; i++ {
+	refine := false
+
+	for i := uint(0); i < nm; i++ {
 		if surplus[i*2] > ε || -surplus[i*2] > ε {
-			return true
+			refine = true
+			break
 		}
 	}
 
-	surplus = surplus[no-nci*2:]
-
-	// The ending.
-	for i := uint(0); i < nci; i++ {
-		if surplus[i*2] > ε || -surplus[i*2] > ε {
-			return true
-		}
+	for i := range dimensions {
+		dimensions[i] = refine
 	}
-
-	return false
 }
 
 func (t *profileTarget) Monitor(level, np, na uint) {

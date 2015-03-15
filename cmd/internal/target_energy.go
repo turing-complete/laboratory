@@ -35,8 +35,11 @@ func (t *energyTarget) Compute(node, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *energyTarget) Refine(surplus []float64) bool {
-	return surplus[0] > t.config.Tolerance || -surplus[0] > t.config.Tolerance
+func (t *energyTarget) Refine(surplus []float64, dimensions []bool) {
+	refine := surplus[0] > t.config.Tolerance || -surplus[0] > t.config.Tolerance
+	for i := range dimensions {
+		dimensions[i] = refine
+	}
 }
 
 func (t *energyTarget) Monitor(level, np, na uint) {
