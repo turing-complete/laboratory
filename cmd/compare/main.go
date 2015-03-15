@@ -50,6 +50,12 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 
 	fmt.Println(solution)
 
+	μo := make([]float64, nm)
+	vo := make([]float64, nm)
+
+	μp := make([]float64, nm)
+	vp := make([]float64, nm)
+
 	εμ := make([]float64, nm)
 	εv := make([]float64, nm)
 	εp := make([]float64, nm)
@@ -61,44 +67,56 @@ func command(config internal.Config, input *mat.File, _ *mat.File) error {
 		observations := cut(observations, j)
 		predictions := cut(predictions, j)
 
-		μ1 := statistics.Mean(observations)
-		μ2 := solution.Expectation[j]
-		εμ[i] = math.Abs(μ1 - μ2)
+		μo[i] = statistics.Mean(observations)
+		vo[i] = statistics.Variance(observations)
 
-		v1 := statistics.Variance(observations)
-		v2 := solution.Expectation[j+1] - μ2*μ2
-		εv[i] = math.Abs(v1 - v2)
+		μp[i] = solution.Expectation[j]
+		vp[i] = solution.Expectation[j+1] - μp[i]*μp[i]
+
+		εμ[i] = math.Abs(μo[i] - μp[i])
+		εv[i] = math.Abs(vo[i] - vp[i])
 
 		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
+	}
 
-		if nm == 1 {
-			fmt.Printf("Error: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-				μ1, εμ[i], εμ[i]/μ1, v1, εv[i], εv[i]/v1, εp[i])
-		} else if config.Verbose {
-			fmt.Printf("%9d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-				i, μ1, εμ[i], εμ[i]/μ1, v1, εv[i], εv[i]/v1, εp[i])
+	if nm == 1 {
+		fmt.Printf("Result: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+			μo[0], εμ[0], εμ[0]/μo[0], vo[0], εv[0], εv[0]/vo[0], εp[0])
+		return nil
+	}
+
+	if config.Verbose {
+		for i := 0; i < nm; i++ {
+			fmt.Printf("%7d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+				i, μo[i], εμ[i], εμ[i]/μo[i], vo[i], εv[i], εv[i]/vo[i], εp[i])
 		}
 	}
 
-	if nm > 1 {
-		fmt.Printf("Average error: μ ± %.2e, v ± %.2e, p %.2e\n",
-			statistics.Mean(εμ), statistics.Mean(εv), statistics.Mean(εp))
+	μμo, μεμ := statistics.Mean(μo), statistics.Mean(εμ)
+	μvo, μεv := statistics.Mean(vo), statistics.Mean(εv)
+	μεp := statistics.Mean(εp)
 
-		fmt.Printf("Maximal error: μ ± %.2e, v ± %.2e, p %.2e\n",
-			max(εμ), max(εv), max(εp))
-	}
+	fmt.Printf("Average: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+		μμo, μεμ, μεμ/μμo, μvo, μεv, μεv/μvo, μεp)
+
+	mεμ, kμ := max(εμ)
+	mεv, kv := max(εv)
+	mεp, _ := max(εp)
+
+	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+		μo[kμ], mεμ, mεμ/μo[kμ], vo[kv], mεv, mεv/vo[kv], mεp)
 
 	return nil
 }
 
-func max(data []float64) float64 {
-	max := math.Inf(-1)
+func max(data []float64) (float64, int) {
+	value, k := math.Inf(-1), -1
 
-	for _, x := range data {
-		if x > max {
-			max = x
+	for i, x := range data {
+		if x > value {
+			value, k = x, i
 		}
 	}
 
-	return max
+	return value, k
 }
