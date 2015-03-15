@@ -35,3 +35,7 @@ func (t *delayTarget) Monitor(level, np, na uint) {
 		TargetExt{t}.Monitor(level, np, na)
 	}
 }
+
+func (t *delayTarget) Generate(ns uint) []float64 {
+	return TargetExt{t}.Generate(ns)
+}

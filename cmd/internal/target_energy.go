@@ -44,3 +44,7 @@ func (t *energyTarget) Monitor(level, np, na uint) {
 		TargetExt{t}.Monitor(level, np, na)
 	}
 }
+
+func (t *energyTarget) Generate(ns uint) []float64 {
+	return TargetExt{t}.Generate(ns)
+}

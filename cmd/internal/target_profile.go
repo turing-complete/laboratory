@@ -125,3 +125,7 @@ func (t *profileTarget) Monitor(level, np, na uint) {
 		TargetExt{t}.Monitor(level, np, na)
 	}
 }
+
+func (t *profileTarget) Generate(ns uint) []float64 {
+	return TargetExt{t}.Generate(ns)
+}

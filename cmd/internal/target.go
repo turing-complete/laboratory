@@ -3,6 +3,9 @@ package internal
 import (
 	"errors"
 	"fmt"
+
+	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/uniform"
 )
 
 type Target interface {
@@ -10,6 +13,7 @@ type Target interface {
 	Compute([]float64, []float64)
 	Refine([]float64) bool
 	Monitor(uint, uint, uint)
+	Generate(uint) []float64
 }
 
 type TargetExt struct {
@@ -40,4 +44,9 @@ func (t TargetExt) Monitor(level, np, na uint) {
 		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
 	}
 	fmt.Printf("%10d %15d %15d\n", level, np, na)
+}
+
+func (t TargetExt) Generate(ns uint) []float64 {
+	ni, _ := t.Dimensions()
+	return probability.Sample(uniform.New(0, 1), ns*ni)
 }

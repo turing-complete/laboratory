@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"github.com/ready-steady/format/mat"
-	"github.com/ready-steady/probability"
-	"github.com/ready-steady/probability/uniform"
 
 	"../internal"
 )
@@ -92,14 +90,14 @@ func observe(config internal.Config) ([]float64, []float64, error) {
 		return nil, nil, err
 	}
 
-	points, err := generate(problem, target)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	if config.Verbose {
 		fmt.Println(problem)
 		fmt.Println(target)
+	}
+
+	points, err := generate(problem, target)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	return invoke(target, points), points, nil
@@ -156,9 +154,7 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		return nil, errors.New("the number of samples should be positive")
 	}
 
-	ni, _ := target.Dimensions()
-
-	return probability.Sample(uniform.New(0, 1), ns*ni), nil
+	return target.Generate(ns), nil
 }
 
 func invoke(target internal.Target, points []float64) []float64 {
