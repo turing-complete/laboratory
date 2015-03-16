@@ -131,6 +131,8 @@ func (t *sliceTarget) Refine(surplus []float64, dimensions []bool) {
 	for i := range dimensions {
 		dimensions[i] = refine
 	}
+
+	dimensions[0] = true // +1 for time
 }
 
 func (t *sliceTarget) Monitor(level, np, na uint) {
