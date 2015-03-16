@@ -3,9 +3,57 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"math"
 	"reflect"
 	"unsafe"
+
+	"github.com/ready-steady/linear/matrix"
 )
+
+var (
+	nInf = math.Inf(-1)
+	pInf = math.Inf(1)
+)
+
+func combine(A, x, y []float64, m, n uint) {
+	infinite, z := false, make([]float64, n)
+
+	for i := range x {
+		switch x[i] {
+		case nInf:
+			infinite, z[i] = true, -1
+		case pInf:
+			infinite, z[i] = true, 1
+		}
+	}
+
+	if !infinite {
+		matrix.Multiply(A, x, y, m, n, 1)
+		return
+	}
+
+	for i := uint(0); i < m; i++ {
+		Σ1, Σ2 := 0.0, 0.0
+		for j := uint(0); j < n; j++ {
+			a := A[j*m+i]
+			if a == 0 {
+				continue
+			}
+			if z[j] == 0 {
+				Σ1 += a * x[j]
+			} else {
+				Σ2 += a * z[j]
+			}
+		}
+		if Σ2 < 0 {
+			y[i] = nInf
+		} else if Σ2 > 0 {
+			y[i] = pInf
+		} else {
+			y[i] = Σ1
+		}
+	}
+}
 
 func enumerate(count uint, line []uint) ([]uint, error) {
 	if len(line) == 0 {

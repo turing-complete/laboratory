@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/gaussian"
 	"github.com/ready-steady/simulation/system"
@@ -110,28 +109,17 @@ func NewProblem(config Config) (*Problem, error) {
 }
 
 func (p *Problem) transform(node []float64) []float64 {
-	const (
-		offset = 1e-8
-	)
-
 	z := make([]float64, p.nz)
 	u := make([]float64, p.nu)
 	d := make([]float64, p.nt)
 
 	// Independent uniform to independent Gaussian
 	for i := range z {
-		switch node[i] {
-		case 0:
-			z[i] = standardGaussian.InvCDF(0 + offset)
-		case 1:
-			z[i] = standardGaussian.InvCDF(1 - offset)
-		default:
-			z[i] = standardGaussian.InvCDF(node[i])
-		}
+		z[i] = standardGaussian.InvCDF(node[i])
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	matrix.Multiply(p.multiplier, z, u, p.nu, p.nz, 1)
+	combine(p.multiplier, z, u, p.nu, p.nz)
 
 	// Dependent Gaussian to dependent uniform to dependent target
 	for i, tid := range p.tasks {

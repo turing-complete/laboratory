@@ -1,10 +1,35 @@
 package internal
 
 import (
+	"math"
 	"testing"
 
 	"github.com/ready-steady/support/assert"
 )
+
+func TestCombine(t *testing.T) {
+	m, n := uint(4), uint(3)
+
+	A := []float64{
+		+0, +1, -2, +0,
+		-1, -2, +0, +1,
+		+1, +1, +0, +2,
+	}
+
+	test := func(x, y []float64) {
+		z := make([]float64, m)
+		combine(A, x, z, m, n)
+		assert.Equal(z, y, t)
+	}
+
+	inf := math.Inf(1)
+
+	test([]float64{1, 2, 1}, []float64{-1, -2, -2, 4})
+	test([]float64{inf, 2, 1}, []float64{-1, inf, -inf, 4})
+	test([]float64{1, -inf, 1}, []float64{inf, inf, -2, -inf})
+	test([]float64{1, 2, inf}, []float64{inf, inf, -2, inf})
+	test([]float64{inf, 2, -inf}, []float64{-inf, -4, -inf, -inf})
+}
 
 func TestLocate(t *testing.T) {
 	line := []float64{0, 0.2, 0.4, 0.6, 0.8, 1}
