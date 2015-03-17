@@ -60,6 +60,8 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 	εv := make([]float64, nm)
 	εp := make([]float64, nm)
 
+	analytic := len(solution.Expectation) == no
+
 	// Compute errors across all outputs.
 	for i := 0; i < nm; i++ {
 		j := i * 2
@@ -70,8 +72,13 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 		μo[i] = statistics.Mean(observations)
 		vo[i] = statistics.Variance(observations)
 
-		μp[i] = solution.Expectation[j]
-		vp[i] = solution.Expectation[j+1] - μp[i]*μp[i]
+		if analytic {
+			μp[i] = solution.Expectation[j]
+			vp[i] = solution.Expectation[j+1] - μp[i]*μp[i]
+		} else {
+			μp[i] = statistics.Mean(predictions)
+			vp[i] = statistics.Variance(predictions)
+		}
 
 		εμ[i] = math.Abs(μo[i] - μp[i])
 		εv[i] = math.Abs(vo[i] - vp[i])
