@@ -22,11 +22,11 @@ cases += 002_020_slice
 cases += 002_020_profile
 
 define define_case
-$(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
-$(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config) | md5))
-
 $(1)_config_base := assets/$(1).json
 $(1)_hash_base := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config_base) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config_base) | md5))
+
+$(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
+$(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) $$($(1)_config_base) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config) $$($(1)_config_base) | md5))
 
 $(1)_construct := $(1)_$$($(1)_hash)_construct.mat
 $(1)_observe := $(1)_$$($(1)_hash_base)_observe.mat
