@@ -1,3 +1,7 @@
 {
-	"inherit": "assets/002_020_profile.json"
+	"inherit": "assets/002_020_profile.json",
+
+	"target": {
+		"verbose": true
+	}
 }

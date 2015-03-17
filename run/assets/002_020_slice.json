@@ -10,11 +10,10 @@
 
 	"target": {
 		"name": "temperature-slice",
-		"tolerance": 0.5,
+		"tolerance": 1,
 		"coreIndex": [0],
-		"timeStep": 1e-3,
-		"timeFraction": [],
-		"verbose": true
+		"timeStep": 1e-2,
+		"timeFraction": []
 	},
 
 	"temperature": {
@@ -24,7 +23,7 @@
 	},
 
 	"interpolation": {
-		"rule": "closed",
+		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 10,
 		"maxNodes": 10000

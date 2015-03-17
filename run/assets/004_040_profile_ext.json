@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/004_040_profile.json",
+
+	"target": {
+		"verbose": true
+	}
+}

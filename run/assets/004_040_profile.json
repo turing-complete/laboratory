@@ -1,5 +1,5 @@
 {
-	"system": "assets/002_020.tgff",
+	"system": "assets/004_040.tgff",
 
 	"probability": {
 		"maxDelay": 0.2,
@@ -17,7 +17,7 @@
 	},
 
 	"temperature": {
-		"floorplan": "assets/002.flp",
+		"floorplan": "assets/004.flp",
 		"configuration": "assets/hotspot.config",
 		"ambience": 318.15
 	},
