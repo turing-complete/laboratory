@@ -56,9 +56,9 @@ type TargetConfig struct {
 	CoreIndex []uint
 	// The time step of temperature profiles.
 	TimeStep float64
-	// The time interval that should be considered; if empty, the parameter is
-	// set the entire span of the application.
-	TimeInterval []float64
+	// The fraction of the application’s span that should be considered; if
+	// empty, the parameter is set to the entire span [0, 1].
+	TimeFraction []float64
 
 	// A flag for displaying diagnostic information.
 	Verbose bool

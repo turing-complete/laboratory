@@ -2,7 +2,6 @@ package internal
 
 import (
 	"errors"
-	"fmt"
 	"math"
 	"reflect"
 	"unsafe"
@@ -122,23 +121,23 @@ func stringify(node []float64) string {
 	return string(bytes)
 }
 
-func subdivide(interval []float64, Δx, span float64) ([]float64, error) {
+func subdivide(span, Δx float64, fraction []float64) ([]float64, error) {
 	if Δx <= 0 {
 		return nil, errors.New("the step should be positive")
 	}
 
 	var left, right float64
 
-	switch len(interval) {
+	switch len(fraction) {
 	case 0:
 		left, right = 0, span
 	case 1:
-		left, right = interval[0], interval[0]
+		left, right = fraction[0]*span, fraction[0]*span
 	default:
-		left, right = interval[0], interval[1]
+		left, right = fraction[0]*span, fraction[1]*span
 	}
 	if left < 0 || left > right || right > span {
-		return nil, errors.New(fmt.Sprintf("the interval should be between 0 and %g", span))
+		return nil, errors.New("the fraction should be between 0 and 1")
 	}
 
 	line := make([]float64, 0, uint((right-left)/Δx)+1)

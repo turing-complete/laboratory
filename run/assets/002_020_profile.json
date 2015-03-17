@@ -13,7 +13,7 @@
 		"tolerance": 0.5,
 		"coreIndex": [0],
 		"timeStep": 1e-3,
-		"timeInterval": []
+		"timeFraction": []
 	},
 
 	"temperature": {

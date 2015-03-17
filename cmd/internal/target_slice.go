@@ -48,7 +48,7 @@ func newSliceTarget(p *Problem, tac *TargetConfig,
 	}
 
 	// The time moments of interest.
-	timeline, err := subdivide(tac.TimeInterval, tac.TimeStep, p.schedule.Span)
+	timeline, err := subdivide(p.schedule.Span, tac.TimeStep, tac.TimeFraction)
 	if err != nil {
 		return nil, err
 	}
