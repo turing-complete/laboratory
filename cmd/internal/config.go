@@ -10,6 +10,8 @@ import (
 
 // Config is a configuration of a problem.
 type Config struct {
+	Inherit string
+
 	// A file containing the specification of a system (a platform and an
 	// application) to analyze in the TGFF format.
 	System string
@@ -84,18 +86,44 @@ type AssessmentConfig struct {
 }
 
 func NewConfig(path string) (Config, error) {
+	paths := []string{path}
+	for {
+		config := Config{}
+		if err := populate(&config, path); err != nil {
+			return Config{}, err
+		}
+
+		if len(config.Inherit) > 0 {
+			path = config.Inherit
+			paths = append([]string{path}, paths...)
+			continue
+		}
+
+		if len(paths) == 1 {
+			return config, nil
+		}
+
+		break
+	}
+
+	config := Config{}
+	for _, path := range paths {
+		if err := populate(&config, path); err != nil {
+			return Config{}, err
+		}
+	}
+
+	return config, nil
+}
+
+func populate(config *Config, path string) error {
 	file, err := os.Open(path)
 	if err != nil {
-		return Config{}, err
+		return err
 	}
 	defer file.Close()
 
 	decoder := json.NewDecoder(file)
 
-	var config Config
-	if err = decoder.Decode(&config); err != nil {
-		return Config{}, err
-	}
-
-	return config, nil
+	return decoder.Decode(config)
 }

@@ -17,11 +17,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, input *mat.File, output *mat.File) error {
-	if input == nil {
-		return errors.New("an input file is required")
-	}
-
+func command(config internal.Config, _ *mat.File, output *mat.File) error {
 	config.Probability.VarThreshold = 42
 
 	problem, err := internal.NewProblem(config)
