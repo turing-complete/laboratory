@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/002_020_slice.json",
+
+	"target": {
+		"verbose": true
+	}
+}
