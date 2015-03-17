@@ -42,7 +42,7 @@ func NewSolver(problem *Problem, target Target) (*Solver, error) {
 
 func (s *Solver) Compute(target Target) *Solution {
 	surrogate := s.Interpolator.Compute(target)
-	target.Monitor(surrogate.Level, 0, surrogate.Nodes)
+	target.Monitor(surrogate.Level, surrogate.Nodes, 0)
 	return &Solution{
 		Surrogate:   *surrogate,
 		Expectation: s.Interpolator.Integrate(surrogate),
