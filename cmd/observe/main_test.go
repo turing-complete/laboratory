@@ -23,11 +23,13 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 		sampleCount = 10000
 	)
 
-	config, _ := internal.NewConfig("fixtures/002_020.json")
+	config, _ := internal.NewConfig("fixtures/002_020_profile.json")
 	problem, _ := internal.NewProblem(config)
 	target, _ := internal.NewTarget(problem)
 
-	points := probability.Sample(uniform.New(0, 1), sampleCount*target.Inputs())
+	ni, _ := target.Dimensions()
+
+	points := probability.Sample(uniform.New(0, 1), sampleCount*ni)
 
 	b.ResetTimer()
 
@@ -37,7 +39,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 }
 
 func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
-	ic, oc := target.Inputs(), target.Outputs()
+	ic, oc := target.Dimensions()
 	pc := uint(len(points)) / ic
 
 	values := make([]float64, pc*oc)
@@ -46,7 +48,7 @@ func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
 
 	for i := uint(0); i < pc; i++ {
 		go func(point, value []float64) {
-			target.Evaluate(point, value, nil)
+			target.Compute(point, value)
 			group.Done()
 		}(points[i*ic:(i+1)*ic], values[i*oc:(i+1)*oc])
 	}

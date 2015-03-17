@@ -16,23 +16,23 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, input *mat.File, _ *mat.File) error {
-	if input == nil {
-		return errors.New("an input file is required")
+func command(config internal.Config, predict *mat.File, observe *mat.File) error {
+	if predict == nil || observe == nil {
+		return errors.New("two data files are required")
 	}
 
 	solution := new(internal.Solution)
-	if err := input.Get("solution", solution); err != nil {
+	if err := predict.Get("solution", solution); err != nil {
 		return err
 	}
 
 	observations := []float64{}
-	if err := input.Get("observations", &observations); err != nil {
+	if err := observe.Get("values", &observations); err != nil {
 		return err
 	}
 
 	predictions := []float64{}
-	if err := input.Get("predictions", &predictions); err != nil {
+	if err := predict.Get("values", &predictions); err != nil {
 		return err
 	}
 

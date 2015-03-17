@@ -50,13 +50,19 @@ func Run(command func(Config, *mat.File, *mat.File) error) {
 	}
 
 	if len(*outputFile) > 0 {
-		if output, err = mat.Open(*outputFile, "w7.3"); err != nil {
+		var mode string
+		if _, err = os.Stat(*outputFile); os.IsNotExist(err) {
+			mode = "w7.3"
+		} else {
+			mode = "u"
+		}
+		if output, err = mat.Open(*outputFile, mode); err != nil {
 			fail(err)
 		}
 		defer output.Close()
 	}
 
-	if err := command(config, input, output); err != nil {
+	if err = command(config, input, output); err != nil {
 		fail(err)
 	}
 }
@@ -69,8 +75,8 @@ func fail(err error) {
 
 Options:
     -c <FILE.json>  - a configuration file (required)
-    -i <FILE.mat>   - an input file
-    -o <FILE.mat>   - an output file
+    -i <FILE.mat>   - a data file, typically an input
+    -o <FILE.mat>   - a date file, typically an output
 `)
 
 	os.Exit(1)
