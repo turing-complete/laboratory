@@ -1,4 +1,5 @@
 /construct
-/sample
+/predict
+/observe
 /compare
 /*.mat
