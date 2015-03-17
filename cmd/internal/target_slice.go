@@ -116,7 +116,7 @@ func (t *sliceTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *sliceTarget) Refine(surplus []float64, dimensions []bool) {
+func (t *sliceTarget) Refine(_, surplus []float64, dimensions []bool) {
 	nci, ε := uint(len(t.cores)), t.config.Tolerance
 
 	refine := false

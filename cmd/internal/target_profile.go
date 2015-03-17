@@ -99,7 +99,7 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Refine(surplus []float64, dimensions []bool) {
+func (t *profileTarget) Refine(_, surplus []float64, dimensions []bool) {
 	nm, ε := uint(len(surplus))/2, t.config.Tolerance
 
 	refine := false
