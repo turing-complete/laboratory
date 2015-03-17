@@ -14,7 +14,7 @@ type profileTarget struct {
 
 	cores    []uint
 	timeline []float64
-	shift    bool
+	shift    uint
 }
 
 func newProfileTarget(p *Problem, tac *TargetConfig,
@@ -38,10 +38,18 @@ func newProfileTarget(p *Problem, tac *TargetConfig,
 		return nil, err
 	}
 
+	shift := uint(0)
+
 	// Force the first time moment to be zero.
-	shift := timeline[0] != 0
-	if shift {
+	if timeline[0] != 0 {
+		shift++
 		timeline = append([]float64{0}, timeline...)
+	}
+
+	// Make sure to have at least three time moments.
+	if len(timeline) == 2 {
+		shift++
+		timeline = []float64{0, timeline[1] / 2, timeline[1]}
 	}
 
 	target := &profileTarget{
@@ -64,10 +72,7 @@ func (t *profileTarget) String() string {
 }
 
 func (t *profileTarget) Dimensions() (uint, uint) {
-	nci, ns := uint(len(t.cores)), uint(len(t.timeline))
-	if t.shift {
-		ns--
-	}
+	nci, ns := uint(len(t.cores)), uint(len(t.timeline))-t.shift
 	return t.problem.nz, ns * nci * 2
 }
 
@@ -81,12 +86,9 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 
 	cores := t.cores
-	nc, nci, ns := p.nc, uint(len(cores)), uint(len(t.timeline))
+	nc, nci, ns := p.nc, uint(len(cores)), uint(len(t.timeline))-t.shift
 
-	if t.shift {
-		Q = Q[nc:]
-		ns--
-	}
+	Q = Q[t.shift*nc:]
 
 	for i, k := uint(0), uint(0); i < ns; i++ {
 		for j := uint(0); j < nci; j++ {
