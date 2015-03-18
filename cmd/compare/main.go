@@ -60,6 +60,9 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 	εv := make([]float64, nm)
 	εp := make([]float64, nm)
 
+	εμr := make([]float64, nm)
+	εvr := make([]float64, nm)
+
 	analytic := len(solution.Expectation) == no
 
 	// Compute errors across all outputs.
@@ -83,47 +86,60 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 		εμ[i] = math.Abs(μo[i] - μp[i])
 		εv[i] = math.Abs(vo[i] - vp[i])
 
+		εμr[i] = εμ[i] / μo[i]
+		εvr[i] = εv[i] / vo[i]
+
 		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
 	}
 
 	if nm == 1 {
 		fmt.Printf("Result: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-			μo[0], εμ[0], εμ[0]/μo[0], vo[0], εv[0], εv[0]/vo[0], εp[0])
+			μo[0], εμ[0], εμr[0], vo[0], εv[0], εvr[0], εp[0])
 		return nil
 	}
 
 	if config.Verbose {
 		for i := 0; i < nm; i++ {
 			fmt.Printf("%7d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-				i, μo[i], εμ[i], εμ[i]/μo[i], vo[i], εv[i], εv[i]/vo[i], εp[i])
+				i, μo[i], εμ[i], εμr[i], vo[i], εv[i], εvr[i], εp[i])
 		}
 	}
 
-	μμo, μεμ := statistics.Mean(μo), statistics.Mean(εμ)
-	μvo, μεv := statistics.Mean(vo), statistics.Mean(εv)
+	μμo, μεμ, μεμr := statistics.Mean(μo), statistics.Mean(εμ), statistics.Mean(nan(εμr))
+	μvo, μεv, μεvr := statistics.Mean(vo), statistics.Mean(εv), statistics.Mean(nan(εvr))
 	μεp := statistics.Mean(εp)
 
 	fmt.Printf("Average: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-		μμo, μεμ, μεμ/μμo, μvo, μεv, μεv/μvo, μεp)
+		μμo, μεμ, μεμr, μvo, μεv, μεvr, μεp)
 
-	mεμ, kμ := max(εμ)
-	mεv, kv := max(εv)
-	mεp, _ := max(εp)
+	kμ, kv, kp := max(εμr), max(εvr), max(εp)
 
 	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-		μo[kμ], mεμ, mεμ/μo[kμ], vo[kv], mεv, mεv/vo[kv], mεp)
+		μo[kμ], εμ[kμ], εμr[kμ], vo[kv], εv[kv], εvr[kv], εp[kp])
 
 	return nil
 }
 
-func max(data []float64) (float64, int) {
+func max(data []float64) int {
 	value, k := math.Inf(-1), -1
 
 	for i, x := range data {
-		if x > value {
+		if !math.IsInf(x, 0) && x > value {
 			value, k = x, i
 		}
 	}
 
-	return value, k
+	return k
+}
+
+func nan(data []float64) []float64 {
+	result := make([]float64, 0, len(data))
+
+	for _, x := range data {
+		if !math.IsNaN(x) {
+			result = append(result, x)
+		}
+	}
+
+	return result
 }
