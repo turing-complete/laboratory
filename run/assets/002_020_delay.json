@@ -1,12 +1,7 @@
 {
-	"system": "assets/002_020.tgff",
+	"inherit": "assets/core.json",
 
-	"probability": {
-		"maxDelay": 0.2,
-		"marginal": "Beta(2, 5)",
-		"corrLength": 5,
-		"varThreshold": 0.95
-	},
+	"system": "assets/002_020.tgff",
 
 	"target": {
 		"name": "end-to-end-delay",
@@ -18,12 +13,5 @@
 		"minLevel": 1,
 		"maxLevel": 10,
 		"maxNodes": 100000
-	},
-
-	"assessment": {
-		"seed": 1,
-		"samples": 100000
-	},
-
-	"verbose": false
+	}
 }

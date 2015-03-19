@@ -3,5 +3,7 @@
 
 	"target": {
 		"verbose": true
-	}
+	},
+
+	"verbose": true
 }

@@ -1,10 +1,9 @@
 {
+	"inherit": "assets/core.json",
+
 	"system": "assets/016_160.tgff",
 
 	"probability": {
-		"maxDelay": 0.2,
-		"marginal": "Beta(2, 5)",
-		"corrLength": 5,
 		"varThreshold": 0.9
 	},
 
@@ -18,12 +17,5 @@
 		"minLevel": 1,
 		"maxLevel": 10,
 		"maxNodes": 100000
-	},
-
-	"assessment": {
-		"seed": 1,
-		"samples": 100000
-	},
-
-	"verbose": false
+	}
 }
