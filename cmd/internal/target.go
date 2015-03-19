@@ -11,7 +11,7 @@ import (
 type Target interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
-	Refine([]float64, []float64, []bool)
+	Refine([]float64, []float64, []float64)
 	Monitor(uint, uint, uint)
 	Generate(uint) []float64
 }

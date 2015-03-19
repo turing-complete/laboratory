@@ -116,23 +116,28 @@ func (t *sliceTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *sliceTarget) Refine(_, surplus []float64, dimensions []bool) {
+func (t *sliceTarget) Refine(_, surplus, score []float64) {
 	nci, ε := uint(len(t.cores)), t.config.Tolerance
 
-	refine := false
+	Σ := 0.0
 
 	for i := uint(0); i < nci; i++ {
-		if surplus[i*2] > ε || -surplus[i*2] > ε {
-			refine = true
-			break
+		Δ := surplus[i*2]
+		if Δ < 0 {
+			Δ = -Δ
+		}
+		if Δ > ε {
+			Σ += Δ
 		}
 	}
 
-	for i := range dimensions {
-		dimensions[i] = refine
+	for i := range score {
+		score[i] = Σ
 	}
 
-	dimensions[0] = true // +1 for time
+	if Σ == 0 {
+		score[0] = pInfinity
+	}
 }
 
 func (t *sliceTarget) Monitor(level, np, na uint) {

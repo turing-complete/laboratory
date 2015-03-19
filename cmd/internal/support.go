@@ -10,8 +10,8 @@ import (
 )
 
 var (
-	nInf = math.Inf(-1)
-	pInf = math.Inf(1)
+	nInfinity = math.Inf(-1)
+	pInfinity = math.Inf(1)
 )
 
 func combine(A, x, y []float64, m, n uint) {
@@ -19,9 +19,9 @@ func combine(A, x, y []float64, m, n uint) {
 
 	for i := range x {
 		switch x[i] {
-		case nInf:
+		case nInfinity:
 			infinite, z[i] = true, -1
-		case pInf:
+		case pInfinity:
 			infinite, z[i] = true, 1
 		}
 	}
@@ -45,9 +45,9 @@ func combine(A, x, y []float64, m, n uint) {
 			}
 		}
 		if Σ2 < 0 {
-			y[i] = nInf
+			y[i] = nInfinity
 		} else if Σ2 > 0 {
-			y[i] = pInf
+			y[i] = pInfinity
 		} else {
 			y[i] = Σ1
 		}

@@ -99,20 +99,23 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Refine(_, surplus []float64, dimensions []bool) {
+func (t *profileTarget) Refine(_, surplus, score []float64) {
 	nm, ε := uint(len(surplus))/2, t.config.Tolerance
 
-	refine := false
+	Σ := 0.0
 
 	for i := uint(0); i < nm; i++ {
-		if surplus[i*2] > ε || -surplus[i*2] > ε {
-			refine = true
-			break
+		Δ := surplus[i*2]
+		if Δ < 0 {
+			Δ = -Δ
+		}
+		if Δ > ε {
+			Σ += Δ
 		}
 	}
 
-	for i := range dimensions {
-		dimensions[i] = refine
+	for i := range score {
+		score[i] = Σ
 	}
 }
 
