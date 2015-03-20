@@ -99,13 +99,13 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Refine(_, surplus, score []float64) {
-	nm, ε := uint(len(surplus))/2, t.config.Tolerance
+func (t *profileTarget) Refine(_, _, volume []float64) float64 {
+	nm, ε := uint(len(volume))/2, t.config.Tolerance
 
 	Σ := 0.0
 
 	for i := uint(0); i < nm; i++ {
-		Δ := surplus[i*2]
+		Δ := volume[i*2]
 		if Δ < 0 {
 			Δ = -Δ
 		}
@@ -114,9 +114,7 @@ func (t *profileTarget) Refine(_, surplus, score []float64) {
 		}
 	}
 
-	for i := range score {
-		score[i] = Σ
-	}
+	return Σ
 }
 
 func (t *profileTarget) Monitor(level, np, na uint) {

@@ -35,17 +35,15 @@ func (t *energyTarget) Compute(node, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *energyTarget) Refine(_, surplus, score []float64) {
-	Δ := surplus[0]
+func (t *energyTarget) Refine(_, _, volume []float64) float64 {
+	Δ := volume[0]
 	if Δ < 0 {
 		Δ = -Δ
 	}
 	if Δ <= t.config.Tolerance {
 		Δ = 0
 	}
-	for i := range score {
-		score[i] = Δ
-	}
+	return Δ
 }
 
 func (t *energyTarget) Monitor(level, np, na uint) {
