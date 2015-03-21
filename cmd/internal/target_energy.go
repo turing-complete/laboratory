@@ -35,11 +35,8 @@ func (t *energyTarget) Compute(node, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *energyTarget) Refine(_, _, volume []float64) float64 {
-	Δ := volume[0]
-	if Δ < 0 {
-		Δ = -Δ
-	}
+func (t *energyTarget) Refine(node, surplus []float64, volume float64) float64 {
+	Δ := CommonTarget{t}.Refine(node, surplus, volume)
 	if Δ <= t.config.Tolerance {
 		Δ = 0
 	}

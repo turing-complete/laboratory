@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"math"
 
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
@@ -11,7 +12,7 @@ import (
 type Target interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
-	Refine([]float64, []float64, []float64) float64
+	Refine([]float64, []float64, float64) float64
 	Monitor(uint, uint, uint)
 	Generate(uint) []float64
 }
@@ -39,6 +40,18 @@ func NewTarget(problem *Problem) (Target, error) {
 func (t CommonTarget) String() string {
 	ni, no := t.Dimensions()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
+}
+
+func (t CommonTarget) Refine(_, surplus []float64, volume float64) float64 {
+	nm := uint(len(surplus)) / 2
+
+	Σ := 0.0
+	for i := uint(0); i < nm; i++ {
+		Δ := surplus[i*2] * volume
+		Σ += Δ * Δ
+	}
+
+	return math.Sqrt(Σ)
 }
 
 func (t CommonTarget) Monitor(level, np, na uint) {

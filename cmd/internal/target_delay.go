@@ -26,11 +26,8 @@ func (t *delayTarget) Compute(node []float64, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *delayTarget) Refine(_, _, volume []float64) float64 {
-	Δ := volume[0]
-	if Δ < 0 {
-		Δ = -Δ
-	}
+func (t *delayTarget) Refine(node, surplus []float64, volume float64) float64 {
+	Δ := CommonTarget{t}.Refine(node, surplus, volume)
 	if Δ <= t.config.Tolerance {
 		Δ = 0
 	}

@@ -99,22 +99,12 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Refine(_, _, volume []float64) float64 {
-	nm, ε := uint(len(volume))/2, t.config.Tolerance
-
-	Σ := 0.0
-
-	for i := uint(0); i < nm; i++ {
-		Δ := volume[i*2]
-		if Δ < 0 {
-			Δ = -Δ
-		}
-		if Δ > ε {
-			Σ += Δ
-		}
+func (t *profileTarget) Refine(node, surplus []float64, volume float64) float64 {
+	Δ := CommonTarget{t}.Refine(node, surplus, volume)
+	if Δ <= t.config.Tolerance {
+		Δ = 0
 	}
-
-	return Σ
+	return Δ
 }
 
 func (t *profileTarget) Monitor(level, np, na uint) {
