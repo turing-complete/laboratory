@@ -13,9 +13,6 @@
 	},
 
 	"interpolation": {
-		"rule": "open",
-		"minLevel": 2,
-		"maxLevel": 10,
-		"maxNodes": 100000
+		"maxLevel": 10
 	}
 }
