@@ -48,12 +48,16 @@ func (t CommonTarget) String() string {
 func (t CommonTarget) Refine(_, surplus []float64, volume float64) float64 {
 	nm := uint(len(surplus)) / 2
 
-	Σ := 0.0
-	for i := uint(0); i < nm; i++ {
-		Δ := surplus[i*2] * volume
-		Σ += Δ * Δ
+	k := uint(0)
+	if t.Config().Squared {
+		k = 1
 	}
 
+	Σ := 0.0
+	for i := uint(0); i < nm; i++ {
+		Δ := surplus[i*2+k] * volume
+		Σ += Δ * Δ
+	}
 	Σ = math.Sqrt(Σ)
 
 	if Σ <= t.Config().Tolerance {

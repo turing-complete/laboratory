@@ -22,7 +22,7 @@ type Config struct {
 	Interpolation InterpolationConfig // Interpolation
 	Assessment    AssessmentConfig    // Assessment
 
-	// A flag for displaying diagnostic information.
+	// A flag indicating that diagnostic information should be displayed.
 	Verbose bool
 }
 
@@ -44,12 +44,15 @@ type ProbabilityConfig struct {
 
 // TargetConfig is a configuration of a quantity of interest.
 type TargetConfig struct {
-	// The name of the quantity of interest. The options are “end-to-end-delay,”
+	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “temperature-profile.”
 	Name string
 
-	// The absolute error tolerance.
+	// The error tolerance.
 	Tolerance float64
+	// A flag indicating that the error estimation should be based on the
+	// squared quantity.
+	Squared bool
 
 	// The indices of the cores that should be considered; if empty, the
 	// parameter is set to all cores.
@@ -60,7 +63,7 @@ type TargetConfig struct {
 	// empty, the parameter is set to the entire span [0, 1].
 	TimeFraction []float64
 
-	// A flag for displaying diagnostic information.
+	// A flag indicating that diagnostic information should be displayed.
 	Verbose bool
 }
 
