@@ -73,6 +73,10 @@ func (t *sliceTarget) String() string {
 	return CommonTarget{t}.String()
 }
 
+func (t *sliceTarget) Config() *TargetConfig {
+	return t.config
+}
+
 func (t *sliceTarget) Dimensions() (uint, uint) {
 	return 1 + t.problem.nz, uint(len(t.cores)) * 2 // +1 for time
 }
@@ -117,11 +121,7 @@ func (t *sliceTarget) Compute(node, value []float64) {
 }
 
 func (t *sliceTarget) Refine(node, surplus []float64, volume float64) float64 {
-	Δ := CommonTarget{t}.Refine(node, surplus, volume)
-	if Δ <= t.config.Tolerance {
-		Δ = 0
-	}
-	return Δ
+	return CommonTarget{t}.Refine(node, surplus, volume)
 }
 
 func (t *sliceTarget) Monitor(level, np, na uint) {

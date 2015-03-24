@@ -10,10 +10,13 @@ import (
 )
 
 type Target interface {
+	Config() *TargetConfig
 	Dimensions() (uint, uint)
+
 	Compute([]float64, []float64)
 	Refine([]float64, []float64, float64) float64
 	Monitor(uint, uint, uint)
+
 	Generate(uint) []float64
 }
 
@@ -51,14 +54,23 @@ func (t CommonTarget) Refine(_, surplus []float64, volume float64) float64 {
 		Σ += Δ * Δ
 	}
 
-	return math.Sqrt(Σ)
+	Σ = math.Sqrt(Σ)
+
+	if Σ <= t.Config().Tolerance {
+		Σ = 0
+	}
+
+	return Σ
 }
 
-func (t CommonTarget) Monitor(level, np, na uint) {
-	if level == 0 {
-		fmt.Printf("%10s %15s %15s\n", "Level", "Passive Nodes", "Active Nodes")
+func (t CommonTarget) Monitor(k, np, na uint) {
+	if !t.Config().Verbose {
+		return
 	}
-	fmt.Printf("%10d %15d %15d\n", level, np, na)
+	if k == 0 {
+		fmt.Printf("%10s %15s %15s\n", "Iteration", "Passive Nodes", "Active Nodes")
+	}
+	fmt.Printf("%10d %15d %15d\n", k, np, na)
 }
 
 func (t CommonTarget) Generate(ns uint) []float64 {

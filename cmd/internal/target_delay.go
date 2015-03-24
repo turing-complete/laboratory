@@ -16,6 +16,10 @@ func (t *delayTarget) String() string {
 	return CommonTarget{t}.String()
 }
 
+func (t *delayTarget) Config() *TargetConfig {
+	return t.config
+}
+
 func (t *delayTarget) Dimensions() (uint, uint) {
 	return t.problem.nz, 2
 }
@@ -27,17 +31,11 @@ func (t *delayTarget) Compute(node []float64, value []float64) {
 }
 
 func (t *delayTarget) Refine(node, surplus []float64, volume float64) float64 {
-	Δ := CommonTarget{t}.Refine(node, surplus, volume)
-	if Δ <= t.config.Tolerance {
-		Δ = 0
-	}
-	return Δ
+	return CommonTarget{t}.Refine(node, surplus, volume)
 }
 
 func (t *delayTarget) Monitor(level, np, na uint) {
-	if t.config.Verbose {
-		CommonTarget{t}.Monitor(level, np, na)
-	}
+	CommonTarget{t}.Monitor(level, np, na)
 }
 
 func (t *delayTarget) Generate(ns uint) []float64 {

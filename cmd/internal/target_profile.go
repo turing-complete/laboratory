@@ -71,6 +71,10 @@ func (t *profileTarget) String() string {
 	return CommonTarget{t}.String()
 }
 
+func (t *profileTarget) Config() *TargetConfig {
+	return t.config
+}
+
 func (t *profileTarget) Dimensions() (uint, uint) {
 	nci, ns := uint(len(t.cores)), uint(len(t.timeline))-t.shift
 	return t.problem.nz, ns * nci * 2
@@ -100,17 +104,11 @@ func (t *profileTarget) Compute(node, value []float64) {
 }
 
 func (t *profileTarget) Refine(node, surplus []float64, volume float64) float64 {
-	Δ := CommonTarget{t}.Refine(node, surplus, volume)
-	if Δ <= t.config.Tolerance {
-		Δ = 0
-	}
-	return Δ
+	return CommonTarget{t}.Refine(node, surplus, volume)
 }
 
 func (t *profileTarget) Monitor(level, np, na uint) {
-	if t.config.Verbose {
-		CommonTarget{t}.Monitor(level, np, na)
-	}
+	CommonTarget{t}.Monitor(level, np, na)
 }
 
 func (t *profileTarget) Generate(ns uint) []float64 {
