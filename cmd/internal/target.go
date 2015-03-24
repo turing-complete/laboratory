@@ -20,7 +20,7 @@ type Target interface {
 	Generate(uint) []float64
 }
 
-type CommonTarget struct {
+type GenericTarget struct {
 	Target
 }
 
@@ -42,12 +42,12 @@ func NewTarget(problem *Problem) (Target, error) {
 	}
 }
 
-func (t CommonTarget) String() string {
+func (t GenericTarget) String() string {
 	ni, no := t.Dimensions()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func (t CommonTarget) Refine(_, surplus []float64, volume float64) float64 {
+func (t GenericTarget) Refine(_, surplus []float64, volume float64) float64 {
 	nm := uint(len(surplus)) / 2
 
 	k := uint(0)
@@ -69,7 +69,7 @@ func (t CommonTarget) Refine(_, surplus []float64, volume float64) float64 {
 	return Σ
 }
 
-func (t CommonTarget) Monitor(k, np, na uint) {
+func (t GenericTarget) Monitor(k, np, na uint) {
 	if !t.Config().Verbose {
 		return
 	}
@@ -79,7 +79,7 @@ func (t CommonTarget) Monitor(k, np, na uint) {
 	fmt.Printf("%10d %15d %15d\n", k, np, na)
 }
 
-func (t CommonTarget) Generate(ns uint) []float64 {
+func (t GenericTarget) Generate(ns uint) []float64 {
 	ni, _ := t.Dimensions()
 	return probability.Sample(uniform.New(0, 1), ns*ni)
 }

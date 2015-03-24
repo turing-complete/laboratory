@@ -68,7 +68,7 @@ func newProfileTarget(p *Problem, tac *TargetConfig,
 }
 
 func (t *profileTarget) String() string {
-	return CommonTarget{t}.String()
+	return GenericTarget{t}.String()
 }
 
 func (t *profileTarget) Config() *TargetConfig {
@@ -104,13 +104,13 @@ func (t *profileTarget) Compute(node, value []float64) {
 }
 
 func (t *profileTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return CommonTarget{t}.Refine(node, surplus, volume)
+	return GenericTarget{t}.Refine(node, surplus, volume)
 }
 
 func (t *profileTarget) Monitor(level, np, na uint) {
-	CommonTarget{t}.Monitor(level, np, na)
+	GenericTarget{t}.Monitor(level, np, na)
 }
 
 func (t *profileTarget) Generate(ns uint) []float64 {
-	return CommonTarget{t}.Generate(ns)
+	return GenericTarget{t}.Generate(ns)
 }
