@@ -48,7 +48,9 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 		return piece
 	}
 
-	fmt.Println(solution)
+	if config.Verbose {
+		fmt.Println(solution)
+	}
 
 	μo := make([]float64, nm)
 	vo := make([]float64, nm)
@@ -64,6 +66,7 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 	εvr := make([]float64, nm)
 
 	analytic := len(solution.Expectation) == no
+	fallback := 0
 
 	// Compute errors across all outputs.
 	for i := 0; i < nm; i++ {
@@ -78,6 +81,11 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 		if analytic {
 			μp[i] = solution.Expectation[j]
 			vp[i] = solution.Expectation[j+1] - μp[i]*μp[i]
+			if vp[i] < 0 {
+				fallback++
+				μp[i] = statistics.Mean(predictions)
+				vp[i] = statistics.Variance(predictions)
+			}
 		} else {
 			μp[i] = statistics.Mean(predictions)
 			vp[i] = statistics.Variance(predictions)
@@ -93,10 +101,18 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 	}
 
 	if nm == 1 {
-		fmt.Printf("Result: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+		fmt.Printf("Result: i %d, o %d, l %2d, n %5d, ",
+			solution.Inputs, solution.Outputs, solution.Level, solution.Nodes)
+		fmt.Printf("μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 			μo[0], εμ[0], εμr[0], vo[0], εv[0], εvr[0], εp[0])
+
 		return nil
 	}
+
+	fmt.Printf("Result: inputs %d, outputs %d, level %d, nodes %d\n",
+		solution.Inputs, solution.Outputs, solution.Level, solution.Nodes)
+
+	fmt.Printf("Outputs:\n")
 
 	if config.Verbose {
 		for i := 0; i < nm; i++ {
@@ -116,6 +132,10 @@ func command(config internal.Config, predict *mat.File, observe *mat.File) error
 
 	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 		μo[kμ], εμ[kμ], εμr[kμ], vo[kv], εv[kv], εvr[kv], εp[kp])
+
+	if fallback > 0 {
+		fmt.Printf("Warning: encountered a negative variance %d time(s).\n", fallback)
+	}
 
 	return nil
 }
