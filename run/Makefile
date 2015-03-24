@@ -50,4 +50,7 @@ $(foreach case,$(cases),$(eval $(call define_case,$(case))))
 clean:
 	rm -f $(bins) cache/*.mat
 
+flush:
+	rm -f cache/*.mat
+
 .PHONY: all clean
