@@ -5,9 +5,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/ready-steady/numeric/basis/linhat"
-	"github.com/ready-steady/numeric/grid/newcot"
-	"github.com/ready-steady/numeric/interpolation/adhier"
+	"github.com/ready-steady/adhier"
+	"github.com/ready-steady/adhier/basis/linhat"
+	"github.com/ready-steady/adhier/grid/newcot"
 )
 
 type Solver struct {

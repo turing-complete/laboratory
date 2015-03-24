@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/ready-steady/numeric/interpolation/adhier"
+	"github.com/ready-steady/adhier"
 	"github.com/ready-steady/simulation/temperature/numeric"
 )
 

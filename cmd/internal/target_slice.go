@@ -3,11 +3,11 @@ package internal
 import (
 	"fmt"
 
-	"github.com/ready-steady/numeric/interpolation/spline"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
 	"github.com/ready-steady/simulation/power"
 	"github.com/ready-steady/simulation/temperature/numeric"
+	"github.com/ready-steady/spline"
 
 	"../../pkg/cache"
 )
