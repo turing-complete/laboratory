@@ -53,7 +53,7 @@ func (t *switchTarget) Config() *TargetConfig {
 }
 
 func (t *switchTarget) Dimensions() (uint, uint) {
-	return t.problem.nz, t.problem.nt * (1 + uint(len(t.cores)))
+	return t.problem.nz, 2 * t.problem.nt * (1 + uint(len(t.cores)))
 }
 
 func (t *switchTarget) Compute(node, value []float64) {
