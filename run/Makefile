@@ -48,6 +48,6 @@ endef
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))
 
 clean:
-	rm -f $(bins) *.mat
+	rm -f $(bins) cache/*.mat
 
 .PHONY: all clean
