@@ -50,9 +50,9 @@ type TargetConfig struct {
 
 	// The error tolerance.
 	Tolerance float64
-	// A flag indicating that the error estimation should be based on the
-	// squared quantity.
-	Squared bool
+	// The patter that is replicated onto a surplus in order to identify the
+	// elements that should be used for the error estimation.
+	Stencil []bool
 
 	// The indices of the cores that should be considered; if empty, the
 	// parameter is set to all cores.

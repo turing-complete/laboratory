@@ -25,18 +25,23 @@ type GenericTarget struct {
 }
 
 func NewTarget(problem *Problem) (Target, error) {
-	config := &problem.Config.Target
+	config := problem.Config.Target
+
+	if len(config.Stencil) == 0 {
+		config.Stencil = []bool{true, false}
+	}
+
 	switch config.Name {
 	case "end-to-end-delay":
-		return newDelayTarget(problem, config), nil
+		return newDelayTarget(problem, &config), nil
 	case "total-energy":
-		return newEnergyTarget(problem, config), nil
+		return newEnergyTarget(problem, &config), nil
 	case "temperature-slice":
-		return newSliceTarget(problem, config, &problem.Config.Temperature)
+		return newSliceTarget(problem, &config, &problem.Config.Temperature)
 	case "temperature-switch":
-		return newSwitchTarget(problem, config, &problem.Config.Temperature)
+		return newSwitchTarget(problem, &config, &problem.Config.Temperature)
 	case "temperature-profile":
-		return newProfileTarget(problem, config, &problem.Config.Temperature)
+		return newProfileTarget(problem, &config, &problem.Config.Temperature)
 	default:
 		return nil, errors.New("the target is unknown")
 	}
@@ -48,21 +53,22 @@ func (t GenericTarget) String() string {
 }
 
 func (t GenericTarget) Refine(_, surplus []float64, volume float64) float64 {
-	nm := uint(len(surplus)) / 2
+	config := t.Config()
 
-	k := uint(0)
-	if t.Config().Squared {
-		k = 1
-	}
+	stencil := config.Stencil
+
+	no, ns := uint(len(surplus)), uint(len(stencil))
 
 	Σ := 0.0
-	for i := uint(0); i < nm; i++ {
-		Δ := surplus[i*2+k] * volume
-		Σ += Δ * Δ
+	for i := uint(0); i < no; i++ {
+		if stencil[i%ns] {
+			s := surplus[i] * volume
+			Σ += s * s
+		}
 	}
 	Σ = math.Sqrt(Σ)
 
-	if Σ <= t.Config().Tolerance {
+	if Σ <= config.Tolerance {
 		Σ = 0
 	}
 
