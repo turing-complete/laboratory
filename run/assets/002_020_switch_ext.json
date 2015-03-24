@@ -1,0 +1,17 @@
+{
+	"inherit": "assets/002_020_switch.json",
+
+	"target": {
+		"tolerance": 1e-2,
+		"stencil": [false, false, true, false],
+		"verbose": true
+	},
+
+	"interpolation": {
+		"rate": 1,
+		"maxLevel": 10,
+		"balance": false
+	},
+
+	"verbose": true
+}
