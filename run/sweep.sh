@@ -3,10 +3,19 @@
 set -e
 
 case=$1
-test -z "$case" && exit 1
+if [ -z "$case" ]; then
+	echo 'Error: need a case name.'
+	exit 1
+fi
 
-file="assets/$case.json"
-test -e "$file" || exit 1
+file="assets/${case}_ext.json"
+if [ ! -f "$file" ]; then
+	file="assets/${case}.json"
+fi
+if [ ! -f "$file" ]; then
+	echo 'Error: cannot find the configuration file.'
+	exit 1
+fi
 
 name='maxLevel'
 values='2 4 6 8 10'
