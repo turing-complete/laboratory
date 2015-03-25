@@ -13,7 +13,7 @@ func newDelayTarget(p *Problem, c *TargetConfig) *delayTarget {
 }
 
 func (t *delayTarget) String() string {
-	return GenericTarget{t}.String()
+	return String(t)
 }
 
 func (t *delayTarget) Config() *TargetConfig {
@@ -31,13 +31,13 @@ func (t *delayTarget) Compute(node []float64, value []float64) {
 }
 
 func (t *delayTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return GenericTarget{t}.Refine(node, surplus, volume)
+	return Refine(t, node, surplus, volume)
 }
 
 func (t *delayTarget) Monitor(level, np, na uint) {
-	GenericTarget{t}.Monitor(level, np, na)
+	Monitor(t, level, np, na)
 }
 
 func (t *delayTarget) Generate(ns uint) []float64 {
-	return GenericTarget{t}.Generate(ns)
+	return Generate(t, ns)
 }

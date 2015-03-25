@@ -70,7 +70,7 @@ func newSliceTarget(p *Problem, tac *TargetConfig,
 }
 
 func (t *sliceTarget) String() string {
-	return GenericTarget{t}.String()
+	return String(t)
 }
 
 func (t *sliceTarget) Config() *TargetConfig {
@@ -121,7 +121,7 @@ func (t *sliceTarget) Compute(node, value []float64) {
 }
 
 func (t *sliceTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return GenericTarget{t}.Refine(node, surplus, volume)
+	return Refine(t, node, surplus, volume)
 }
 
 func (t *sliceTarget) Monitor(level, np, na uint) {

@@ -13,7 +13,7 @@ func newEnergyTarget(p *Problem, c *TargetConfig) *energyTarget {
 }
 
 func (t *energyTarget) String() string {
-	return GenericTarget{t}.String()
+	return String(t)
 }
 
 func (t *energyTarget) Config() *TargetConfig {
@@ -40,13 +40,13 @@ func (t *energyTarget) Compute(node, value []float64) {
 }
 
 func (t *energyTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return GenericTarget{t}.Refine(node, surplus, volume)
+	return Refine(t, node, surplus, volume)
 }
 
 func (t *energyTarget) Monitor(level, np, na uint) {
-	GenericTarget{t}.Monitor(level, np, na)
+	Monitor(t, level, np, na)
 }
 
 func (t *energyTarget) Generate(ns uint) []float64 {
-	return GenericTarget{t}.Generate(ns)
+	return Generate(t, ns)
 }

@@ -20,10 +20,6 @@ type Target interface {
 	Generate(uint) []float64
 }
 
-type GenericTarget struct {
-	Target
-}
-
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
@@ -47,13 +43,13 @@ func NewTarget(problem *Problem) (Target, error) {
 	}
 }
 
-func (t GenericTarget) String() string {
-	ni, no := t.Dimensions()
+func String(target Target) string {
+	ni, no := target.Dimensions()
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func (t GenericTarget) Refine(_, surplus []float64, volume float64) float64 {
-	config := t.Config()
+func Refine(target Target, _, surplus []float64, volume float64) float64 {
+	config := target.Config()
 
 	stencil := config.Stencil
 
@@ -75,8 +71,8 @@ func (t GenericTarget) Refine(_, surplus []float64, volume float64) float64 {
 	return Σ
 }
 
-func (t GenericTarget) Monitor(k, np, na uint) {
-	if !t.Config().Verbose {
+func Monitor(target Target, k, np, na uint) {
+	if !target.Config().Verbose {
 		return
 	}
 	if k == 0 {
@@ -85,8 +81,8 @@ func (t GenericTarget) Monitor(k, np, na uint) {
 	fmt.Printf("%10d %15d %15d\n", k, np, na)
 }
 
-func (t GenericTarget) Generate(ns uint) []float64 {
-	ni, _ := t.Dimensions()
+func Generate(target Target, ns uint) []float64 {
+	ni, _ := target.Dimensions()
 	return probability.Sample(uniform.New(0, 1), ns*ni)
 }
 
