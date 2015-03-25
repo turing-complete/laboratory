@@ -2,7 +2,7 @@ pwd := $(shell pwd)
 cmd := $(pwd)/../cmd
 pkg := $(pwd)/../pkg
 
-bins := construct predict observe compare
+bins := construct predict observe compare sweep
 srcs := $(shell find $(cmd)/internal -name '*.go')
 srcs += $(shell find $(pkg) -name '*.go')
 
@@ -32,6 +32,7 @@ $(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) $$($(1)_co
 $(1)_construct := cache/$(1)_$$($(1)_hash)_construct.mat
 $(1)_observe := cache/$(1)_$$($(1)_hash_base)_observe.mat
 $(1)_predict := cache/$(1)_$$($(1)_hash)_predict.mat
+$(1)_sweep := cache/$(1)_$$($(1)_hash)_sweep.mat
 
 $$($(1)_construct): construct
 	@./construct -c $$($(1)_config) -o $$@
@@ -44,6 +45,11 @@ $$($(1)_observe): observe
 
 $(1): $$($(1)_predict) $$($(1)_observe) compare
 	@./compare -c $$($(1)_config) -i $$($(1)_predict) -o $$($(1)_observe)
+
+$(1)_sweep: $$($(1)_sweep)
+
+$$($(1)_sweep): sweep
+	@./sweep -c $$($(1)_config) -o $$@
 endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))
