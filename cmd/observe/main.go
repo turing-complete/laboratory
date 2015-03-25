@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"math/rand"
 	"runtime"
-	"sync"
 	"time"
 
 	"github.com/ready-steady/format/mat"
@@ -41,7 +40,7 @@ func command(config internal.Config, _ *mat.File, output *mat.File) error {
 		fmt.Println(target)
 	}
 
-	values := invoke(target, points)
+	values := internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
 
 	if config.Verbose {
 		fmt.Println("Done.")
@@ -63,35 +62,6 @@ func command(config internal.Config, _ *mat.File, output *mat.File) error {
 	}
 
 	return nil
-}
-
-func invoke(target internal.Target, points []float64) []float64 {
-	nw := uint(runtime.GOMAXPROCS(0))
-	ni, no := target.Dimensions()
-	np := uint(len(points)) / ni
-
-	values := make([]float64, np*no)
-	jobs := make(chan uint, np)
-	group := sync.WaitGroup{}
-	group.Add(int(np))
-
-	for i := uint(0); i < nw; i++ {
-		go func() {
-			for j := range jobs {
-				target.Compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
-				group.Done()
-			}
-		}()
-	}
-
-	for i := uint(0); i < np; i++ {
-		jobs <- i
-	}
-
-	group.Wait()
-	close(jobs)
-
-	return values
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
