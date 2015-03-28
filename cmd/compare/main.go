@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"math"
 
-	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/hdf5"
 	"github.com/ready-steady/statistics"
 	"github.com/ready-steady/statistics/test"
 
@@ -16,7 +16,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, predict *mat.File, observe *mat.File) error {
+func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) error {
 	if predict == nil || observe == nil {
 		return errors.New("two data files are required")
 	}

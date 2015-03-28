@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/hdf5"
 
 	"../internal"
 )
@@ -12,7 +12,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, _ *mat.File, output *mat.File) error {
+func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return err

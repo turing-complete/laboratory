@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"runtime"
 
-	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/hdf5"
 
 	"../internal"
 )
@@ -16,7 +16,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, _ *mat.File, output *mat.File) error {
+func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return err
@@ -48,10 +48,10 @@ func command(config internal.Config, _ *mat.File, output *mat.File) error {
 	ni, no := target.Dimensions()
 	np := uint(len(points)) / ni
 
-	if err := output.PutArray("values", values, no, np); err != nil {
+	if err := output.Put("values", values, no, np); err != nil {
 		return err
 	}
-	if err := output.PutArray("points", points, ni, np); err != nil {
+	if err := output.Put("points", points, ni, np); err != nil {
 		return err
 	}
 

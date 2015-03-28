@@ -8,10 +8,10 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/hdf5"
 )
 
-func Run(command func(Config, *mat.File, *mat.File) error) {
+func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
 	configFile := flag.String("c", "", "")
 	inputFile := flag.String("i", "", "")
 	outputFile := flag.String("o", "", "")
@@ -32,7 +32,7 @@ func Run(command func(Config, *mat.File, *mat.File) error) {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	var input, output *mat.File
+	var input, output *hdf5.File
 
 	if len(*configFile) == 0 {
 		fail(errors.New("a configuration file is required"))
@@ -43,20 +43,19 @@ func Run(command func(Config, *mat.File, *mat.File) error) {
 	}
 
 	if len(*inputFile) > 0 {
-		if input, err = mat.Open(*inputFile, "r"); err != nil {
+		if input, err = hdf5.Open(*inputFile); err != nil {
 			fail(err)
 		}
 		defer input.Close()
 	}
 
 	if len(*outputFile) > 0 {
-		var mode string
 		if _, err = os.Stat(*outputFile); os.IsNotExist(err) {
-			mode = "w7.3"
+			output, err = hdf5.Create(*outputFile)
 		} else {
-			mode = "u"
+			output, err = hdf5.Open(*outputFile)
 		}
-		if output, err = mat.Open(*outputFile, mode); err != nil {
+		if err != nil {
 			fail(err)
 		}
 		defer output.Close()

@@ -3,4 +3,4 @@
 /observe
 /compare
 /sweep
-/cache/*.mat
+/cache/*.h5

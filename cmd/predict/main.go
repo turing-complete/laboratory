@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"time"
 
-	"github.com/ready-steady/format/mat"
+	"github.com/ready-steady/hdf5"
 
 	"../internal"
 )
@@ -15,7 +15,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, input *mat.File, output *mat.File) error {
+func command(config internal.Config, input *hdf5.File, output *hdf5.File) error {
 	if input == nil {
 		return errors.New("an input file is required")
 	}
@@ -66,10 +66,10 @@ func command(config internal.Config, input *mat.File, output *mat.File) error {
 	no := uint(len(values)) / ns
 	ni := uint(len(points)) / ns
 
-	if err := output.PutArray("values", values, no, ns); err != nil {
+	if err := output.Put("values", values, no, ns); err != nil {
 		return err
 	}
-	if err := output.PutArray("points", points, ni, ns); err != nil {
+	if err := output.Put("points", points, ni, ns); err != nil {
 		return err
 	}
 	if err := output.Put("solution", *solution); err != nil {

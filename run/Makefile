@@ -29,10 +29,10 @@ $(1)_hash_base := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config_base) 
 $(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
 $(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) $$($(1)_config_base) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config) $$($(1)_config_base) | md5))
 
-$(1)_construct := cache/$(1)_$$($(1)_hash)_construct.mat
-$(1)_observe := cache/$(1)_$$($(1)_hash_base)_observe.mat
-$(1)_predict := cache/$(1)_$$($(1)_hash)_predict.mat
-$(1)_sweep := cache/$(1)_$$($(1)_hash)_sweep.mat
+$(1)_construct := cache/$(1)_$$($(1)_hash)_construct.h5
+$(1)_observe := cache/$(1)_$$($(1)_hash_base)_observe.h5
+$(1)_predict := cache/$(1)_$$($(1)_hash)_predict.h5
+$(1)_sweep := cache/$(1)_$$($(1)_hash)_sweep.h5
 
 $$($(1)_construct): construct
 	@./construct -c $$($(1)_config) -o $$@
@@ -54,10 +54,10 @@ endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))
 
-clean:
-	rm -f $(bins) cache/*.mat
+clean: flush
+	rm -f $(bins)
 
 flush:
-	rm -f cache/*.mat
+	rm -f cache/*.h5
 
-.PHONY: all clean
+.PHONY: all clean flush
