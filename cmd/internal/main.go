@@ -11,12 +11,15 @@ import (
 	"github.com/ready-steady/hdf5"
 )
 
-func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
-	configFile := flag.String("c", "", "")
-	inputFile := flag.String("i", "", "")
-	outputFile := flag.String("o", "", "")
-	profileFile := flag.String("p", "", "")
+var (
+	configFile  = flag.String("c", "", "a configuration file in JSON")
+	inputFile   = flag.String("i", "", "a data file in HDF5 (typically an input)")
+	outputFile  = flag.String("o", "", "a data file in HDF5 (typically an output)")
+	profileFile = flag.String("p", "", "a file for dumping profiling information")
+)
 
+func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
+	flag.Usage = usage
 	flag.Parse()
 
 	var err error
@@ -67,16 +70,13 @@ func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
 }
 
 func fail(err error) {
-	fmt.Printf("Error: %s.\n\n", err)
+	fmt.Printf("Error: %s.\n", err)
+	os.Exit(1)
+}
 
-	fmt.Printf("Usage: %s [options]", os.Args[0])
-	fmt.Printf(`
-
-Options:
-    -c <FILE.json>  - a configuration file (required)
-    -i <FILE.mat>   - a data file, typically an input
-    -o <FILE.mat>   - a date file, typically an output
-`)
-
+func usage() {
+	fmt.Printf("Usage: %s [options]\n\n", os.Args[0])
+	fmt.Printf("Options:\n")
+	flag.PrintDefaults()
 	os.Exit(1)
 }
