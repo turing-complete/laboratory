@@ -15,8 +15,9 @@ import (
 )
 
 var (
-	parameters = flag.String("s", "[]", "the parameters to sweep")
-	pointCount = flag.Uint("n", 10, "the number of points per parameter")
+	parameterIndex = flag.String("s", "[]", "the parameters to sweep")
+	numberOfPoints = flag.Uint("n", 10, "the number of points per parameter")
+	defaultPoint   = flag.Float64("d", 0.5, "the default value of parameters")
 )
 
 func main() {
@@ -70,7 +71,7 @@ func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
 
 func generate(target internal.Target) ([]float64, error) {
 	ni, _ := target.Dimensions()
-	np := *pointCount
+	np := *numberOfPoints
 
 	index, err := detect(target)
 	if err != nil {
@@ -79,7 +80,7 @@ func generate(target internal.Target) ([]float64, error) {
 
 	parameters := make([][]float64, ni)
 
-	steady := []float64{0.5}
+	steady := []float64{*defaultPoint}
 	for i := uint(0); i < ni; i++ {
 		parameters[i] = steady
 	}
@@ -100,7 +101,7 @@ func detect(target internal.Target) ([]uint, error) {
 
 	index := []uint{}
 
-	decoder := json.NewDecoder(strings.NewReader(*parameters))
+	decoder := json.NewDecoder(strings.NewReader(*parameterIndex))
 	if err := decoder.Decode(&index); err != nil {
 		return nil, err
 	}
