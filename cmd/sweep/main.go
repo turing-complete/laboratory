@@ -16,8 +16,8 @@ import (
 
 var (
 	parameterIndex = flag.String("s", "[]", "the parameters to sweep")
-	numberOfPoints = flag.Uint("n", 10, "the number of points per parameter")
-	defaultPoint   = flag.Float64("d", 0.5, "the default value of parameters")
+	numberOfNodes  = flag.Uint("n", 10, "the number of nodes per parameter")
+	defaultNode    = flag.Float64("d", 0.5, "the default value of parameters")
 )
 
 func main() {
@@ -71,7 +71,7 @@ func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
 
 func generate(target internal.Target) ([]float64, error) {
 	ni, _ := target.Dimensions()
-	np := *numberOfPoints
+	nn := *numberOfNodes
 
 	index, err := detect(target)
 	if err != nil {
@@ -80,14 +80,14 @@ func generate(target internal.Target) ([]float64, error) {
 
 	parameters := make([][]float64, ni)
 
-	steady := []float64{*defaultPoint}
+	steady := []float64{*defaultNode}
 	for i := uint(0); i < ni; i++ {
 		parameters[i] = steady
 	}
 
-	sweep := make([]float64, np)
-	for i := uint(0); i < np; i++ {
-		sweep[i] = float64(i) * 1.0 / float64(np-1)
+	sweep := make([]float64, nn)
+	for i := uint(0); i < nn; i++ {
+		sweep[i] = float64(i) * 1.0 / float64(nn-1)
 	}
 	for _, i := range index {
 		parameters[i] = sweep
