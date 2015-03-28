@@ -16,6 +16,7 @@ var (
 	inputFile   = flag.String("i", "", "a data file in HDF5 (typically an input)")
 	outputFile  = flag.String("o", "", "a data file in HDF5 (typically an output)")
 	profileFile = flag.String("p", "", "a file for dumping profiling information")
+	verbose     = flag.Bool("v", false, "a flag for displaying diagnostic information")
 )
 
 func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
@@ -43,6 +44,9 @@ func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
 	config, err := NewConfig(*configFile)
 	if err != nil {
 		fail(err)
+	}
+	if *verbose {
+		config.Verbose = true
 	}
 
 	if len(*inputFile) > 0 {

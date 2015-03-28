@@ -49,7 +49,7 @@ $(1): $$($(1)_predict) $$($(1)_observe) compare
 $(1)_sweep: $$($(1)_sweep)
 
 $$($(1)_sweep): sweep
-	@./sweep -c $$($(1)_config) -o $$@
+	@./sweep -c $$($(1)_config) -o $$@ -v
 endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))
