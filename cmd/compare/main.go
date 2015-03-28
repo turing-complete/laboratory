@@ -52,6 +52,8 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 		fmt.Println(solution)
 	}
 
+	an := make([]bool, nm)
+
 	μo := make([]float64, nm)
 	vo := make([]float64, nm)
 
@@ -66,7 +68,6 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 	εvr := make([]float64, nm)
 
 	analytic := len(solution.Expectation) == no
-	fallback := 0
 
 	// Compute errors across all outputs.
 	for i := 0; i < nm; i++ {
@@ -82,9 +83,10 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 			μp[i] = solution.Expectation[j]
 			vp[i] = solution.Expectation[j+1] - μp[i]*μp[i]
 			if vp[i] < 0 {
-				fallback++
 				μp[i] = statistics.Mean(predictions)
 				vp[i] = statistics.Variance(predictions)
+			} else {
+				an[i] = true
 			}
 		} else {
 			μp[i] = statistics.Mean(predictions)
@@ -116,8 +118,14 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 
 	if config.Verbose {
 		for i := 0; i < nm; i++ {
-			fmt.Printf("%7d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
+			fmt.Printf("%7d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e",
 				i, μo[i], εμ[i], εμr[i], vo[i], εv[i], εvr[i], εp[i])
+
+			if !an[i] {
+				fmt.Printf(" (sampling)\n")
+			}
+
+			fmt.Printf("\n")
 		}
 	}
 
@@ -132,10 +140,6 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 
 	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 		μo[kμ], εμ[kμ], εμr[kμ], vo[kv], εv[kv], εvr[kv], εp[kp])
-
-	if fallback > 0 {
-		fmt.Printf("Warning: encountered a negative variance %d time(s).\n", fallback)
-	}
 
 	return nil
 }
