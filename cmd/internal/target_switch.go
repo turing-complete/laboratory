@@ -20,7 +20,7 @@ func newSwitchTarget(p *Problem, tac *TargetConfig,
 	tec *TemperatureConfig) (*switchTarget, error) {
 
 	power := power.New(p.platform, p.application)
-	temperature, err := numeric.New(&tec.Config)
+	temperature, err := newTemperature(tec)
 	if err != nil {
 		return nil, err
 	}
