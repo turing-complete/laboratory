@@ -46,6 +46,6 @@ function explore()
     figure;
     surf(X, Y, Z);
     zlim([MN, MX]);
-    title(sprintf('Output%d(Input%d, Input%d), Range %f', z, x, y, mx-mn));
+    title(sprintf('Output %d(Input %d, Input %d), Range %f', z-1, x-1, y-1, mx-mn));
   end
 end
