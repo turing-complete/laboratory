@@ -2,7 +2,7 @@ pwd := $(shell pwd)
 cmd := $(pwd)/../cmd
 pkg := $(pwd)/../pkg
 
-bins := construct predict observe compare sweep
+bins := construct predict observe compare explore
 srcs := $(shell find $(cmd)/internal -name '*.go')
 srcs += $(shell find $(pkg) -name '*.go')
 
@@ -32,7 +32,7 @@ $(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) $$($(1)_co
 $(1)_construct := data/$(1)_$$($(1)_hash)_construct.h5
 $(1)_observe := data/$(1)_$$($(1)_hash_base)_observe.h5
 $(1)_predict := data/$(1)_$$($(1)_hash)_predict.h5
-$(1)_sweep := data/$(1)_$$($(1)_hash)_sweep.h5
+$(1)_explore := data/$(1)_$$($(1)_hash)_explore.h5
 
 $$($(1)_construct): construct
 	@./construct -c $$($(1)_config) -o $$@
@@ -46,10 +46,10 @@ $$($(1)_observe): observe
 $(1): $$($(1)_predict) $$($(1)_observe) compare
 	@./compare -c $$($(1)_config) -i $$($(1)_predict) -o $$($(1)_observe)
 
-$(1)_sweep: $$($(1)_sweep)
+$(1)_explore: $$($(1)_explore)
 
-$$($(1)_sweep): sweep
-	@./sweep -c $$($(1)_config) -o $$@ -v
+$$($(1)_explore): explore
+	@./explore -c $$($(1)_config) -o $$@ -v
 endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))

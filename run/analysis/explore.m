@@ -1,5 +1,5 @@
-function sweep()
-  filename = locate('sweep');
+function explore()
+  filename = locate('explore');
 
   points = h5read(filename, '/points');
   values = h5read(filename, '/values');
