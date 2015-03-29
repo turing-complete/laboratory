@@ -48,7 +48,7 @@ func String(target Target) string {
 	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
 }
 
-func Refine(target Target, _, surplus []float64, volume float64) float64 {
+func Refine(target Target, _, surplus []float64, _ float64) float64 {
 	config := target.Config()
 
 	stencil := config.Stencil
@@ -61,7 +61,7 @@ func Refine(target Target, _, surplus []float64, volume float64) float64 {
 			score += surplus[i] * surplus[i]
 		}
 	}
-	score = volume * math.Sqrt(score)
+	score = math.Sqrt(score)
 
 	if score <= config.Tolerance {
 		score = 0
