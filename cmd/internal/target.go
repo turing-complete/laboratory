@@ -55,20 +55,19 @@ func Refine(target Target, _, surplus []float64, volume float64) float64 {
 
 	no, ns := uint(len(surplus)), uint(len(stencil))
 
-	Σ := 0.0
+	score := 0.0
 	for i := uint(0); i < no; i++ {
 		if stencil[i%ns] {
-			s := surplus[i] * volume
-			Σ += s * s
+			score += surplus[i] * surplus[i]
 		}
 	}
-	Σ = math.Sqrt(Σ)
+	score = volume * math.Sqrt(score)
 
-	if Σ <= config.Tolerance {
-		Σ = 0
+	if score <= config.Tolerance {
+		score = 0
 	}
 
-	return Σ
+	return score
 }
 
 func Monitor(target Target, k, np, na uint) {
