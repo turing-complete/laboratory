@@ -9,7 +9,7 @@
 
 	"target": {
 		"name": "end-to-end-delay",
-		"tolerance": 1e-3
+		"tolerance": 5e-2
 	},
 
 	"interpolation": {
