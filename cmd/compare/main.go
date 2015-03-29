@@ -129,8 +129,8 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 		}
 	}
 
-	μμo, μεμ, μεμr := statistics.Mean(μo), statistics.Mean(εμ), statistics.Mean(nan(εμr))
-	μvo, μεv, μεvr := statistics.Mean(vo), statistics.Mean(εv), statistics.Mean(nan(εvr))
+	μμo, μεμ, μεμr := statistics.Mean(μo), statistics.Mean(εμ), statistics.Mean(filter(εμr))
+	μvo, μεv, μεvr := statistics.Mean(vo), statistics.Mean(εv), statistics.Mean(filter(εvr))
 	μεp := statistics.Mean(εp)
 
 	fmt.Printf("Average: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
@@ -156,11 +156,11 @@ func max(data []float64) int {
 	return k
 }
 
-func nan(data []float64) []float64 {
+func filter(data []float64) []float64 {
 	result := make([]float64, 0, len(data))
 
 	for _, x := range data {
-		if !math.IsNaN(x) {
+		if !math.IsNaN(x) && !math.IsInf(x, 0) {
 			result = append(result, x)
 		}
 	}
