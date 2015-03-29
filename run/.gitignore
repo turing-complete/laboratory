@@ -2,5 +2,6 @@
 /predict
 /observe
 /compare
-/sweep
-/cache/*.h5
+/explore
+
+/data/*.h5
