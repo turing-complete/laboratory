@@ -3,7 +3,6 @@ package internal
 import (
 	"errors"
 	"fmt"
-	"strings"
 
 	"github.com/ready-steady/adhier"
 	"github.com/ready-steady/adhier/basis/linhat"
@@ -25,7 +24,7 @@ func NewSolver(problem *Problem, target Target) (*Solver, error) {
 	var grid adhier.Grid
 	var basis adhier.Basis
 
-	switch strings.ToLower(problem.Config.Interpolation.Rule) {
+	switch problem.Config.Interpolation.Rule {
 	case "open":
 		grid, basis = newcot.NewOpen(ni), linhat.NewOpen(ni)
 	case "closed":
