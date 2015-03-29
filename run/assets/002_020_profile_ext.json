@@ -2,8 +2,8 @@
 	"inherit": "assets/002_020_profile.json",
 
 	"target": {
-		"tolerance": 5,
-		"stencil": [false, true],
+		"tolerance": 1,
+		"stencil": [true, false],
 		"verbose": true
 	},
 

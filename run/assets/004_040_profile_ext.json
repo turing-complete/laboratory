@@ -2,7 +2,15 @@
 	"inherit": "assets/004_040_profile.json",
 
 	"target": {
+		"tolerance": 1,
+		"stencil": [true, false],
 		"verbose": true
+	},
+
+	"interpolation": {
+		"rate": 1,
+		"maxLevel": 10,
+		"balance": false
 	},
 
 	"verbose": true

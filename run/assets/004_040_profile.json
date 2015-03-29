@@ -5,7 +5,6 @@
 
 	"target": {
 		"name": "temperature-profile",
-		"tolerance": 1,
 		"coreIndex": [0],
 		"timeStep": 1e-2,
 		"timeFraction": []
@@ -13,9 +12,5 @@
 
 	"temperature": {
 		"floorplan": "assets/004.flp"
-	},
-
-	"interpolation": {
-		"maxLevel": 10
 	}
 }
