@@ -122,7 +122,7 @@ func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) err
 				i, μo[i], εμ[i], εμr[i], vo[i], εv[i], εvr[i], εp[i])
 
 			if !an[i] {
-				fmt.Printf(" (sampling)\n")
+				fmt.Printf(" (sampling)")
 			}
 
 			fmt.Printf("\n")
