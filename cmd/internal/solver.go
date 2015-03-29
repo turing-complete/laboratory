@@ -25,10 +25,10 @@ func NewSolver(problem *Problem, target Target) (*Solver, error) {
 	var basis adhier.Basis
 
 	switch problem.Config.Interpolation.Rule {
-	case "open":
-		grid, basis = newcot.NewOpen(ni), linhat.NewOpen(ni)
 	case "closed":
 		grid, basis = newcot.NewClosed(ni), linhat.NewClosed(ni)
+	case "open":
+		grid, basis = newcot.NewOpen(ni), linhat.NewOpen(ni)
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
 	}

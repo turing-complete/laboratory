@@ -74,7 +74,7 @@ type TemperatureConfig struct {
 
 // InterpolationConfig is a configuration of the interpolation algorithm.
 type InterpolationConfig struct {
-	// The quadrature rule to use, which is either “open” or “closed.”
+	// The quadrature rule to use, which is either “closed” or “open.”
 	Rule string
 
 	adhier.Config

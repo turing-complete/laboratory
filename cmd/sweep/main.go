@@ -35,7 +35,7 @@ func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
 		return err
 	}
 
-	points, err := generate(target)
+	points, err := generate(target, config.Interpolation.Rule)
 	if err != nil {
 		return err
 	}
@@ -69,7 +69,7 @@ func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
 	return nil
 }
 
-func generate(target internal.Target) ([]float64, error) {
+func generate(target internal.Target, rule string) ([]float64, error) {
 	ni, _ := target.Dimensions()
 	nn := *numberOfNodes
 
@@ -78,16 +78,25 @@ func generate(target internal.Target) ([]float64, error) {
 		return nil, err
 	}
 
-	parameters := make([][]float64, ni)
-
 	steady := []float64{*defaultNode}
-	for i := uint(0); i < ni; i++ {
-		parameters[i] = steady
-	}
 
 	sweep := make([]float64, nn)
-	for i := uint(0); i < nn; i++ {
-		sweep[i] = float64(i) * 1.0 / float64(nn-1)
+	switch rule {
+	case "closed":
+		for i := uint(0); i < nn; i++ {
+			sweep[i] = float64(i) / float64(nn-1)
+		}
+	case "open":
+		for i := uint(0); i < nn; i++ {
+			sweep[i] = float64(i+1) / float64(nn+1)
+		}
+	default:
+		return nil, errors.New("the sweep rule is unknown")
+	}
+
+	parameters := make([][]float64, ni)
+	for i := uint(0); i < ni; i++ {
+		parameters[i] = steady
 	}
 	for _, i := range index {
 		parameters[i] = sweep
