@@ -123,7 +123,18 @@ func NewConfig(path string) (*Config, error) {
 }
 
 func DefaultConfig() *Config {
-	return &Config{}
+	config := &Config{}
+
+	i := &config.Interpolation
+	i.Rule = "open"
+	i.MinLevel = 1
+	i.MaxLevel = 10
+
+	a := &config.Assessment
+	a.Seed = 1
+	a.Samples = 10000
+
+	return config
 }
 
 func populate(config *Config, path string) error {

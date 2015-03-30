@@ -7,31 +7,19 @@
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
-		"varThreshold": 0.9
+		"varThreshold": 0.95
 	},
 
 	"target": {
 		"name": "temperature-profile",
-		"tolerance": 1e-2,
-		"timeStep": 1e-4
+		"coreIndex": [0],
+		"timeStep": 1e-2,
+		"tolerance": 1
 	},
 
     "temperature": {
         "floorplan": "fixtures/002.flp",
 		"configuration": "fixtures/hotspot.config",
         "ambience": 318.15
-    },
-
-	"interpolation": {
-		"rule": "open",
-		"minLevel": 1,
-		"maxLevel": 9
-	},
-
-	"assessment": {
-		"seed": 1,
-		"samples": 10000
-	},
-
-	"verbose": false
+    }
 }

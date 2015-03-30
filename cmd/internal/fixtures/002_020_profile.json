@@ -23,15 +23,6 @@
 	},
 
 	"interpolation": {
-		"rule": "open",
-		"minLevel": 1,
 		"maxLevel": 3
-	},
-
-	"assessment": {
-		"seed": 1,
-		"samples": 10000
-	},
-
-	"verbose": false
+	}
 }

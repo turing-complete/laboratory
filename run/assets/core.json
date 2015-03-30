@@ -9,16 +9,5 @@
 	"temperature": {
 		"configuration": "assets/hotspot.config",
 		"ambience": 318.15
-	},
-
-	"interpolation": {
-		"rule": "open",
-		"minLevel": 1,
-		"maxLevel": 10
-	},
-
-	"assessment": {
-		"seed": 1,
-		"samples": 10000
 	}
 }
