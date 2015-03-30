@@ -8,14 +8,11 @@ import (
 	"github.com/ready-steady/simulation/temperature/numeric"
 )
 
-// Config is a configuration of a problem.
+// Config is a configuration of the problem.
 type Config struct {
 	Inherit string
 
-	// A file containing the specification of a system (a platform and an
-	// application) to analyze in the TGFF format.
-	System string
-
+	System        SystemConfig        // Platform and application
 	Probability   ProbabilityConfig   // Probability model
 	Target        TargetConfig        // Quantity of interest
 	Temperature   TemperatureConfig   // Temperature analysis
@@ -24,6 +21,12 @@ type Config struct {
 
 	// A flag indicating that diagnostic information should be displayed.
 	Verbose bool
+}
+
+// SystemConfig is a configuration of the system.
+type SystemConfig struct {
+	// A TGFF file containing the specification of the system to analyze.
+	Specification string
 }
 
 // ProbabilityConfig is a configuration of the probability model.
@@ -42,7 +45,7 @@ type ProbabilityConfig struct {
 	VarThreshold float64 // ∈ (0, 1]
 }
 
-// TargetConfig is a configuration of a quantity of interest.
+// TargetConfig is a configuration of the quantity of interest.
 type TargetConfig struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “temperature-profile.”

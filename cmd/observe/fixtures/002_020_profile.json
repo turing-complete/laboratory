@@ -1,5 +1,7 @@
 {
-	"system": "fixtures/002_020.tgff",
+	"system": {
+		"specification": "fixtures/002_020.tgff"
+	},
 
 	"probability": {
 		"maxDelay": 0.2,

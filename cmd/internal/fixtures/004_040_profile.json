@@ -1,7 +1,9 @@
 {
 	"inherit": "fixtures/002_020_profile.json",
 
-	"system": "fixtures/004_040.tgff",
+	"system": {
+		"specification": "fixtures/004_040.tgff"
+	},
 
 	"temperature": {
 		"floorplan": "fixtures/004.flp"

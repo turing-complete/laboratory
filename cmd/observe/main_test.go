@@ -1,6 +1,7 @@
 package main
 
 import (
+	"runtime"
 	"sync"
 	"testing"
 
@@ -11,7 +12,7 @@ import (
 )
 
 func BenchmarkInvokeJobQueue(b *testing.B) {
-	benchmarkInvoke(invoke, b)
+	benchmarkInvoke(invokeJobQueue, b)
 }
 
 func BenchmarkInvokeNoJobQueue(b *testing.B) {
@@ -20,7 +21,7 @@ func BenchmarkInvokeNoJobQueue(b *testing.B) {
 
 func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testing.B) {
 	const (
-		sampleCount = 10000
+		sampleCount = 1000
 	)
 
 	config, _ := internal.NewConfig("fixtures/002_020_profile.json")
@@ -36,6 +37,10 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 	for i := 0; i < b.N; i++ {
 		invoke(target, points)
 	}
+}
+
+func invokeJobQueue(target internal.Target, points []float64) []float64 {
+	return internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
 }
 
 func invokeNoJobQueue(target internal.Target, points []float64) []float64 {

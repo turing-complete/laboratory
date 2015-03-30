@@ -4,7 +4,7 @@ import (
 	"math"
 	"testing"
 
-	"github.com/ready-steady/support/assert"
+	"github.com/ready-steady/assert"
 )
 
 func TestCombine(t *testing.T) {
