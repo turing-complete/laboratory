@@ -25,8 +25,7 @@
 	"interpolation": {
 		"rule": "open",
 		"minLevel": 1,
-		"maxLevel": 9,
-		"maxNodes": 100000
+		"maxLevel": 9
 	},
 
 	"assessment": {
