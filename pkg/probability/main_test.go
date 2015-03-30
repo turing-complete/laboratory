@@ -2,6 +2,8 @@ package probability
 
 import (
 	"testing"
+
+	"github.com/ready-steady/assert"
 )
 
 func TestParseInverter(t *testing.T) {
@@ -22,11 +24,10 @@ func TestParseInverter(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result := ParseInverter(c.line)
-		if c.success && result == nil {
-			t.Errorf("expected “%v” to succeed", c.line)
-		} else if !c.success && result != nil {
-			t.Errorf("expected “%v” to fail", c.line)
+		if _, err := ParseInverter(c.line); c.success {
+			assert.Success(err, t)
+		} else {
+			assert.Failure(err, t)
 		}
 	}
 }

@@ -76,9 +76,9 @@ func NewProblem(config *Config) (*Problem, error) {
 		return nil, err
 	}
 
-	marginalizer := aprobability.ParseInverter(c.Marginal)
-	if marginalizer == nil {
-		return nil, errors.New("invalid marginal distributions")
+	marginalizer, err := aprobability.ParseInverter(c.Marginal)
+	if err != nil {
+		return nil, err
 	}
 	marginals := make([]probability.Inverter, nu)
 	for i, tid := range tasks {

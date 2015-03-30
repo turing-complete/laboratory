@@ -1,6 +1,7 @@
 package probability
 
 import (
+	"errors"
 	"regexp"
 	"strconv"
 	"strings"
@@ -16,17 +17,17 @@ const (
 	betaFamily
 )
 
-func ParseInverter(line string) func(min, max float64) probability.Inverter {
+func ParseInverter(line string) (func(float64, float64) probability.Inverter, error) {
 	family, params := parse(line)
 
 	switch family {
 	case betaFamily:
 		return func(min, max float64) probability.Inverter {
 			return beta.New(params[0], params[1], min, max)
-		}
+		}, nil
+	default:
+		return nil, errors.New("the marginal distribution is unknown")
 	}
-
-	return nil
 }
 
 func parse(line string) (family, []float64) {
