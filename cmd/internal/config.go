@@ -125,17 +125,24 @@ func NewConfig(path string) (*Config, error) {
 func DefaultConfig() *Config {
 	config := &Config{}
 
-	i := &config.Interpolation
-	i.Rule = "open"
-	i.MinLevel = 1
-	i.MaxLevel = 10
+	func(c *TargetConfig) {
+		c.Stencil = []bool{true, false}
+	}(&config.Target)
 
-	t := &config.Temperature
-	t.Ambience = 45 + 273.15
+	func(c *InterpolationConfig) {
+		c.Rule = "open"
+		c.MinLevel = 1
+		c.MaxLevel = 10
+	}(&config.Interpolation)
 
-	a := &config.Assessment
-	a.Seed = 1
-	a.Samples = 10000
+	func(c *TemperatureConfig) {
+		c.Ambience = 45 + 273.15
+	}(&config.Temperature)
+
+	func(c *AssessmentConfig) {
+		c.Seed = 1
+		c.Samples = 10000
+	}(&config.Assessment)
 
 	return config
 }

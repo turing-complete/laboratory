@@ -3,7 +3,6 @@
 
 	"target": {
 		"tolerance": 1,
-		"stencil": [true, false],
 		"verbose": true
 	},
 

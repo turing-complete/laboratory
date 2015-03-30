@@ -23,10 +23,6 @@ type Target interface {
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
-	if len(config.Stencil) == 0 {
-		config.Stencil = []bool{true, false}
-	}
-
 	switch config.Name {
 	case "end-to-end-delay":
 		return newDelayTarget(problem, &config), nil
