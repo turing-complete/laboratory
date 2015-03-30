@@ -17,7 +17,7 @@ import (
 var standardGaussian = gaussian.New(0, 1)
 
 type Problem struct {
-	Config Config
+	Config *Config
 
 	platform    *system.Platform
 	application *system.Application
@@ -40,7 +40,7 @@ func (p *Problem) String() string {
 		p.nc, p.nt, p.nu, p.nz)
 }
 
-func NewProblem(config Config) (*Problem, error) {
+func NewProblem(config *Config) (*Problem, error) {
 	platform, application, err := system.Load(config.System.Specification)
 	if err != nil {
 		return nil, err

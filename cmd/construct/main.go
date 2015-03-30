@@ -12,7 +12,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
+func command(config *internal.Config, _ *hdf5.File, output *hdf5.File) error {
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return err

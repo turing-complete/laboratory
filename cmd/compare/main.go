@@ -16,7 +16,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, predict *hdf5.File, observe *hdf5.File) error {
+func command(config *internal.Config, predict *hdf5.File, observe *hdf5.File) error {
 	if predict == nil || observe == nil {
 		return errors.New("two data files are required")
 	}

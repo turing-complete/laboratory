@@ -19,7 +19,7 @@ var (
 	verbose     = flag.Bool("v", false, "a flag for displaying diagnostic information")
 )
 
-func Run(command func(Config, *hdf5.File, *hdf5.File) error) {
+func Run(command func(*Config, *hdf5.File, *hdf5.File) error) {
 	flag.Usage = usage
 	flag.Parse()
 

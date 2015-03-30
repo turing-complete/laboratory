@@ -15,7 +15,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, input *hdf5.File, output *hdf5.File) error {
+func command(config *internal.Config, input *hdf5.File, output *hdf5.File) error {
 	if input == nil {
 		return errors.New("an input file is required")
 	}

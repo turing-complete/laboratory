@@ -91,12 +91,12 @@ type AssessmentConfig struct {
 	Samples uint
 }
 
-func NewConfig(path string) (Config, error) {
+func NewConfig(path string) (*Config, error) {
 	paths := []string{path}
 	for {
-		config := Config{}
-		if err := populate(&config, path); err != nil {
-			return Config{}, err
+		config := DefaultConfig()
+		if err := populate(config, path); err != nil {
+			return nil, err
 		}
 
 		if len(config.Inherit) > 0 {
@@ -112,14 +112,18 @@ func NewConfig(path string) (Config, error) {
 		break
 	}
 
-	config := Config{}
+	config := DefaultConfig()
 	for _, path := range paths {
-		if err := populate(&config, path); err != nil {
-			return Config{}, err
+		if err := populate(config, path); err != nil {
+			return nil, err
 		}
 	}
 
 	return config, nil
+}
+
+func DefaultConfig() *Config {
+	return &Config{}
 }
 
 func populate(config *Config, path string) error {

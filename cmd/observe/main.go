@@ -16,7 +16,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config internal.Config, _ *hdf5.File, output *hdf5.File) error {
+func command(config *internal.Config, _ *hdf5.File, output *hdf5.File) error {
 	config.Probability.VarThreshold = 42
 
 	problem, err := internal.NewProblem(config)
