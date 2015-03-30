@@ -7,7 +7,6 @@
 	},
 
 	"temperature": {
-		"configuration": "assets/hotspot.config",
-		"ambience": 318.15
+		"configuration": "assets/hotspot.config"
 	}
 }

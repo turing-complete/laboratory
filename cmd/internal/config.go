@@ -130,6 +130,9 @@ func DefaultConfig() *Config {
 	i.MinLevel = 1
 	i.MaxLevel = 10
 
+	t := &config.Temperature
+	t.Ambience = 45 + 273.15
+
 	a := &config.Assessment
 	a.Seed = 1
 	a.Samples = 10000

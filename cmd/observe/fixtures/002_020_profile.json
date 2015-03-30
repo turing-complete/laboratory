@@ -19,7 +19,6 @@
 
     "temperature": {
         "floorplan": "fixtures/002.flp",
-		"configuration": "fixtures/hotspot.config",
-        "ambience": 318.15
+		"configuration": "fixtures/hotspot.config"
     }
 }
