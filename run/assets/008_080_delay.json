@@ -5,7 +5,7 @@
 
 	"target": {
 		"name": "end-to-end-delay",
-		"tolerance": 1e-1
+		"tolerance": 1e-3
 	},
 
 	"interpolation": {

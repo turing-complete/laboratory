@@ -9,7 +9,7 @@
 
 	"target": {
 		"name": "total-energy",
-		"tolerance": 1e-1
+		"tolerance": 5e-2
 	},
 
 	"interpolation": {
