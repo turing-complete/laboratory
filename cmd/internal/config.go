@@ -118,7 +118,7 @@ func DefaultConfig() *Config {
 	config := &Config{}
 
 	func(c *SystemConfig) {
-		c.Ambience = 45 + 273.15
+		c.Ambience = 45
 	}(&config.System)
 
 	func(c *TargetConfig) {
