@@ -1,9 +1,5 @@
 {
-	"inherit": "assets/core.json",
-
-	"system": {
-		"specification": "assets/002_020.tgff"
-	},
+	"inherit": "assets/002_020.json",
 
 	"target": {
 		"name": "end-to-end-delay",

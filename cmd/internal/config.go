@@ -24,10 +24,10 @@ type Config struct {
 
 // SystemConfig is a configuration of the system.
 type SystemConfig struct {
-	// A TGFF file containing a specification of the system to analyze.
+	// A TGFF file describing the platform and application to analyze.
 	Specification string
-	// A configuration of the temperature analysis.
-	Temperature numeric.Config
+
+	numeric.Config
 }
 
 // ProbabilityConfig is a configuration of the probability model.
@@ -118,7 +118,7 @@ func DefaultConfig() *Config {
 	config := &Config{}
 
 	func(c *SystemConfig) {
-		c.Temperature.Ambience = 45 + 273.15
+		c.Ambience = 45 + 273.15
 	}(&config.System)
 
 	func(c *TargetConfig) {

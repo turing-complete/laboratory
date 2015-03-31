@@ -40,7 +40,7 @@ func newSystem(config *SystemConfig) (*system, error) {
 
 	time := time.NewList(platform, application)
 	power := power.New(platform, application)
-	temperature := numeric.New(&config.Temperature, integrator)
+	temperature := numeric.New(&config.Config, integrator)
 
 	schedule := time.Compute(asystem.NewProfile(platform, application).Mobility)
 

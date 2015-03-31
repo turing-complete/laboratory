@@ -1,8 +1,6 @@
 {
 	"system": {
-		"temperature": {
-			"configuration": "assets/hotspot.config"
-		}
+		"configuration": "assets/hotspot.config"
 	},
 
 	"probability": {

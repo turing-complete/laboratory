@@ -1,9 +1,5 @@
 {
-	"inherit": "assets/core.json",
-
-	"system": {
-		"specification": "assets/008_080.tgff"
-	},
+	"inherit": "assets/008_080.json",
 
 	"target": {
 		"name": "total-energy",

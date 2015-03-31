@@ -9,9 +9,11 @@ import (
 func TestNewProblem(t *testing.T) {
 	config, _ := NewConfig("fixtures/002_020_profile.json")
 	problem, _ := NewProblem(config)
+	system := problem.system
 
-	assert.Equal(problem.nc, uint(2), t)
-	assert.Equal(problem.nt, uint(20), t)
+	assert.Equal(system.nc, uint(2), t)
+	assert.Equal(system.nt, uint(20), t)
+
 	assert.Equal(problem.nu, uint(20), t)
 	assert.Equal(problem.nz, uint(3), t)
 
@@ -27,8 +29,7 @@ func TestNewProblem(t *testing.T) {
 
 	assert.Equal(len(problem.multiplier), 3*20, t)
 
-	schedule := problem.system.schedule
-
+	schedule := system.schedule
 	assert.Equal(schedule.Mapping, []uint{
 		0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
 		1, 0, 0, 0, 0, 1, 1, 1, 1, 1,

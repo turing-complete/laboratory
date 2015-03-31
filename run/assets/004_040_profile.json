@@ -1,12 +1,5 @@
 {
-	"inherit": "assets/core.json",
-
-	"system": {
-		"specification": "assets/004_040.tgff",
-		"temperature": {
-			"floorplan": "assets/004.flp"
-		}
-	},
+	"inherit": "assets/004_040.json",
 
 	"target": {
 		"name": "temperature-profile",

@@ -1,9 +1,5 @@
 {
-	"inherit": "assets/core.json",
-
-	"system": {
-		"specification": "assets/016_160.tgff"
-	},
+	"inherit": "assets/016_160.json",
 
 	"probability": {
 		"varThreshold": 0.9
