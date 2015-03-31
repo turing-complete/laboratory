@@ -13,7 +13,7 @@ type switchTarget struct {
 
 func newSwitchTarget(p *Problem, c *TargetConfig) (*switchTarget, error) {
 	// The cores of interest.
-	coreIndex, err := enumerate(p.nc, c.CoreIndex)
+	coreIndex, err := enumerate(p.system.nc, c.CoreIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -37,7 +37,7 @@ func (t *switchTarget) Config() *TargetConfig {
 }
 
 func (t *switchTarget) Dimensions() (uint, uint) {
-	return t.problem.nz, 2 * t.problem.nt * (1 + uint(len(t.coreIndex)))
+	return t.problem.nz, 2 * t.problem.system.nt * (1 + uint(len(t.coreIndex)))
 }
 
 func (t *switchTarget) Compute(node, value []float64) {
@@ -45,7 +45,7 @@ func (t *switchTarget) Compute(node, value []float64) {
 	s := p.system
 
 	coreIndex := t.coreIndex
-	nc, nt, nci := p.nc, p.nt, uint(len(coreIndex))
+	nc, nt, nci := s.nc, s.nt, uint(len(coreIndex))
 
 	schedule := s.computeSchedule(p.transform(node))
 

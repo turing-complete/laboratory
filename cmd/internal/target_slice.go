@@ -26,7 +26,7 @@ func newSliceTarget(p *Problem, c *TargetConfig) (*sliceTarget, error) {
 	)
 
 	// The cores of interest.
-	coreIndex, err := enumerate(p.nc, c.CoreIndex)
+	coreIndex, err := enumerate(p.system.nc, c.CoreIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -86,7 +86,7 @@ func (t *sliceTarget) Compute(node, value []float64) {
 		i, j := locate(left, right, time)
 
 		time = time[i:j]
-		Q = slice(Q[i*p.nc:j*p.nc], t.coreIndex, p.nc)
+		Q = slice(Q[i*s.nc:j*s.nc], t.coreIndex, s.nc)
 
 		interpolant = spline.NewCubic(time, Q)
 

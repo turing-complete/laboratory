@@ -24,15 +24,13 @@ type Problem struct {
 	multiplier []float64
 	marginals  []probability.Inverter
 
-	nc uint
-	nt uint
 	nu uint
 	nz uint
 }
 
 func (p *Problem) String() string {
 	return fmt.Sprintf("Problem{cores: %d, tasks: %d, dvars: %d, ivars: %d}",
-		p.nc, p.nt, p.nu, p.nz)
+		p.system.nc, p.system.nt, p.nu, p.nz)
 }
 
 func NewProblem(config *Config) (*Problem, error) {
@@ -83,8 +81,6 @@ func NewProblem(config *Config) (*Problem, error) {
 		multiplier: multiplier,
 		marginals:  marginals,
 
-		nc: system.nc,
-		nt: system.nt,
 		nu: nu,
 		nz: nz,
 	}
@@ -93,7 +89,7 @@ func NewProblem(config *Config) (*Problem, error) {
 }
 
 func (p *Problem) transform(z []float64) []float64 {
-	nt, nu, nz := p.nt, p.nu, p.nz
+	nt, nu, nz := p.system.nt, p.nu, p.nz
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)

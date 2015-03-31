@@ -11,7 +11,7 @@ type profileTarget struct {
 
 func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
 	// The cores of interest.
-	coreIndex, err := enumerate(p.nc, c.CoreIndex)
+	coreIndex, err := enumerate(p.system.nc, c.CoreIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +72,7 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 
 	coreIndex := t.coreIndex
-	nc, nci, ns := p.nc, uint(len(coreIndex)), uint(len(t.timeline))-t.shift
+	nc, nci, ns := s.nc, uint(len(coreIndex)), uint(len(t.timeline))-t.shift
 
 	Q = Q[t.shift*nc:]
 
