@@ -5,8 +5,6 @@ import (
 
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
-	"github.com/ready-steady/simulation/power"
-	"github.com/ready-steady/simulation/temperature/numeric"
 	"github.com/ready-steady/spline"
 
 	"../../pkg/cache"
@@ -16,52 +14,35 @@ type sliceTarget struct {
 	problem *Problem
 	config  *TargetConfig
 
-	power       *power.Power
-	temperature *numeric.Temperature
-
-	cores    []uint
-	timeline []float64
+	coreIndex []uint
+	timeline  []float64
 
 	cache *cache.Cache
 }
 
-func newSliceTarget(p *Problem, tac *TargetConfig,
-	tec *TemperatureConfig) (*sliceTarget, error) {
-
+func newSliceTarget(p *Problem, c *TargetConfig) (*sliceTarget, error) {
 	const (
 		cacheCapacity = 10000
 	)
 
-	power := power.New(p.platform, p.application)
-	temperature, err := newTemperature(tec)
+	// The cores of interest.
+	coreIndex, err := enumerate(p.nc, c.CoreIndex)
 	if err != nil {
 		return nil, err
 	}
 
-	// The cores of interest.
-	cores := tac.CoreIndex
-	if len(cores) == 0 {
-		cores = make([]uint, p.nc)
-		for i := uint(0); i < p.nc; i++ {
-			cores[i] = i
-		}
-	}
-
 	// The time moments of interest.
-	timeline, err := subdivide(p.schedule.Span, tac.TimeStep, tac.TimeFraction)
+	timeline, err := subdivide(p.system.schedule.Span, c.TimeStep, c.TimeFraction)
 	if err != nil {
 		return nil, err
 	}
 
 	target := &sliceTarget{
 		problem: p,
-		config:  tac,
+		config:  c,
 
-		power:       power,
-		temperature: temperature,
-
-		cores:    cores,
-		timeline: timeline,
+		coreIndex: coreIndex,
+		timeline:  timeline,
 
 		cache: cache.New(cacheCapacity),
 	}
@@ -78,11 +59,12 @@ func (t *sliceTarget) Config() *TargetConfig {
 }
 
 func (t *sliceTarget) Dimensions() (uint, uint) {
-	return 1 + t.problem.nz, uint(len(t.cores)) * 2 // +1 for time
+	return 1 + t.problem.nz, uint(len(t.coreIndex)) * 2 // +1 for time
 }
 
 func (t *sliceTarget) Compute(node, value []float64) {
 	p := t.problem
+	s := p.system
 
 	var interpolant *spline.Cubic
 	var key string
@@ -95,9 +77,8 @@ func (t *sliceTarget) Compute(node, value []float64) {
 	left, right := t.timeline[0], t.timeline[len(t.timeline)-1]
 
 	if interpolant == nil {
-		schedule := p.time.Recompute(p.schedule, p.transform(node[1:])) // +1 for time
-
-		Q, time, err := t.temperature.Compute(t.power.Process(schedule), []float64{0, right})
+		schedule := s.computeSchedule(p.transform(node[1:])) // +1 for time
+		Q, time, err := s.temperature.Compute(s.power.Process(schedule), []float64{0, right})
 		if err != nil {
 			panic("cannot compute a temperature profile")
 		}
@@ -105,7 +86,7 @@ func (t *sliceTarget) Compute(node, value []float64) {
 		i, j := locate(left, right, time)
 
 		time = time[i:j]
-		Q = slice(Q[i*p.nc:j*p.nc], t.cores, p.nc)
+		Q = slice(Q[i*p.nc:j*p.nc], t.coreIndex, p.nc)
 
 		interpolant = spline.NewCubic(time, Q)
 

@@ -1,6 +1,10 @@
 {
 	"system": {
-		"specification": "fixtures/002_020.tgff"
+		"specification": "fixtures/002_020.tgff",
+		"temperature": {
+			"floorplan": "fixtures/002.flp",
+			"configuration": "fixtures/hotspot.config"
+		}
 	},
 
 	"probability": {
@@ -15,10 +19,5 @@
 		"coreIndex": [0],
 		"timeStep": 1e-2,
 		"tolerance": 1
-	},
-
-    "temperature": {
-        "floorplan": "fixtures/002.flp",
-		"configuration": "fixtures/hotspot.config"
-    }
+	}
 }

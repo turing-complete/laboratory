@@ -1,39 +1,23 @@
 package internal
 
-import (
-	"github.com/ready-steady/simulation/power"
-	"github.com/ready-steady/simulation/temperature/numeric"
-)
-
 type profileTarget struct {
 	problem *Problem
 	config  *TargetConfig
 
-	power       *power.Power
-	temperature *numeric.Temperature
-
-	cores    []uint
-	timeline []float64
-	shift    uint
+	coreIndex []uint
+	timeline  []float64
+	shift     uint
 }
 
-func newProfileTarget(p *Problem, tac *TargetConfig,
-	tec *TemperatureConfig) (*profileTarget, error) {
-
-	power := power.New(p.platform, p.application)
-	temperature, err := newTemperature(tec)
-	if err != nil {
-		return nil, err
-	}
-
+func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
 	// The cores of interest.
-	cores, err := enumerate(p.nc, tac.CoreIndex)
+	coreIndex, err := enumerate(p.nc, c.CoreIndex)
 	if err != nil {
 		return nil, err
 	}
 
 	// The time moments of interest.
-	timeline, err := subdivide(p.schedule.Span, tac.TimeStep, tac.TimeFraction)
+	timeline, err := subdivide(p.system.schedule.Span, c.TimeStep, c.TimeFraction)
 	if err != nil {
 		return nil, err
 	}
@@ -54,14 +38,11 @@ func newProfileTarget(p *Problem, tac *TargetConfig,
 
 	target := &profileTarget{
 		problem: p,
-		config:  tac,
+		config:  c,
 
-		power:       power,
-		temperature: temperature,
-
-		cores:    cores,
-		timeline: timeline,
-		shift:    shift,
+		coreIndex: coreIndex,
+		timeline:  timeline,
+		shift:     shift,
 	}
 
 	return target, nil
@@ -76,27 +57,28 @@ func (t *profileTarget) Config() *TargetConfig {
 }
 
 func (t *profileTarget) Dimensions() (uint, uint) {
-	nci, ns := uint(len(t.cores)), uint(len(t.timeline))-t.shift
+	nci, ns := uint(len(t.coreIndex)), uint(len(t.timeline))-t.shift
 	return t.problem.nz, ns * nci * 2
 }
 
 func (t *profileTarget) Compute(node, value []float64) {
 	p := t.problem
+	s := p.system
 
-	schedule := p.time.Recompute(p.schedule, p.transform(node))
-	Q, _, err := t.temperature.Compute(t.power.Process(schedule), t.timeline)
+	schedule := s.computeSchedule(p.transform(node))
+	Q, _, err := s.temperature.Compute(s.power.Process(schedule), t.timeline)
 	if err != nil {
 		panic("cannot compute a temperature profile")
 	}
 
-	cores := t.cores
-	nc, nci, ns := p.nc, uint(len(cores)), uint(len(t.timeline))-t.shift
+	coreIndex := t.coreIndex
+	nc, nci, ns := p.nc, uint(len(coreIndex)), uint(len(t.timeline))-t.shift
 
 	Q = Q[t.shift*nc:]
 
 	for i, k := uint(0), uint(0); i < ns; i++ {
 		for j := uint(0); j < nci; j++ {
-			value[k] = Q[i*nc+cores[j]]
+			value[k] = Q[i*nc+coreIndex[j]]
 			value[k+1] = value[k] * value[k]
 			k += 2
 		}

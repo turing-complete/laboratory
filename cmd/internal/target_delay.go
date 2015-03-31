@@ -26,7 +26,9 @@ func (t *delayTarget) Dimensions() (uint, uint) {
 
 func (t *delayTarget) Compute(node []float64, value []float64) {
 	p := t.problem
-	value[0] = p.time.Recompute(p.schedule, p.transform(node)).Span
+	s := p.system
+
+	value[0] = s.computeSchedule(p.transform(node)).Span
 	value[1] = value[0] * value[0]
 }
 

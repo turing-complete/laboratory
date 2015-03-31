@@ -27,17 +27,19 @@ func TestNewProblem(t *testing.T) {
 
 	assert.Equal(len(problem.multiplier), 3*20, t)
 
-	assert.Equal(problem.schedule.Mapping, []uint{
+	schedule := problem.system.schedule
+
+	assert.Equal(schedule.Mapping, []uint{
 		0, 1, 0, 0, 1, 1, 1, 0, 0, 1,
 		1, 0, 0, 0, 0, 1, 1, 1, 1, 1,
 	}, t)
-	assert.Equal(problem.schedule.Order, []uint{
+	assert.Equal(schedule.Order, []uint{
 		0, 1, 2, 9, 12, 16, 18, 14, 17, 13,
 		15, 3, 5, 11, 19, 8, 7, 6, 4, 10,
 	}, t)
-	assert.EqualWithin(problem.schedule.Start, []float64{
+	assert.EqualWithin(schedule.Start, []float64{
 		0.000, 0.010, 0.013, 0.187, 0.265, 0.218, 0.262, 0.260, 0.242, 0.051,
 		0.267, 0.237, 0.079, 0.152, 0.113, 0.170, 0.079, 0.141, 0.113, 0.242,
 	}, 1e-15, t)
-	assert.EqualWithin(problem.schedule.Span, 0.291, 1e-15, t)
+	assert.EqualWithin(schedule.Span, 0.291, 1e-15, t)
 }

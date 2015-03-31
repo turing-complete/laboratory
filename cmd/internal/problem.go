@@ -6,26 +6,21 @@ import (
 
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/gaussian"
-	"github.com/ready-steady/simulation/system"
-	"github.com/ready-steady/simulation/time"
 	"github.com/ready-steady/statistics/correlation"
 
 	acorrelation "../../pkg/correlation"
 	aprobability "../../pkg/probability"
 )
 
-var standardGaussian = gaussian.New(0, 1)
+var (
+	standardGaussian = gaussian.New(0, 1)
+)
 
 type Problem struct {
 	Config *Config
+	system *system
 
-	platform    *system.Platform
-	application *system.Application
-
-	time     *time.List
-	schedule *time.Schedule
-
-	tasks      []uint
+	taskIndex  []uint
 	multiplier []float64
 	marginals  []probability.Inverter
 
@@ -41,18 +36,12 @@ func (p *Problem) String() string {
 }
 
 func NewProblem(config *Config) (*Problem, error) {
-	platform, application, err := system.Load(config.System.Specification)
+	system, err := newSystem(&config.System)
 	if err != nil {
 		return nil, err
 	}
 
-	nc, nt := uint(len(platform.Cores)), uint(len(application.Tasks))
-
-	time := time.NewList(platform, application)
-	schedule := time.Compute(system.NewProfile(platform, application).Mobility)
-
 	c := &config.Probability
-
 	if c.MaxDelay < 0 {
 		return nil, errors.New("the maximal delay should be nonnegative")
 	}
@@ -63,14 +52,14 @@ func NewProblem(config *Config) (*Problem, error) {
 		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
-	tasks, err := enumerate(nt, c.TaskIndex)
+	taskIndex, err := enumerate(system.nt, c.TaskIndex)
 	if err != nil {
 		return nil, err
 	}
 
-	nu := uint(len(tasks))
+	nu := uint(len(taskIndex))
 
-	C := acorrelation.Compute(application, tasks, c.CorrLength)
+	C := acorrelation.Compute(system.application, taskIndex, c.CorrLength)
 	multiplier, nz, err := correlation.Decompose(C, nu, c.VarThreshold)
 	if err != nil {
 		return nil, err
@@ -80,27 +69,22 @@ func NewProblem(config *Config) (*Problem, error) {
 	if err != nil {
 		return nil, err
 	}
+	duration := system.computeTime(system.schedule)
 	marginals := make([]probability.Inverter, nu)
-	for i, tid := range tasks {
-		duration := platform.Cores[schedule.Mapping[tid]].Time[application.Tasks[tid].Type]
-		marginals[i] = marginalizer(0, c.MaxDelay*duration)
+	for i, j := range taskIndex {
+		marginals[i] = marginalizer(0, c.MaxDelay*duration[j])
 	}
 
 	problem := &Problem{
 		Config: config,
+		system: system,
 
-		platform:    platform,
-		application: application,
-
-		time:     time,
-		schedule: schedule,
-
-		tasks:      tasks,
+		taskIndex:  taskIndex,
 		multiplier: multiplier,
 		marginals:  marginals,
 
-		nc: nc,
-		nt: nt,
+		nc: system.nc,
+		nt: system.nt,
 		nu: nu,
 		nz: nz,
 	}
@@ -108,22 +92,24 @@ func NewProblem(config *Config) (*Problem, error) {
 	return problem, nil
 }
 
-func (p *Problem) transform(node []float64) []float64 {
-	z := make([]float64, p.nz)
-	u := make([]float64, p.nu)
-	d := make([]float64, p.nt)
+func (p *Problem) transform(z []float64) []float64 {
+	nt, nu, nz := p.nt, p.nu, p.nz
+
+	n := make([]float64, nz)
+	u := make([]float64, nu)
+	d := make([]float64, nt)
 
 	// Independent uniform to independent Gaussian
-	for i := range z {
-		z[i] = standardGaussian.InvCDF(node[i])
+	for i := range n {
+		n[i] = standardGaussian.InvCDF(z[i])
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	combine(p.multiplier, z, u, p.nu, p.nz)
+	combine(p.multiplier, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform to dependent target
-	for i, tid := range p.tasks {
-		d[tid] = p.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+	for i, j := range p.taskIndex {
+		d[j] = p.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
 	return d

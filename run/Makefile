@@ -1,6 +1,6 @@
 pwd := $(shell pwd)
-cmd := $(pwd)/../cmd
-pkg := $(pwd)/../pkg
+cmd := $(dir $(pwd))cmd
+pkg := $(dir $(pwd))pkg
 
 bins := construct predict observe compare explore
 srcs := $(shell find $(cmd)/internal -name '*.go')

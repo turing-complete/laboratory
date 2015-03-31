@@ -15,7 +15,6 @@ type Config struct {
 	System        SystemConfig        // Platform and application
 	Probability   ProbabilityConfig   // Probability model
 	Target        TargetConfig        // Quantity of interest
-	Temperature   TemperatureConfig   // Temperature analysis
 	Interpolation InterpolationConfig // Interpolation
 	Assessment    AssessmentConfig    // Assessment
 
@@ -25,8 +24,10 @@ type Config struct {
 
 // SystemConfig is a configuration of the system.
 type SystemConfig struct {
-	// A TGFF file containing the specification of the system to analyze.
+	// A TGFF file containing a specification of the system to analyze.
 	Specification string
+	// A configuration of the temperature analysis.
+	Temperature numeric.Config
 }
 
 // ProbabilityConfig is a configuration of the probability model.
@@ -70,11 +71,6 @@ type TargetConfig struct {
 	Verbose bool
 }
 
-// TemperatureConfig is a configuration of the temperature analysis.
-type TemperatureConfig struct {
-	numeric.Config
-}
-
 // InterpolationConfig is a configuration of the interpolation algorithm.
 type InterpolationConfig struct {
 	// The quadrature rule to use, which is either “closed” or “open.”
@@ -94,8 +90,8 @@ type AssessmentConfig struct {
 func NewConfig(path string) (*Config, error) {
 	paths := []string{path}
 	for {
-		config := DefaultConfig()
-		if err := populate(config, path); err != nil {
+		config := Config{}
+		if err := populate(&config, path); err != nil {
 			return nil, err
 		}
 
@@ -103,10 +99,6 @@ func NewConfig(path string) (*Config, error) {
 			path = config.Inherit
 			paths = append([]string{path}, paths...)
 			continue
-		}
-
-		if len(paths) == 1 {
-			return config, nil
 		}
 
 		break
@@ -125,6 +117,10 @@ func NewConfig(path string) (*Config, error) {
 func DefaultConfig() *Config {
 	config := &Config{}
 
+	func(c *SystemConfig) {
+		c.Temperature.Ambience = 45 + 273.15
+	}(&config.System)
+
 	func(c *TargetConfig) {
 		c.Stencil = []bool{true, false}
 	}(&config.Target)
@@ -134,10 +130,6 @@ func DefaultConfig() *Config {
 		c.MinLevel = 1
 		c.MaxLevel = 10
 	}(&config.Interpolation)
-
-	func(c *TemperatureConfig) {
-		c.Ambience = 45 + 273.15
-	}(&config.Temperature)
 
 	func(c *AssessmentConfig) {
 		c.Seed = 1

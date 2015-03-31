@@ -2,7 +2,10 @@
 	"inherit": "assets/core.json",
 
 	"system": {
-		"specification": "assets/004_040.tgff"
+		"specification": "assets/004_040.tgff",
+		"temperature": {
+			"floorplan": "assets/004.flp"
+		}
 	},
 
 	"target": {
@@ -10,9 +13,5 @@
 		"coreIndex": [0],
 		"timeStep": 1e-2,
 		"timeFraction": []
-	},
-
-	"temperature": {
-		"floorplan": "assets/004.flp"
 	}
 }

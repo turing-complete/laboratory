@@ -1,12 +1,14 @@
 {
+	"system": {
+		"temperature": {
+			"configuration": "assets/hotspot.config"
+		}
+	},
+
 	"probability": {
 		"maxDelay": 0.2,
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
 		"varThreshold": 0.95
-	},
-
-	"temperature": {
-		"configuration": "assets/hotspot.config"
 	}
 }

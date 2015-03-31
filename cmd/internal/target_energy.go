@@ -26,14 +26,14 @@ func (t *energyTarget) Dimensions() (uint, uint) {
 
 func (t *energyTarget) Compute(node, value []float64) {
 	p := t.problem
+	s := p.system
 
-	cores, tasks := p.platform.Cores, p.application.Tasks
-	schedule := p.time.Recompute(p.schedule, p.transform(node))
+	schedule := s.computeSchedule(p.transform(node))
+	time, power := s.computeTime(schedule), s.computePower(schedule)
 
 	value[0] = 0
-	for i := range tasks {
-		value[0] += (schedule.Finish[i] - schedule.Start[i]) *
-			cores[schedule.Mapping[i]].Power[tasks[i].Type]
+	for i := range time {
+		value[0] += time[i] * power[i]
 	}
 
 	value[1] = value[0] * value[0]

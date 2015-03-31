@@ -10,7 +10,7 @@ func TestNewConfig(t *testing.T) {
 	config, _ := NewConfig("fixtures/004_040_profile.json")
 
 	assert.Equal(config.System.Specification, "fixtures/004_040.tgff", t)
-	assert.Equal(config.Temperature.Floorplan, "fixtures/004.flp", t)
+	assert.Equal(config.System.Temperature.Floorplan, "fixtures/004.flp", t)
 	assert.Equal(config.Probability.Marginal, "Beta(1, 1)", t)
 	assert.Equal(config.Assessment.Samples, uint(10000), t)
 }

@@ -2,15 +2,14 @@
 	"inherit": "assets/core.json",
 
 	"system": {
-		"specification": "assets/002_020.tgff"
+		"specification": "assets/002_020.tgff",
+		"temperature": {
+			"floorplan": "assets/002.flp"
+		}
 	},
 
 	"target": {
 		"name": "temperature-switch",
 		"coreIndex": [0]
-	},
-
-	"temperature": {
-		"floorplan": "assets/002.flp"
 	}
 }
