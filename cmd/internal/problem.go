@@ -50,7 +50,7 @@ func NewProblem(config *Config) (*Problem, error) {
 		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
-	taskIndex, err := enumerate(system.nt, c.TaskIndex)
+	taskIndex, err := parseNaturalIndex(c.TaskIndex, 0, system.nt-1)
 	if err != nil {
 		return nil, err
 	}

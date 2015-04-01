@@ -2,8 +2,12 @@ package internal
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"reflect"
+	"regexp"
+	"strconv"
+	"strings"
 	"unsafe"
 
 	"github.com/ready-steady/linear/matrix"
@@ -54,59 +58,6 @@ func combine(A, x, y []float64, m, n uint) {
 	}
 }
 
-func enumerate(count uint, line []uint) ([]uint, error) {
-	if len(line) == 0 {
-		line = make([]uint, count)
-		for i := uint(0); i < count; i++ {
-			line[i] = i
-		}
-	}
-
-	for _, i := range line {
-		if i >= count {
-			return nil, errors.New("the index is out of range")
-		}
-	}
-
-	return line, nil
-}
-
-func locate(l, r float64, line []float64) (uint, uint) {
-	n := len(line)
-
-	i, j := 0, n-1
-
-	for i < j-1 {
-		if l < line[i+1] {
-			break
-		}
-		i++
-	}
-	for j > i+1 {
-		if r > line[j-1] {
-			break
-		}
-		j--
-	}
-
-	return uint(i), uint(j + 1)
-}
-
-func slice(data []float64, index []uint, m uint) []float64 {
-	n := uint(len(data)) / m
-	p := uint(len(index))
-
-	chunk := make([]float64, p*n)
-
-	for i := uint(0); i < p; i++ {
-		for j := uint(0); j < n; j++ {
-			chunk[j*p+i] = data[j*m+index[i]]
-		}
-	}
-
-	return chunk
-}
-
 func stringify(node []float64) string {
 	const (
 		sizeOfFloat64 = 8
@@ -121,29 +72,103 @@ func stringify(node []float64) string {
 	return string(bytes)
 }
 
-func subdivide(span, Δx float64, fraction []float64) ([]float64, error) {
-	if Δx <= 0 {
-		return nil, errors.New("the step should be positive")
+func parseNaturalIndex(line string, min, max uint) ([]uint, error) {
+	realIndex, err := parseRealIndex(line, float64(min), float64(max))
+	if err != nil {
+		return nil, err
 	}
 
-	var left, right float64
-
-	switch len(fraction) {
-	case 0:
-		left, right = 0, span
-	case 1:
-		left, right = fraction[0]*span, fraction[0]*span
-	default:
-		left, right = fraction[0]*span, fraction[1]*span
-	}
-	if left < 0 || left > right || right > span {
-		return nil, errors.New("the fraction should be between 0 and 1")
+	index := make([]uint, len(realIndex))
+	for i := range index {
+		index[i] = uint(realIndex[i] + 0.5)
 	}
 
-	line := make([]float64, 0, uint((right-left)/Δx)+1)
-	for t := left; t <= right; t += Δx {
-		line = append(line, t)
+	return index, nil
+}
+
+var (
+	arrayPattern = regexp.MustCompile(`^\[([^:]*)]$`)
+	commaPattern = regexp.MustCompile(`\s*,\s*`)
+
+	rangePattern = regexp.MustCompile(`^\[(.*)\]$`)
+	colonPattern = regexp.MustCompile(`\s*:\s*`)
+)
+
+func parseRealIndex(line string, min, max float64) ([]float64, error) {
+	const (
+		ε = 1e-8
+	)
+
+	index := make([]float64, 0)
+
+	line = strings.Trim(line, " \t")
+	if len(line) == 0 {
+		start, step, end := min, 1.0, max
+		for start < end || math.Abs(start-end) < ε {
+			index = append(index, start)
+			start += step
+		}
+	} else if match := arrayPattern.FindStringSubmatch(line); match != nil {
+		for _, chunk := range commaPattern.Split(match[1], -1) {
+			number, err := strconv.ParseFloat(chunk, 64)
+			if err != nil {
+				return nil, err
+			}
+			index = append(index, number)
+		}
+	} else if match := rangePattern.FindStringSubmatch(line); match != nil {
+		var err error
+		var start, step, end float64
+
+		chunks := colonPattern.Split(match[1], -1)
+
+		switch len(chunks) {
+		case 2:
+			start, err = strconv.ParseFloat(chunks[0], 64)
+			if err != nil {
+				return nil, err
+			}
+			step = 1
+			end, err = strconv.ParseFloat(chunks[1], 64)
+			if err != nil {
+				return nil, err
+			}
+		case 3:
+			start, err = strconv.ParseFloat(chunks[0], 64)
+			if err != nil {
+				return nil, err
+			}
+			step, err = strconv.ParseFloat(chunks[1], 64)
+			if err != nil {
+				return nil, err
+			}
+			end, err = strconv.ParseFloat(chunks[2], 64)
+			if err != nil {
+				return nil, err
+			}
+		default:
+			return nil, errors.New(fmt.Sprintf("cannot parse the index “%s”", line))
+		}
+
+		for start < end || math.Abs(start-end) < ε {
+			index = append(index, start)
+			start += step
+		}
+	} else {
+		return nil, errors.New(fmt.Sprintf("cannot parse the index “%s”", line))
 	}
 
-	return line, nil
+	for i, item := range index {
+		if math.Abs(item-min) < ε {
+			index[i] = min
+		}
+		if math.Abs(item-max) < ε {
+			index[i] = max
+		}
+		if item < min || item > max {
+			return nil, errors.New(fmt.Sprintf("the index “%s” is out of range", line))
+		}
+	}
+
+	return index, nil
 }

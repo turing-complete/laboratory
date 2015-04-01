@@ -31,30 +31,52 @@ func TestCombine(t *testing.T) {
 	test([]float64{inf, 2, -inf}, []float64{-inf, -4, -inf, -inf})
 }
 
-func TestLocate(t *testing.T) {
-	line := []float64{0, 0.2, 0.4, 0.6, 0.8, 1}
-
-	test := func(l, r float64, i, j uint) {
-		goti, gotj := locate(l, r, line)
-		assert.Equal(goti, i, t)
-		assert.Equal(gotj, j, t)
+func TestParseNaturalIndex(t *testing.T) {
+	cases := []struct {
+		line   string
+		min    uint
+		max    uint
+		result []uint
+	}{
+		{"[0, 1, 9, 10]", 0, 10, []uint{0, 1, 9, 10}},
+		{"[0, 1, 11]", 0, 10, nil},
+		{"[0:10]", 0, 10, []uint{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+		{"[1:2:10]", 0, 10, []uint{1, 3, 5, 7, 9}},
+		{"[0:2:10]", 0, 10, []uint{0, 2, 4, 6, 8, 10}},
+		{"[0:5:15]", 0, 10, nil},
+		{"", 0, 10, []uint{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
 	}
 
-	test(0.0, 1.0, 0, 6)
-	test(0.1, 0.9, 0, 6)
-	test(0.1, 0.8, 0, 5)
-	test(0.2, 0.9, 1, 6)
-	test(0.2, 0.8, 1, 5)
-	test(0.3, 0.5, 1, 4)
+	for _, c := range cases {
+		result, err := parseNaturalIndex(c.line, c.min, c.max)
+		if c.result != nil {
+			assert.Success(err, t)
+		}
+		assert.Equal(result, c.result, t)
+	}
 }
 
-func TestSlice(t *testing.T) {
-	data := []float64{
-		0, 1, 2, 3, 4, 5,
-		6, 7, 8, 9, 8, 7,
-		6, 5, 4, 3, 2, 1,
+func TestParseRealIndex(t *testing.T) {
+	cases := []struct {
+		line   string
+		min    float64
+		max    float64
+		result []float64
+	}{
+		{"[0, 0.1, 0.9, 1]", 0, 1, []float64{0, 0.1, 0.9, 1}},
+		{"[0, 0.1, 1.1]", 0, 1, nil},
+		{"[0:1]", 0, 1, []float64{0, 1}},
+		{"[0.1:0.2:1]", 0, 1, []float64{0.1, 0.3, 0.5, 0.7, 0.9}},
+		{"[0:0.2:1]", 0, 1, []float64{0, 0.2, 0.4, 0.6, 0.8, 1}},
+		{"[0:0.5:1.5]", 0, 1, nil},
+		{"", 0, 1, []float64{0, 1}},
 	}
 
-	assert.Equal(slice(data, []uint{1, 3}, 6), []float64{1, 3, 7, 9, 5, 3}, t)
-	assert.Equal(slice(data, []uint{0, 5}, 6), []float64{0, 5, 6, 7, 6, 1}, t)
+	for _, c := range cases {
+		result, err := parseRealIndex(c.line, c.min, c.max)
+		if c.result != nil {
+			assert.Success(err, t)
+		}
+		assert.EqualWithin(result, c.result, 1e-15, t)
+	}
 }

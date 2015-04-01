@@ -32,11 +32,10 @@ type SystemConfig struct {
 
 // ProbabilityConfig is a configuration of the probability model.
 type ProbabilityConfig struct {
-	// The indices of the tasks whose execution times should be considered as
-	// uncertain; if empty, the parameter is set to all tasks.
-	TaskIndex []uint
+	// The tasks whose execution times should be considered as uncertain.
+	TaskIndex string // ⊂ {0, ..., #tasks-1}
 	// The multiplier used to calculate the maximal delay of a task.
-	MaxDelay float64 // ∈ [0, 1)
+	MaxDelay float64 // ≥ 0
 	// The marginal distributions of tasks’ delays.
 	Marginal string
 	// The strength of correlations between tasks.
@@ -58,14 +57,11 @@ type TargetConfig struct {
 	// elements that should be used for the error estimation.
 	Stencil []bool
 
-	// The indices of the cores that should be considered; if empty, the
-	// parameter is set to all cores.
-	CoreIndex []uint
-	// The time step of temperature profiles.
-	TimeStep float64
-	// The fraction of the application’s span that should be considered; if
-	// empty, the parameter is set to the entire span [0, 1].
-	TimeFraction []float64
+	// The cores that should be considered.
+	CoreIndex string // ⊂ {0, ..., #cores-1}
+	// The time moments that should be considered. The elements are assumed to
+	// be normalized by the application’s span.
+	TimeIndex string // ⊂ [0, 1]
 
 	// A flag indicating that diagnostic information should be displayed.
 	Verbose bool

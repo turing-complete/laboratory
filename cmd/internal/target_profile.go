@@ -11,15 +11,18 @@ type profileTarget struct {
 
 func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
 	// The cores of interest.
-	coreIndex, err := enumerate(p.system.nc, c.CoreIndex)
+	coreIndex, err := parseNaturalIndex(c.CoreIndex, 0, p.system.nc-1)
 	if err != nil {
 		return nil, err
 	}
 
 	// The time moments of interest.
-	timeline, err := subdivide(p.system.schedule.Span, c.TimeStep, c.TimeFraction)
+	timeline, err := parseRealIndex(c.TimeIndex, 0, 1)
 	if err != nil {
 		return nil, err
+	}
+	for i := range timeline {
+		timeline[i] *= p.system.schedule.Span
 	}
 
 	shift := uint(0)

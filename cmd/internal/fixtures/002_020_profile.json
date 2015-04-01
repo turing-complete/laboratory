@@ -16,7 +16,7 @@
 	"target": {
 		"name": "temperature-profile",
 		"tolerance": 1e-1,
-		"timeStep": 1e-3
+		"timeIndex": "[0:0.1:1]"
 	},
 
 	"interpolation": {
