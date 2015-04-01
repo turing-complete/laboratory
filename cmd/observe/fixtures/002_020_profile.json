@@ -2,7 +2,8 @@
 	"system": {
 		"floorplan": "fixtures/002.flp",
 		"configuration": "fixtures/hotspot.config",
-		"specification": "fixtures/002_020.tgff"
+		"specification": "fixtures/002_020.tgff",
+		"ambience": 318.15
 	},
 
 	"probability": {
@@ -14,8 +15,19 @@
 
 	"target": {
 		"name": "temperature-profile",
+		"tolerance": 1,
 		"coreIndex": [0],
-		"timeStep": 1e-2,
-		"tolerance": 1
+		"timeStep": 1e-2
+	},
+
+	"interpolation": {
+		"rule": "open",
+		"minLevel": 1,
+		"maxLevel": 10
+	},
+
+	"assessment": {
+		"seed": 1,
+		"samples": 10000
 	}
 }

@@ -104,7 +104,7 @@ func NewConfig(path string) (*Config, error) {
 		break
 	}
 
-	config := DefaultConfig()
+	config := &Config{}
 	for _, path := range paths {
 		if err := populate(config, path); err != nil {
 			return nil, err
@@ -112,31 +112,6 @@ func NewConfig(path string) (*Config, error) {
 	}
 
 	return config, nil
-}
-
-func DefaultConfig() *Config {
-	config := &Config{}
-
-	func(c *SystemConfig) {
-		c.Ambience = 45
-	}(&config.System)
-
-	func(c *TargetConfig) {
-		c.Stencil = []bool{true, false}
-	}(&config.Target)
-
-	func(c *InterpolationConfig) {
-		c.Rule = "open"
-		c.MinLevel = 1
-		c.MaxLevel = 10
-	}(&config.Interpolation)
-
-	func(c *AssessmentConfig) {
-		c.Seed = 1
-		c.Samples = 10000
-	}(&config.Assessment)
-
-	return config
 }
 
 func populate(config *Config, path string) error {

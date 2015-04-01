@@ -1,6 +1,7 @@
 {
 	"system": {
-		"configuration": "assets/hotspot.config"
+		"configuration": "assets/hotspot.config",
+		"ambience": 45
 	},
 
 	"probability": {
@@ -8,5 +9,16 @@
 		"marginal": "Beta(2, 5)",
 		"corrLength": 5,
 		"varThreshold": 0.95
+	},
+
+	"interpolation": {
+		"rule": "open",
+		"minLevel": 1,
+		"maxLevel": 10
+	},
+
+	"assessment": {
+		"seed": 1,
+		"samples": 10000
 	}
 }
