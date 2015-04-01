@@ -25,13 +25,13 @@ func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
 		timeline[i] *= p.system.schedule.Span
 	}
 
-	shift := uint(0)
-
 	// Force the first time moment to be zero.
 	if timeline[0] != 0 {
-		shift++
 		timeline = append([]float64{0}, timeline...)
 	}
+
+	// Never consider the first time moment.
+	shift := uint(1)
 
 	// Make sure to have at least three time moments.
 	if len(timeline) == 2 {
