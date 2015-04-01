@@ -16,7 +16,7 @@ endef
 
 $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
-cases := 001_010_delay 001_010_energy
+cases := 001_010_delay 001_010_energy 001_010_profile
 cases += 004_040_delay 004_040_energy
 cases += 009_090_delay 009_090_energy
 cases += 016_160_delay 016_160_energy

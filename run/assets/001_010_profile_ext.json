@@ -1,0 +1,14 @@
+{
+	"inherit": "assets/001_010_profile.json",
+
+	"target": {
+		"tolerance": 1e-2,
+		"verbose": true
+	},
+
+	"interpolation": {
+		"maxLevel": 10
+	},
+
+	"verbose": true
+}
