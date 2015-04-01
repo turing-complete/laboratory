@@ -5,9 +5,6 @@ import (
 	"fmt"
 	"math"
 	"sync"
-
-	"github.com/ready-steady/probability"
-	"github.com/ready-steady/probability/uniform"
 )
 
 type Target interface {
@@ -17,7 +14,6 @@ type Target interface {
 	Monitor(uint, uint, uint)
 
 	Config() *TargetConfig
-	Generate(uint) []float64
 }
 
 func NewTarget(problem *Problem) (Target, error) {
@@ -32,8 +28,6 @@ func NewTarget(problem *Problem) (Target, error) {
 		return newDelayTarget(problem, &config), nil
 	case "total-energy":
 		return newEnergyTarget(problem, &config), nil
-	case "temperature-slice":
-		return newSliceTarget(problem, &config)
 	case "temperature-profile":
 		return newProfileTarget(problem, &config)
 	default:
@@ -76,11 +70,6 @@ func Monitor(target Target, k, np, na uint) {
 		fmt.Printf("%10s %15s %15s\n", "Iteration", "Passive Nodes", "Active Nodes")
 	}
 	fmt.Printf("%10d %15d %15d\n", k, np, na)
-}
-
-func Generate(target Target, ns uint) []float64 {
-	ni, _ := target.Dimensions()
-	return probability.Sample(uniform.New(0, 1), ns*ni)
 }
 
 func Invoke(target Target, points []float64, nw uint) []float64 {

@@ -39,7 +39,3 @@ func (t *delayTarget) Refine(node, surplus []float64, volume float64) float64 {
 func (t *delayTarget) Monitor(level, np, na uint) {
 	Monitor(t, level, np, na)
 }
-
-func (t *delayTarget) Generate(ns uint) []float64 {
-	return Generate(t, ns)
-}

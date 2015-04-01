@@ -7,6 +7,8 @@ import (
 	"time"
 
 	"github.com/ready-steady/hdf5"
+	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/uniform"
 
 	"../internal"
 )
@@ -80,6 +82,8 @@ func command(config *internal.Config, input *hdf5.File, output *hdf5.File) error
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
+	ni, _ := target.Dimensions()
+
 	config := &problem.Config.Assessment
 
 	if config.Seed > 0 {
@@ -93,5 +97,5 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		return nil, errors.New("the number of samples should be positive")
 	}
 
-	return target.Generate(ns), nil
+	return probability.Sample(uniform.New(0, 1), ns*ni), nil
 }

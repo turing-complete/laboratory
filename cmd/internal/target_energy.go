@@ -46,7 +46,3 @@ func (t *energyTarget) Refine(node, surplus []float64, volume float64) float64 {
 func (t *energyTarget) Monitor(level, np, na uint) {
 	Monitor(t, level, np, na)
 }
-
-func (t *energyTarget) Generate(ns uint) []float64 {
-	return Generate(t, ns)
-}

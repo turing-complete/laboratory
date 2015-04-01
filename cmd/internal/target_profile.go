@@ -92,7 +92,3 @@ func (t *profileTarget) Refine(node, surplus []float64, volume float64) float64 
 func (t *profileTarget) Monitor(level, np, na uint) {
 	Monitor(t, level, np, na)
 }
-
-func (t *profileTarget) Generate(ns uint) []float64 {
-	return Generate(t, ns)
-}
