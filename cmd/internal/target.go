@@ -34,8 +34,6 @@ func NewTarget(problem *Problem) (Target, error) {
 		return newEnergyTarget(problem, &config), nil
 	case "temperature-slice":
 		return newSliceTarget(problem, &config)
-	case "temperature-switch":
-		return newSwitchTarget(problem, &config)
 	case "temperature-profile":
 		return newProfileTarget(problem, &config)
 	default:
