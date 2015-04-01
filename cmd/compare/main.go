@@ -129,14 +129,14 @@ func command(config *internal.Config, predict *hdf5.File, observe *hdf5.File) er
 		}
 	}
 
-	μμo, μεμ, μεμr := statistics.Mean(μo), statistics.Mean(εμ), statistics.Mean(filter(εμr))
-	μvo, μεv, μεvr := statistics.Mean(vo), statistics.Mean(εv), statistics.Mean(filter(εvr))
+	μμo, μεμ, μεμr := statistics.Mean(μo), statistics.Mean(εμ), statistics.Mean(clean(εμr))
+	μvo, μεv, μεvr := statistics.Mean(vo), statistics.Mean(εv), statistics.Mean(clean(εvr))
 	μεp := statistics.Mean(εp)
 
 	fmt.Printf("Average: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 		μμo, μεμ, μεμr, μvo, μεv, μεvr, μεp)
 
-	kμ, kv, kp := max(εμ), max(εv), max(εp)
+	kμ, kv, kp := max(εμr), max(εvr), max(εp)
 
 	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 		μo[kμ], εμ[kμ], εμr[kμ], vo[kv], εv[kv], εvr[kv], εp[kp])
@@ -148,7 +148,7 @@ func max(data []float64) int {
 	value, k := math.Inf(-1), -1
 
 	for i, x := range data {
-		if !math.IsInf(x, 0) && x > value {
+		if !math.IsNaN(x) && !math.IsInf(x, 0) && x > value {
 			value, k = x, i
 		}
 	}
@@ -156,7 +156,7 @@ func max(data []float64) int {
 	return k
 }
 
-func filter(data []float64) []float64 {
+func clean(data []float64) []float64 {
 	result := make([]float64, 0, len(data))
 
 	for _, x := range data {
