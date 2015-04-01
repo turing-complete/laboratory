@@ -1,0 +1,12 @@
+{
+	"inherit": "assets/001_010.json",
+
+	"target": {
+		"name": "end-to-end-delay",
+		"tolerance": 1e-3
+	},
+
+	"interpolation": {
+		"maxLevel": 10
+	}
+}

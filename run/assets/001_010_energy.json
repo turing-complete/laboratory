@@ -1,0 +1,12 @@
+{
+	"inherit": "assets/001_010.json",
+
+	"target": {
+		"name": "total-energy",
+		"tolerance": 1e-2
+	},
+
+	"interpolation": {
+		"maxLevel": 10
+	}
+}
