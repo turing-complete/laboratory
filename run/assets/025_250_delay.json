@@ -1,5 +1,9 @@
 {
-	"inherit": "assets/002_020.json",
+	"inherit": "assets/025_250.json",
+
+	"probability": {
+		"varThreshold": 0.9
+	},
 
 	"target": {
 		"name": "end-to-end-delay",

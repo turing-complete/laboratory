@@ -1,8 +1,0 @@
-{
-	"inherit": "assets/002_020.json",
-
-	"target": {
-		"name": "temperature-switch",
-		"coreIndex": [0]
-	}
-}

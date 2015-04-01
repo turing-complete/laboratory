@@ -5,9 +5,9 @@ tg_label APPLICATION
 # Number of applications
 tg_cnt 1
 # Number of tasks per application +/- jitter
-task_cnt 20 0.001
+task_cnt 90 0.001
 # Number of different tasks
-task_type_cnt 20
+task_type_cnt 90
 # Average time per task including communication
 task_trans_time 1
 # Deadline jitter
@@ -15,7 +15,7 @@ deadline_jitter 0
 # To have exactly the same task count each time
 period_mul 1
 # Numbers of in and out edges
-task_degree 3 6
+task_degree 2 4
 # All tasks are different?
 task_unique false
 # Write
@@ -25,10 +25,10 @@ eps_write
 # Processor label
 table_label PROCESSOR
 # Number of processors
-table_cnt 2
+table_cnt 9
 # Attributes of the tasks mapped on a particular processor
 type_attrib \
-  dynamic_power 5.5 4.5 0 0.0001, \
-  execution_time 0.0255 0.0245 0 0.0001
+  dynamic_power 10 5 0 0.001, \
+  execution_time 0.03 0.02 0 0.001
 # Write
 pe_write

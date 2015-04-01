@@ -1,4 +1,4 @@
-seed 1
+seed 0
 
 # Application label
 tg_label APPLICATION
@@ -15,7 +15,7 @@ deadline_jitter 0
 # To have exactly the same task count each time
 period_mul 1
 # Numbers of in and out edges
-task_degree 3 6
+task_degree 2 4
 # All tasks are different?
 task_unique false
 # Write
@@ -28,7 +28,7 @@ table_label PROCESSOR
 table_cnt 4
 # Attributes of the tasks mapped on a particular processor
 type_attrib \
-  dynamic_power 5.5 4.5 0 0.0001, \
-  execution_time 0.0255 0.0245 0 0.0001
+  dynamic_power 10 5 0 0.001, \
+  execution_time 0.03 0.02 0 0.001
 # Write
 pe_write

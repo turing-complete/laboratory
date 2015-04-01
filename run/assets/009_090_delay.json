@@ -1,5 +1,5 @@
 {
-	"inherit": "assets/008_080.json",
+	"inherit": "assets/009_090.json",
 
 	"target": {
 		"name": "end-to-end-delay",

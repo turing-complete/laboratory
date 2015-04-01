@@ -16,14 +16,11 @@ endef
 
 $(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
 
-cases :=
-cases += 001_010_delay 001_010_energy
-
-cases += 002_020_delay 004_040_delay 008_080_delay 016_160_delay 032_320_delay
-cases += 002_020_energy 004_040_energy 008_080_energy 016_160_energy 032_320_energy
-cases += 002_020_slice
-cases += 002_020_switch
-cases += 002_020_profile 004_040_profile
+cases := 001_010_delay 001_010_energy
+cases += 004_040_delay 004_040_energy
+cases += 009_090_delay 009_090_energy
+cases += 016_160_delay 016_160_energy
+cases += 025_250_delay 025_250_energy
 
 define define_case
 $(1)_config_base := assets/$(1).json
