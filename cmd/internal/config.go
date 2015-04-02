@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/ready-steady/adhier"
-	"github.com/ready-steady/simulation/temperature/numeric"
+	"github.com/ready-steady/simulation/temperature/analytic"
 )
 
 // Config is a configuration of the problem.
@@ -27,7 +27,7 @@ type SystemConfig struct {
 	// A TGFF file describing the platform and application to analyze.
 	Specification string
 
-	numeric.Config
+	analytic.Config
 }
 
 // ProbabilityConfig is a configuration of the probability model.

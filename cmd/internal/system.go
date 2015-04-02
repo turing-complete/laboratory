@@ -1,10 +1,9 @@
 package internal
 
 import (
-	"github.com/ready-steady/ode/dopri"
 	"github.com/ready-steady/simulation/power"
 	asystem "github.com/ready-steady/simulation/system"
-	"github.com/ready-steady/simulation/temperature/numeric"
+	"github.com/ready-steady/simulation/temperature/analytic"
 	"github.com/ready-steady/simulation/time"
 )
 
@@ -14,7 +13,7 @@ type system struct {
 
 	time        *time.List
 	power       *power.Power
-	temperature *numeric.Temperature
+	temperature *analytic.Fluid
 
 	schedule *time.Schedule
 
@@ -28,19 +27,12 @@ func newSystem(config *SystemConfig) (*system, error) {
 		return nil, err
 	}
 
-	integrator, err := dopri.New(&dopri.Config{
-		MaxStep:  0,
-		TryStep:  0,
-		AbsError: 1e-3,
-		RelError: 1e-3,
-	})
+	time := time.NewList(platform, application)
+	power := power.New(platform, application)
+	temperature, err := analytic.NewFluid(&config.Config)
 	if err != nil {
 		return nil, err
 	}
-
-	time := time.NewList(platform, application)
-	power := power.New(platform, application)
-	temperature := numeric.New(&config.Config, integrator)
 
 	schedule := time.Compute(asystem.NewProfile(platform, application).Mobility)
 

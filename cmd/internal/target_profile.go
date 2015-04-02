@@ -5,8 +5,7 @@ type profileTarget struct {
 	config  *TargetConfig
 
 	coreIndex []uint
-	timeline  []float64
-	shift     uint
+	timeIndex []float64
 }
 
 func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
@@ -17,26 +16,15 @@ func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
 	}
 
 	// The time moments of interest.
-	timeline, err := parseRealIndex(c.TimeIndex, 0, 1)
+	timeIndex, err := parseRealIndex(c.TimeIndex, 0, 1)
 	if err != nil {
 		return nil, err
 	}
-	for i := range timeline {
-		timeline[i] *= p.system.schedule.Span
+	if timeIndex[0] == 0 {
+		timeIndex = timeIndex[1:]
 	}
-
-	// Force the first time moment to be zero.
-	if timeline[0] != 0 {
-		timeline = append([]float64{0}, timeline...)
-	}
-
-	// Never consider the first time moment.
-	shift := uint(1)
-
-	// Make sure to have at least three time moments.
-	if len(timeline) == 2 {
-		shift++
-		timeline = []float64{0, timeline[1] / 2, timeline[1]}
+	for i := range timeIndex {
+		timeIndex[i] *= p.system.schedule.Span
 	}
 
 	target := &profileTarget{
@@ -44,8 +32,7 @@ func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
 		config:  c,
 
 		coreIndex: coreIndex,
-		timeline:  timeline,
-		shift:     shift,
+		timeIndex: timeIndex,
 	}
 
 	return target, nil
@@ -60,28 +47,35 @@ func (t *profileTarget) Config() *TargetConfig {
 }
 
 func (t *profileTarget) Dimensions() (uint, uint) {
-	nci, ns := uint(len(t.coreIndex)), uint(len(t.timeline))-t.shift
-	return t.problem.nz, ns * nci * 2
+	nci, nsi := uint(len(t.coreIndex)), uint(len(t.timeIndex))
+	return t.problem.nz, nsi * nci * 2
 }
 
 func (t *profileTarget) Compute(node, value []float64) {
+	const (
+		ε = 1e-10
+	)
+
 	p := t.problem
 	s := p.system
 
 	schedule := s.computeSchedule(p.transform(node))
-	Q, _, err := s.temperature.Compute(s.power.Process(schedule), t.timeline)
-	if err != nil {
-		panic("cannot compute a temperature profile")
+	P, ΔT, timeIndex := s.power.Partition(schedule, t.timeIndex, ε)
+	for i := range timeIndex {
+		if timeIndex[i] == 0 {
+			panic("the timeline of interest should not contain time 0")
+		}
+		timeIndex[i]--
 	}
 
+	Q := s.temperature.Compute(P, ΔT)
+
 	coreIndex := t.coreIndex
-	nc, nci, ns := s.nc, uint(len(coreIndex)), uint(len(t.timeline))-t.shift
+	nc, nci, nsi := s.nc, uint(len(coreIndex)), uint(len(timeIndex))
 
-	Q = Q[t.shift*nc:]
-
-	for i, k := uint(0), uint(0); i < ns; i++ {
+	for i, k := uint(0), uint(0); i < nsi; i++ {
 		for j := uint(0); j < nci; j++ {
-			value[k] = Q[i*nc+coreIndex[j]]
+			value[k] = Q[timeIndex[i]*nc+coreIndex[j]]
 			value[k+1] = value[k] * value[k]
 			k += 2
 		}
