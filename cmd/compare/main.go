@@ -136,7 +136,7 @@ func command(config *internal.Config, predict *hdf5.File, observe *hdf5.File) er
 	fmt.Printf("Average: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 		μμo, μεμ, μεμr, μvo, μεv, μεvr, μεp)
 
-	kμ, kv, kp := max(εμr), max(εvr), max(εp)
+	kμ, kv, kp := max(εμ), max(εv), max(εp)
 
 	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
 		μo[kμ], εμ[kμ], εμr[kμ], vo[kv], εv[kv], εvr[kv], εp[kp])
