@@ -158,14 +158,14 @@ func parseRealIndex(line string, min, max float64) ([]float64, error) {
 		return nil, errors.New(fmt.Sprintf("cannot parse the index “%s”", line))
 	}
 
-	for i, item := range index {
-		if math.Abs(item-min) < ε {
+	for i := range index {
+		if math.Abs(index[i]-min) < ε {
 			index[i] = min
 		}
-		if math.Abs(item-max) < ε {
+		if math.Abs(index[i]-max) < ε {
 			index[i] = max
 		}
-		if item < min || item > max {
+		if index[i] < min || index[i] > max {
 			return nil, errors.New(fmt.Sprintf("the index “%s” is out of range", line))
 		}
 	}
