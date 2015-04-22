@@ -118,8 +118,8 @@ func compare(data1, data2, mean2 []float64) []float64 {
 		v2 = statistics.Variance(data2)
 	}
 
-	εμ := math.Abs(μ1 - μ2)
-	εv := math.Abs(v1 - v2)
+	εμ := math.Abs(μ1-μ2) / μ1
+	εv := math.Abs(v1-v2) / v1
 
 	_, _, εp := test.KolmogorovSmirnov(data1, data2, 0)
 
