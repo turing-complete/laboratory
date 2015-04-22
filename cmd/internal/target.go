@@ -67,7 +67,7 @@ func Monitor(target Target, k, np, na uint) {
 		return
 	}
 	if k == 0 {
-		fmt.Printf("%10s %15s %15s\n", "Iteration", "Passive Nodes", "Active Nodes")
+		fmt.Printf("%10s %15s %15s\n", "Step", "Passive Nodes", "Active Nodes")
 	}
 	fmt.Printf("%10d %15d %15d\n", k, np, na)
 }

@@ -1,30 +1,48 @@
 package main
 
 import (
-	"errors"
-	"fmt"
+	"flag"
 	"math"
 
-	"github.com/ready-steady/hdf5"
 	"github.com/ready-steady/statistics"
 	"github.com/ready-steady/statistics/test"
 
 	"../internal"
 )
 
+const (
+	momentCount = 2
+	metricCount = 3
+)
+
+var (
+	observeFile = flag.String("observe", "", "an output file of `observe` (required)")
+	predictFile = flag.String("predict", "", "an output file of `predict` (required)")
+	outputFile  = flag.String("o", "", "an output file (required)")
+)
+
 func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config, predict *hdf5.File, observe *hdf5.File) error {
-	if predict == nil || observe == nil {
-		return errors.New("two data files are required")
-	}
-
-	solution := new(internal.Solution)
-	if err := predict.Get("solution", solution); err != nil {
+func command(_ *internal.Config) error {
+	observe, err := internal.Open(*observeFile)
+	if err != nil {
 		return err
 	}
+	defer observe.Close()
+
+	predict, err := internal.Open(*predictFile)
+	if err != nil {
+		return err
+	}
+	defer predict.Close()
+
+	output, err := internal.Create(*outputFile)
+	if err != nil {
+		return err
+	}
+	defer output.Close()
 
 	observations := []float64{}
 	if err := observe.Get("values", &observations); err != nil {
@@ -36,134 +54,115 @@ func command(config *internal.Config, predict *hdf5.File, observe *hdf5.File) er
 		return err
 	}
 
-	ns := int(config.Assessment.Samples)
-	no := len(observations) / ns
-	nm := no / 2
-
-	cut := func(data []float64, i int) []float64 {
-		piece := make([]float64, ns)
-		for j := 0; j < ns; j++ {
-			piece[j] = data[j*no+i]
-		}
-		return piece
+	moments := []float64{}
+	if err := predict.Get("moments", &moments); err != nil {
+		return err
 	}
 
-	if config.Verbose {
-		fmt.Println(solution)
+	solution := new(internal.Solution)
+	if err := predict.Get("solution", solution); err != nil {
+		return err
 	}
 
-	an := make([]bool, nm)
+	steps := solution.Steps
 
-	μo := make([]float64, nm)
-	vo := make([]float64, nm)
+	no := solution.Outputs
+	nq := no / momentCount
+	ns := uint(len(steps))
 
-	μp := make([]float64, nm)
-	vp := make([]float64, nm)
+	εo := make([]float64, 0, nq*ns*metricCount)
+	εp := make([]float64, 0, nq*ns*metricCount)
 
-	εμ := make([]float64, nm)
-	εv := make([]float64, nm)
-	εp := make([]float64, nm)
+	for i := uint(0); i < nq; i++ {
+		observations := slice(observations, no, i*momentCount, 1)
+		predictions := slice(predictions, no, i*momentCount, 1)
+		moments := slice(moments, no, i*momentCount, momentCount)
 
-	εμr := make([]float64, nm)
-	εvr := make([]float64, nm)
+		data1 := cumulate(observations, steps)
+		data2 := divide(predictions, ns)
+		mean2 := divide(moments, ns)
 
-	analytic := len(solution.Expectation) == no
-
-	// Compute errors across all outputs.
-	for i := 0; i < nm; i++ {
-		j := i * 2
-
-		observations := cut(observations, j)
-		predictions := cut(predictions, j)
-
-		μo[i] = statistics.Mean(observations)
-		vo[i] = statistics.Variance(observations)
-
-		if analytic {
-			μp[i] = solution.Expectation[j]
-			vp[i] = solution.Expectation[j+1] - μp[i]*μp[i]
-			if vp[i] < 0 {
-				μp[i] = statistics.Mean(predictions)
-				vp[i] = statistics.Variance(predictions)
-			} else {
-				an[i] = true
-			}
-		} else {
-			μp[i] = statistics.Mean(predictions)
-			vp[i] = statistics.Variance(predictions)
-		}
-
-		εμ[i] = math.Abs(μo[i] - μp[i])
-		εv[i] = math.Abs(vo[i] - vp[i])
-
-		εμr[i] = εμ[i] / μo[i]
-		εvr[i] = εv[i] / vo[i]
-
-		_, _, εp[i] = test.KolmogorovSmirnov(observations, predictions, 0)
-	}
-
-	if nm == 1 {
-		fmt.Printf("Result: i %d, o %d, l %2d, n %5d, ",
-			solution.Inputs, solution.Outputs, solution.Level, solution.Nodes)
-		fmt.Printf("μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-			μo[0], εμ[0], εμr[0], vo[0], εv[0], εvr[0], εp[0])
-
-		return nil
-	}
-
-	fmt.Printf("Result: inputs %d, outputs %d, level %d, nodes %d\n",
-		solution.Inputs, solution.Outputs, solution.Level, solution.Nodes)
-
-	fmt.Printf("Outputs:\n")
-
-	if config.Verbose {
-		for i := 0; i < nm; i++ {
-			fmt.Printf("%7d: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e",
-				i, μo[i], εμ[i], εμr[i], vo[i], εv[i], εvr[i], εp[i])
-
-			if !an[i] {
-				fmt.Printf(" (sampling)")
-			}
-
-			fmt.Printf("\n")
+		for j := uint(0); j < ns; j++ {
+			εo = append(εo, compare(observations, data1[j], nil)...)
+			εp = append(εp, compare(observations, data2[j], mean2[j])...)
 		}
 	}
 
-	μμo, μεμ, μεμr := statistics.Mean(μo), statistics.Mean(εμ), statistics.Mean(clean(εμr))
-	μvo, μεv, μεvr := statistics.Mean(vo), statistics.Mean(εv), statistics.Mean(clean(εvr))
-	μεp := statistics.Mean(εp)
+	if err := output.Put("steps", steps); err != nil {
+		return err
+	}
 
-	fmt.Printf("Average: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-		μμo, μεμ, μεμr, μvo, μεv, μεvr, μεp)
+	if err := output.Put("observe", εo, metricCount, ns, nq); err != nil {
+		return err
+	}
 
-	kμ, kv, kp := max(εμ), max(εv), max(εp)
-
-	fmt.Printf("Maximal: μ %.2e ± %.2e (%.2e), v %.2e ± %.2e (%.2e), p %.2e\n",
-		μo[kμ], εμ[kμ], εμr[kμ], vo[kv], εv[kv], εvr[kv], εp[kp])
+	if err := output.Put("predict", εp, metricCount, ns, nq); err != nil {
+		return err
+	}
 
 	return nil
 }
 
-func max(data []float64) int {
-	value, k := math.Inf(-1), -1
+func compare(data1, data2, mean2 []float64) []float64 {
+	μ1, v1 := statistics.Mean(data1), statistics.Variance(data1)
 
-	for i, x := range data {
-		if !math.IsNaN(x) && !math.IsInf(x, 0) && x > value {
-			value, k = x, i
+	var μ2, v2 float64
+	if len(mean2) > 0 {
+		μ2 = mean2[0]
+		v2 = mean2[1] - μ2*μ2
+		if v2 < 0 {
+			v2 = statistics.Variance(data2)
 		}
+	} else {
+		μ2 = statistics.Mean(data2)
+		v2 = statistics.Variance(data2)
 	}
 
-	return k
-}
+	εμ := math.Abs(μ1 - μ2)
+	εv := math.Abs(v1 - v2)
 
-func clean(data []float64) []float64 {
-	result := make([]float64, 0, len(data))
+	_, _, εp := test.KolmogorovSmirnov(data1, data2, 0)
 
-	for _, x := range data {
-		if !math.IsNaN(x) && !math.IsInf(x, 0) {
-			result = append(result, x)
-		}
-	}
+	result := make([]float64, metricCount)
+	result[0] = εμ
+	result[1] = εv
+	result[2] = εp
 
 	return result
+}
+
+func cumulate(data []float64, steps []uint) [][]float64 {
+	count := uint(len(steps))
+
+	sets := make([][]float64, count)
+	for i, sum := uint(0), uint(0); i < count; i++ {
+		sum += steps[i]
+		sets[i] = data[:sum]
+	}
+
+	return sets
+}
+
+func divide(data []float64, count uint) [][]float64 {
+	step := uint(len(data)) / count
+
+	sets := make([][]float64, count)
+	for i := uint(0); i < count; i++ {
+		sets[i] = data[i*step : (i+1)*step]
+	}
+
+	return sets
+}
+
+func slice(data []float64, height, offset, thickness uint) []float64 {
+	width := uint(len(data)) / height
+	piece := make([]float64, thickness*width)
+
+	for i := uint(0); i < thickness; i++ {
+		for j := uint(0); j < width; j++ {
+			piece[j*thickness+i] = data[j*height+offset+i]
+		}
+	}
+
+	return piece
 }

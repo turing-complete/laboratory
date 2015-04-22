@@ -7,23 +7,17 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
-
-	"github.com/ready-steady/hdf5"
 )
 
 var (
-	configFile  = flag.String("c", "", "a configuration file in JSON")
-	inputFile   = flag.String("i", "", "a data file in HDF5 (typically an input)")
-	outputFile  = flag.String("o", "", "a data file in HDF5 (typically an output)")
-	profileFile = flag.String("p", "", "a file for dumping profiling information")
+	configFile  = flag.String("c", "", "a configuration file (required)")
+	profileFile = flag.String("p", "", "an output file for profiling information")
 	verbose     = flag.Bool("v", false, "a flag for displaying diagnostic information")
 )
 
-func Run(command func(*Config, *hdf5.File, *hdf5.File) error) {
+func Run(command func(*Config) error) {
 	flag.Usage = usage
 	flag.Parse()
-
-	var err error
 
 	if len(*profileFile) > 0 {
 		profile, err := os.Create(*profileFile)
@@ -36,10 +30,8 @@ func Run(command func(*Config, *hdf5.File, *hdf5.File) error) {
 
 	runtime.GOMAXPROCS(runtime.NumCPU())
 
-	var input, output *hdf5.File
-
 	if len(*configFile) == 0 {
-		fail(errors.New("a configuration file is required"))
+		fail(errors.New("expected a filename"))
 	}
 	config, err := NewConfig(*configFile)
 	if err != nil {
@@ -49,26 +41,7 @@ func Run(command func(*Config, *hdf5.File, *hdf5.File) error) {
 		config.Verbose = true
 	}
 
-	if len(*inputFile) > 0 {
-		if input, err = hdf5.Open(*inputFile); err != nil {
-			fail(err)
-		}
-		defer input.Close()
-	}
-
-	if len(*outputFile) > 0 {
-		if _, err = os.Stat(*outputFile); os.IsNotExist(err) {
-			output, err = hdf5.Create(*outputFile)
-		} else {
-			output, err = hdf5.Open(*outputFile)
-		}
-		if err != nil {
-			fail(err)
-		}
-		defer output.Close()
-	}
-
-	if err = command(config, input, output); err != nil {
+	if err = command(config); err != nil {
 		fail(err)
 	}
 }

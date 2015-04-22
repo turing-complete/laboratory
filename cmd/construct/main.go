@@ -1,18 +1,27 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
-	"github.com/ready-steady/hdf5"
-
 	"../internal"
+)
+
+var (
+	outputFile = flag.String("o", "", "an output file (required)")
 )
 
 func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config, _ *hdf5.File, output *hdf5.File) error {
+func command(config *internal.Config) error {
+	output, err := internal.Create(*outputFile)
+	if err != nil {
+		return err
+	}
+	defer output.Close()
+
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return err
@@ -28,20 +37,16 @@ func command(config *internal.Config, _ *hdf5.File, output *hdf5.File) error {
 		return err
 	}
 
-	var solution *internal.Solution
-
 	if config.Verbose {
 		fmt.Println(problem)
 		fmt.Println(target)
 		fmt.Println("Constructing a surrogate...")
-		solution = solver.Compute(target)
-		fmt.Println(solution)
-	} else {
-		solution = solver.Compute(target)
 	}
 
-	if output == nil {
-		return nil
+	solution := solver.Compute(target)
+
+	if config.Verbose {
+		fmt.Println(solution)
 	}
 
 	if err := output.Put("solution", *solution); err != nil {

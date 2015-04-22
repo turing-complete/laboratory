@@ -15,7 +15,6 @@ type Solver struct {
 
 type Solution struct {
 	adhier.Surrogate
-	Expectation []float64
 }
 
 func NewSolver(problem *Problem, target Target) (*Solver, error) {
@@ -42,14 +41,15 @@ func NewSolver(problem *Problem, target Target) (*Solver, error) {
 func (s *Solver) Compute(target Target) *Solution {
 	surrogate := s.Interpolator.Compute(target)
 	target.Monitor(surrogate.Level, surrogate.Nodes, 0)
-	return &Solution{
-		Surrogate:   *surrogate,
-		Expectation: s.Interpolator.Integrate(surrogate),
-	}
+	return &Solution{*surrogate}
 }
 
 func (s *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
 	return s.Interpolator.Evaluate(&solution.Surrogate, nodes)
+}
+
+func (s *Solver) Integrate(solution *Solution) []float64 {
+	return s.Interpolator.Integrate(&solution.Surrogate)
 }
 
 func (s *Solution) String() string {

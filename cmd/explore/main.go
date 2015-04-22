@@ -8,13 +8,13 @@ import (
 	"runtime"
 	"strings"
 
-	"github.com/ready-steady/hdf5"
 	"github.com/ready-steady/linear"
 
 	"../internal"
 )
 
 var (
+	outputFile     = flag.String("o", "", "an output file (required)")
 	parameterIndex = flag.String("s", "[]", "the parameters to sweep")
 	numberOfNodes  = flag.Uint("n", 10, "the number of nodes per parameter")
 	defaultNode    = flag.Float64("d", 0.5, "the default value of parameters")
@@ -24,7 +24,13 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config, _ *hdf5.File, output *hdf5.File) error {
+func command(config *internal.Config) error {
+	output, err := internal.Create(*outputFile)
+	if err != nil {
+		return err
+	}
+	defer output.Close()
+
 	problem, err := internal.NewProblem(config)
 	if err != nil {
 		return err
@@ -45,18 +51,12 @@ func command(config *internal.Config, _ *hdf5.File, output *hdf5.File) error {
 
 	if config.Verbose {
 		fmt.Printf("Evaluating the reduced model at %v points...\n", np)
-		fmt.Println(problem)
-		fmt.Println(target)
 	}
 
 	values := internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
 
 	if config.Verbose {
 		fmt.Println("Done.")
-	}
-
-	if output == nil {
-		return nil
 	}
 
 	if err := output.Put("values", values, no, np); err != nil {

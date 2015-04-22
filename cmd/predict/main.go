@@ -2,25 +2,38 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"math/rand"
 	"time"
 
-	"github.com/ready-steady/hdf5"
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/probability/uniform"
 
 	"../internal"
 )
 
+var (
+	constructFile = flag.String("construct", "", "an output of `construct` (required)")
+	outputFile    = flag.String("o", "", "an output file (required)")
+)
+
 func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config, input *hdf5.File, output *hdf5.File) error {
-	if input == nil {
-		return errors.New("an input file is required")
+func command(config *internal.Config) error {
+	construct, err := internal.Open(*constructFile)
+	if err != nil {
+		return err
 	}
+	defer construct.Close()
+
+	output, err := internal.Create(*outputFile)
+	if err != nil {
+		return err
+	}
+	defer output.Close()
 
 	problem, err := internal.NewProblem(config)
 	if err != nil {
@@ -38,7 +51,7 @@ func command(config *internal.Config, input *hdf5.File, output *hdf5.File) error
 	}
 
 	solution := new(internal.Solution)
-	if err = input.Get("solution", solution); err != nil {
+	if err = construct.Get("solution", solution); err != nil {
 		return err
 	}
 
@@ -49,32 +62,45 @@ func command(config *internal.Config, input *hdf5.File, output *hdf5.File) error
 
 	if config.Verbose {
 		fmt.Println("Sampling the surrogate model...")
-		fmt.Println(problem)
-		fmt.Println(target)
-		fmt.Println(solution)
 	}
 
-	values := solver.Evaluate(solution, points)
+	ni, no := target.Dimensions()
+	ns := config.Assessment.Samples
+	np := uint(len(solution.Steps))
+
+	values := make([]float64, np*ns*no)
+	moments := make([]float64, np*no)
+
+	for i, nn := uint(0), uint(0); i < np; i++ {
+		nn += solution.Steps[i]
+
+		if config.Verbose {
+			fmt.Printf("%5d: %10d\n", i, nn)
+		}
+
+		s := *solution
+		s.Nodes = nn
+		s.Indices = s.Indices[:nn*ni]
+		s.Surpluses = s.Surpluses[:nn*no]
+
+		copy(values[i*ns*no:(i+1)*ns*no], solver.Evaluate(&s, points))
+		copy(moments[i*no:(i+1)*no], solver.Integrate(&s))
+	}
 
 	if config.Verbose {
 		fmt.Println("Done.")
 	}
 
-	if output == nil {
-		return nil
-	}
-
-	ns := config.Assessment.Samples
-	no := uint(len(values)) / ns
-	ni := uint(len(points)) / ns
-
-	if err := output.Put("values", values, no, ns); err != nil {
+	if err := output.Put("solution", *solution); err != nil {
 		return err
 	}
 	if err := output.Put("points", points, ni, ns); err != nil {
 		return err
 	}
-	if err := output.Put("solution", *solution); err != nil {
+	if err := output.Put("values", values, no, ns, np); err != nil {
+		return err
+	}
+	if err := output.Put("moments", moments, no, np); err != nil {
 		return err
 	}
 
