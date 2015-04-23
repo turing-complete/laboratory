@@ -125,7 +125,7 @@ func detect(target internal.Target) ([]uint, error) {
 
 	for _, i := range index {
 		if i >= ni {
-			return nil, errors.New(fmt.Sprintf("the indices should be less that %v", ni))
+			return nil, errors.New(fmt.Sprintf("the indices should be less than %v", ni))
 		}
 	}
 
