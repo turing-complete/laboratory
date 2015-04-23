@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/generator"
 	"github.com/ready-steady/probability/uniform"
 
 	"../internal"
@@ -30,7 +31,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 
 	ni, _ := target.Dimensions()
 
-	points := probability.Sample(uniform.New(0, 1), sampleCount*ni)
+	points := probability.Sample(uniform.New(0, 1), generator.New(0), sampleCount*ni)
 
 	b.ResetTimer()
 
