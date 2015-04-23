@@ -104,23 +104,28 @@ func command(_ *internal.Config) error {
 }
 
 func compare(data1, data2, mean2 []float64) []float64 {
-	μ1, v1 := statistics.Mean(data1), statistics.Variance(data1)
+	μ1 := statistics.Mean(data1)
+	v1 := statistics.Variance(data1)
 
-	var μ2, v2 float64
+	var μ2 float64
 	if len(mean2) > 0 {
 		μ2 = mean2[0]
+	} else {
+		μ2 = statistics.Mean(data2)
+	}
+
+	var v2 float64
+	if len(mean2) > 1 {
 		v2 = mean2[1] - μ2*μ2
 		if v2 < 0 {
 			v2 = statistics.Variance(data2)
 		}
 	} else {
-		μ2 = statistics.Mean(data2)
 		v2 = statistics.Variance(data2)
 	}
 
-	εμ := math.Abs(μ1-μ2) / μ1
-	εv := math.Abs(v1-v2) / v1
-
+	εμ := math.Abs((μ1 - μ2) / μ1)
+	εv := math.Abs((v1 - v2) / v1)
 	_, _, εp := test.KolmogorovSmirnov(data1, data2, 0)
 
 	result := make([]float64, metricCount)
