@@ -53,6 +53,6 @@ func (s *Solver) Integrate(solution *Solution) []float64 {
 }
 
 func (s *Solution) String() string {
-	return fmt.Sprintf("Solution{inputs: %d, outputs: %d, level: %d, nodes: %d}",
+	return fmt.Sprintf(`{"inputs": %d, "outputs": %d, "level": %d, "nodes": %d}`,
 		s.Inputs, s.Outputs, s.Level, s.Nodes)
 }

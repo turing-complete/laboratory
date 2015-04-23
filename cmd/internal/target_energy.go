@@ -21,14 +21,13 @@ func (t *energyTarget) Config() *TargetConfig {
 }
 
 func (t *energyTarget) Dimensions() (uint, uint) {
-	return t.problem.nz, 2
+	return t.problem.model.nz, 2
 }
 
 func (t *energyTarget) Compute(node, value []float64) {
-	p := t.problem
-	s := p.system
+	s, m := t.problem.system, t.problem.model
 
-	schedule := s.computeSchedule(p.transform(node))
+	schedule := s.computeSchedule(m.transform(node))
 	time, power := s.computeTime(schedule), s.computePower(schedule)
 
 	value[0] = 0

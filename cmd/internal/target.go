@@ -37,7 +37,7 @@ func NewTarget(problem *Problem) (Target, error) {
 
 func String(target Target) string {
 	ni, no := target.Dimensions()
-	return fmt.Sprintf("Target{inputs: %d, outputs: %d}", ni, no)
+	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
 }
 
 func Refine(target Target, _, surplus []float64, _ float64) float64 {

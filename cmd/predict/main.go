@@ -4,7 +4,6 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"time"
 
 	"github.com/ready-steady/sequence"
 
@@ -107,18 +106,12 @@ func command(config *internal.Config) error {
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
 	config := &problem.Config.Assessment
-
-	ni, _ := target.Dimensions()
-
-	seed := int64(config.Seed)
-	if seed < 0 {
-		seed = time.Now().Unix()
-	}
-
-	ns := config.Samples
-	if ns == 0 {
+	if config.Samples == 0 {
 		return nil, errors.New("the number of samples should be positive")
 	}
 
-	return sequence.NewSobol(ni, seed).Next(ns), nil
+	ni, _ := target.Dimensions()
+	sequence := sequence.NewSobol(ni, internal.NewSeed(config.Seed))
+
+	return sequence.Next(config.Samples), nil
 }

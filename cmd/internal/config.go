@@ -34,10 +34,16 @@ type SystemConfig struct {
 type ProbabilityConfig struct {
 	// The tasks whose execution times should be considered as uncertain.
 	TaskIndex string // ⊂ {0, ..., #tasks-1}
-	// The multiplier used to calculate the maximal delay of a task.
-	MaxDelay float64 // ≥ 0
-	// The marginal distributions of tasks’ delays.
-	Marginal string
+
+	// The seed for initializing the tasks’ execution modes.
+	Seed int64
+	// The maximal number of execution modes per task.
+	MaxModes uint // > 0
+	// The minimal scaling factor of an execution mode.
+	MinScale float64 // > 0
+	// The maximal scaling factor of an execution mode.
+	MaxScale float64 // > 0
+
 	// The strength of correlations between tasks.
 	CorrLength float64 // > 0
 	// The portion of the variance to be preserved when reducing the number of
@@ -77,8 +83,8 @@ type InterpolationConfig struct {
 
 // AssessmentConfig is a configuration of the assessment procedure.
 type AssessmentConfig struct {
-	// The seed for random number generation.
-	Seed int
+	// The seed for generating samples.
+	Seed int64
 	// The number of samples to take.
 	Samples uint
 }

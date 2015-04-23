@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"fmt"
+
 	"github.com/ready-steady/simulation/power"
 	asystem "github.com/ready-steady/simulation/system"
 	"github.com/ready-steady/simulation/temperature/analytic"
@@ -15,7 +17,8 @@ type system struct {
 	power       *power.Power
 	temperature *analytic.Fluid
 
-	schedule *time.Schedule
+	schedule  *time.Schedule
+	reference []float64
 
 	nc uint
 	nt uint
@@ -36,6 +39,9 @@ func newSystem(config *SystemConfig) (*system, error) {
 
 	schedule := time.Compute(asystem.NewProfile(platform, application).Mobility)
 
+	nc := uint(len(platform.Cores))
+	nt := uint(len(application.Tasks))
+
 	system := &system{
 		platform:    platform,
 		application: application,
@@ -44,26 +50,30 @@ func newSystem(config *SystemConfig) (*system, error) {
 		power:       power,
 		temperature: temperature,
 
-		schedule: schedule,
+		schedule:  schedule,
+		reference: computeTime(schedule),
 
-		nc: uint(len(platform.Cores)),
-		nt: uint(len(application.Tasks)),
+		nc: nc,
+		nt: nt,
 	}
 
 	return system, nil
 }
 
-func (s *system) computeSchedule(delay []float64) *time.Schedule {
-	return s.time.Delay(s.schedule, delay)
+func (s *system) String() string {
+	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, s.nc, s.nt)
+}
+
+func (s *system) computeSchedule(modes []float64) *time.Schedule {
+	duration := make([]float64, s.nt)
+	for i, time := range s.reference {
+		duration[i] = (1 + modes[i]) * time
+	}
+	return s.time.Update(s.schedule, duration)
 }
 
 func (s *system) computeTime(schedule *time.Schedule) []float64 {
-	time := make([]float64, s.nt)
-	for i := range time {
-		time[i] = schedule.Finish[i] - schedule.Start[i]
-	}
-
-	return time
+	return computeTime(schedule)
 }
 
 func (s *system) computePower(schedule *time.Schedule) []float64 {
@@ -75,4 +85,12 @@ func (s *system) computePower(schedule *time.Schedule) []float64 {
 	}
 
 	return power
+}
+
+func computeTime(schedule *time.Schedule) []float64 {
+	time := make([]float64, len(schedule.Start))
+	for i := range time {
+		time[i] = schedule.Finish[i] - schedule.Start[i]
+	}
+	return time
 }

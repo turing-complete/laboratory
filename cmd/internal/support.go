@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 	"unsafe"
 
 	"github.com/ready-steady/linear/matrix"
@@ -17,6 +18,13 @@ var (
 	nInfinity = math.Inf(-1)
 	pInfinity = math.Inf(1)
 )
+
+func NewSeed(value int64) int64 {
+	if value < 0 {
+		value = time.Now().Unix()
+	}
+	return value
+}
 
 func combine(A, x, y []float64, m, n uint) {
 	infinite, z := false, make([]float64, n)
