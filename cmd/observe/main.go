@@ -4,12 +4,10 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"math/rand"
 	"runtime"
 	"time"
 
-	"github.com/ready-steady/probability"
-	"github.com/ready-steady/probability/uniform"
+	"github.com/ready-steady/sequence"
 
 	"../internal"
 )
@@ -70,14 +68,13 @@ func command(config *internal.Config) error {
 }
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
-	ni, _ := target.Dimensions()
-
 	config := &problem.Config.Assessment
 
-	if config.Seed > 0 {
-		rand.Seed(int64(config.Seed))
-	} else {
-		rand.Seed(time.Now().Unix())
+	ni, _ := target.Dimensions()
+
+	seed := int64(config.Seed)
+	if seed < 0 {
+		seed = time.Now().Unix()
 	}
 
 	ns := config.Samples
@@ -85,5 +82,5 @@ func generate(problem *internal.Problem, target internal.Target) ([]float64, err
 		return nil, errors.New("the number of samples should be positive")
 	}
 
-	return probability.Sample(uniform.New(0, 1), ns*ni), nil
+	return sequence.NewSobol(ni, seed).Next(ns), nil
 }

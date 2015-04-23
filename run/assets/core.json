@@ -18,7 +18,7 @@
 	},
 
 	"assessment": {
-		"seed": 1,
+		"seed": 0,
 		"samples": 10000
 	}
 }
