@@ -54,7 +54,7 @@ func command(config *internal.Config) error {
 	}
 
 	ni, no := target.Dimensions()
-	ns := config.Assessment.Samples
+	ns := uint(len(points)) / ni
 
 	if err := output.Put("points", points, ni, ns); err != nil {
 		return err

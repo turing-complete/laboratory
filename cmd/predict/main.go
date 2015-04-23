@@ -62,7 +62,7 @@ func command(config *internal.Config) error {
 	}
 
 	ni, no := target.Dimensions()
-	ns := config.Assessment.Samples
+	ns := uint(len(points)) / ni
 	np := uint(len(solution.Steps))
 
 	values := make([]float64, np*ns*no)
