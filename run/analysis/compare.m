@@ -1,4 +1,6 @@
 function compare()
+  use('Interaction');
+
   filename = locate('observe');
   ovalues = h5read(filename, '/values');
   ovalues = ovalues(1:2:end, :);
@@ -23,13 +25,35 @@ function compare()
   count = cumsum(steps);
 
   for i = 1:nq
-    figure;
-    line(count(2:end), log10(oerror(:, 2:end, i))');
-    line(count(2:end), log10(perror(:, 2:end, i))', 'LineStyle', '--');
-    legend('Expectation', 'Variance', 'Density');
+    o = oerror(:, 2:end, i);
+    p = perror(:, 2:end, i);
 
-    figure;
-    draw(ovalues(i, :), pvalues(i, :));
-    print(ovalues(i, :), pvalues(i, :));
+    Plot.figure(800, 400);
+    line(count(2:end), log10(o)');
+    line(count(2:end), log10(p)', 'LineStyle', '--');
+    legend('Expectation', 'Variance', 'Density');
+  end
+
+  for i = 1:nq
+    o = ovalues(i, :);
+    p = pvalues(i, :);
+
+    [~, ~, delta] = kstest2(o, p);
+
+    Plot.figure(800, 400);
+    title(sprintf('CDF (delta %.4e)',delta));
+    hold on;
+    ecdf(o);
+    ecdf(p);
+    hold off;
+    legend('Observe', 'Predict');
+
+    Plot.figure(800, 400);
+    subplot(1, 2, 1);
+    hist(o, 100);
+    title('Observe');
+    subplot(1, 2, 2);
+    hist(p, 100);
+    title('Predict');
   end
 end
