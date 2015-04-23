@@ -48,7 +48,7 @@ $$($(1)_compare): $$($(1)_observe) $$($(1)_predict) compare
 	@./compare -c $$($(1)_config) -observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
 
 $$($(1)_explore): explore
-	@./explore -c $$($(1)_config) -v -n 50 -s "[1,2]" -o $$@
+	@./explore -c $$($(1)_config) -n 100 -s "[0,1]" -o $$@
 
 $(1)_construct: $$($(1)_construct)
 

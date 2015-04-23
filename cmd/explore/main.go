@@ -50,7 +50,8 @@ func command(config *internal.Config) error {
 	np := uint(len(points)) / ni
 
 	if config.Verbose {
-		fmt.Printf("Evaluating the reduced model at %v points...\n", np)
+		fmt.Printf("Evaluating the model with reduction %.2f at %v points...\n",
+			config.Probability.VarThreshold, np)
 	}
 
 	values := internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
