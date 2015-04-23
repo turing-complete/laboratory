@@ -11,6 +11,10 @@
 		"varThreshold": 0.95
 	},
 
+	"target": {
+		"verbose": true
+	},
+
 	"interpolation": {
 		"rule": "open",
 		"minLevel": 1,
@@ -20,5 +24,7 @@
 	"assessment": {
 		"seed": 0,
 		"samples": 10000
-	}
+	},
+
+	"verbose": true
 }
