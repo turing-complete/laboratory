@@ -1,13 +1,13 @@
 package internal
 
 import (
-	"bytes"
 	"errors"
 	"fmt"
 
 	"github.com/ready-steady/probability/gaussian"
 	"github.com/ready-steady/probability/generator"
 	"github.com/ready-steady/probability/uniform"
+	"github.com/ready-steady/staircase"
 	"github.com/ready-steady/statistics/correlation"
 
 	acorrelation "../../pkg/correlation"
@@ -20,17 +20,14 @@ var (
 type model struct {
 	taskIndex  []uint
 	correlator []float64
-	modes      [][]mode
+	modes      []mode
 
 	nt uint
 	nu uint
 	nz uint
 }
 
-type mode struct {
-	value float64
-	point float64
-}
+type mode *staircase.Staircase
 
 func newModel(c *ProbabilityConfig, s *system) (*model, error) {
 	nt := s.nt
@@ -67,30 +64,7 @@ func newModel(c *ProbabilityConfig, s *system) (*model, error) {
 }
 
 func (m *model) String() string {
-	var buffer bytes.Buffer
-
-	put := func(format string, arguments ...interface{}) {
-		buffer.WriteString(fmt.Sprintf(format, arguments...))
-	}
-
-	put("[")
-	for i, tid := range m.taskIndex {
-		if i > 0 {
-			put(", ")
-		}
-		put(`{"id": %d, "modes": [`, tid)
-		for j := range m.modes[i] {
-			if j > 0 {
-				put(", ")
-			}
-			put("[%.2f, %.2f]", m.modes[i][j].value, m.modes[i][j].point)
-		}
-		put("]}")
-	}
-	put("]")
-
-	return fmt.Sprintf(`{"parameters": %d, "variables": %d, "tasks": %s}`,
-		m.nu, m.nz, buffer.String())
+	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, m.nu, m.nz)
 }
 
 func (m *model) transform(z []float64) []float64 {
@@ -114,12 +88,7 @@ func (m *model) transform(z []float64) []float64 {
 
 	modes := make([]float64, nt)
 	for i, tid := range m.taskIndex {
-		for j := range m.modes[i] {
-			if u[i] <= m.modes[i][j].point {
-				modes[tid] = m.modes[i][j].value
-				break
-			}
-		}
+		modes[tid] = (*staircase.Staircase)(m.modes[i]).Evaluate(u[i])
 	}
 
 	return modes
@@ -142,7 +111,7 @@ func computeCorrelator(c *ProbabilityConfig, s *system, taskIndex []uint) ([]flo
 	return correlator, nil
 }
 
-func computeModes(c *ProbabilityConfig, count uint) ([][]mode, error) {
+func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 	if c.MaxModes == 0 {
 		return nil, errors.New("the number of modes should be positive")
 	}
@@ -153,23 +122,29 @@ func computeModes(c *ProbabilityConfig, count uint) ([][]mode, error) {
 	generator := generator.New(NewSeed(c.Seed))
 	uniform := uniform.New(0, 1)
 
-	result := make([][]mode, count)
+	result := make([]mode, count)
 	for i := range result {
 		count := uint(uniform.Sample(generator)*float64(c.MaxModes)) + 1
 
-		result[i] = make([]mode, count)
-		for j := range result[i] {
-			result[i][j].value = uniform.Sample(generator)
-			result[i][j].point = uniform.Sample(generator)
-			if j > 0 {
-				result[i][j].point += result[i][j-1].point
-			}
+		Σ := 0.0
+		values := make([]float64, count)
+		probabilities := make([]float64, count)
+		for j := uint(0); j < count; j++ {
+			values[j] = uniform.Sample(generator)
+			probabilities[j] = uniform.Sample(generator)
+			Σ += probabilities[j]
 		}
-		for j := range result[i] {
-			result[i][j].value *= c.MaxScale - c.MinScale
-			result[i][j].value += c.MinScale
-			result[i][j].point /= result[i][count-1].point
+		for j := uint(0); j < count; j++ {
+			values[j] *= c.MaxScale - c.MinScale
+			values[j] += c.MinScale
+			probabilities[j] /= Σ
 		}
+
+		mode, err := staircase.New(probabilities, values, c.Transition, c.Steepness)
+		if err != nil {
+			return nil, err
+		}
+		result[i] = mode
 	}
 
 	return result, nil

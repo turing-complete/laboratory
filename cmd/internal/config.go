@@ -37,12 +37,16 @@ type ProbabilityConfig struct {
 
 	// The seed for initializing the tasks’ execution modes.
 	Seed int64
-	// The maximal number of execution modes per task.
+	// The maximal number of modes per task.
 	MaxModes uint // > 0
-	// The minimal scaling factor of an execution mode.
+	// The minimal scaling factor of a mode.
 	MinScale float64 // > 0
-	// The maximal scaling factor of an execution mode.
+	// The maximal scaling factor of a mode.
 	MaxScale float64 // > 0
+	// The relative length of transition from one mode to another.
+	Transition float64 // ∈ (0, 0.5]
+	// The steepness of transition from one mode to another.
+	Steepness float64 // ≥ 0
 
 	// The strength of correlations between tasks.
 	CorrLength float64 // > 0
