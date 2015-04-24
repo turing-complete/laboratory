@@ -5,7 +5,7 @@ import (
 	"math"
 
 	"github.com/ready-steady/statistics"
-	"github.com/ready-steady/statistics/test"
+	"github.com/ready-steady/statistics/metric"
 
 	"../internal"
 )
@@ -124,14 +124,10 @@ func compare(data1, data2, mean2 []float64) []float64 {
 		v2 = statistics.Variance(data2)
 	}
 
-	εμ := math.Abs((μ1 - μ2) / μ1)
-	εv := math.Abs((v1 - v2) / v1)
-	_, _, εp := test.KolmogorovSmirnov(data1, data2, 0)
-
 	result := make([]float64, metricCount)
-	result[0] = εμ
-	result[1] = εv
-	result[2] = εp
+	result[0] = math.Abs((μ1 - μ2) / μ1)
+	result[1] = math.Abs((v1 - v2) / v1)
+	result[2] = metric.KolmogorovSmirnov(data1, data2)
 
 	return result
 }
