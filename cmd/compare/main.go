@@ -4,7 +4,7 @@ import (
 	"flag"
 	"math"
 
-	"github.com/ready-steady/statistics"
+	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
 
 	"../internal"
@@ -104,24 +104,24 @@ func command(_ *internal.Config) error {
 }
 
 func compare(data1, data2, mean2 []float64) []float64 {
-	μ1 := statistics.Mean(data1)
-	v1 := statistics.Variance(data1)
+	μ1 := distribution.Mean(data1)
+	v1 := distribution.Variance(data1)
 
 	var μ2 float64
 	if len(mean2) > 0 {
 		μ2 = mean2[0]
 	} else {
-		μ2 = statistics.Mean(data2)
+		μ2 = distribution.Mean(data2)
 	}
 
 	var v2 float64
 	if len(mean2) > 1 {
 		v2 = mean2[1] - μ2*μ2
 		if v2 < 0 {
-			v2 = statistics.Variance(data2)
+			v2 = distribution.Variance(data2)
 		}
 	} else {
-		v2 = statistics.Variance(data2)
+		v2 = distribution.Variance(data2)
 	}
 
 	result := make([]float64, metricCount)
