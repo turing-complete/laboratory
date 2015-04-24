@@ -18,7 +18,7 @@ func TestSolverCompute(t *testing.T) {
 	ni, no := target.Dimensions()
 	nc := surrogate.Nodes
 
-	assert.Equal(nc, uint(111), t)
+	assert.Equal(nc, uint(103), t)
 
 	grid := newcot.NewOpen(ni)
 	nodes := grid.Compute(surrogate.Indices)

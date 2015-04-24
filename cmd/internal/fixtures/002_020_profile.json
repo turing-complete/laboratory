@@ -7,8 +7,9 @@
 	},
 
 	"probability": {
-		"maxDelay": 0.2,
-		"marginal": "Beta(1, 1)",
+		"maxModes": 2,
+		"minScale": -0.1,
+		"maxScale": 0.1,
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},
@@ -23,10 +24,5 @@
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 3
-	},
-
-	"assessment": {
-		"seed": 1,
-		"samples": 10000
 	}
 }

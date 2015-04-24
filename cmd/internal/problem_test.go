@@ -9,25 +9,10 @@ import (
 func TestNewProblem(t *testing.T) {
 	config, _ := NewConfig("fixtures/002_020_profile.json")
 	problem, _ := NewProblem(config)
-	system := problem.system
 
+	system := problem.system
 	assert.Equal(system.nc, uint(2), t)
 	assert.Equal(system.nt, uint(20), t)
-
-	assert.Equal(problem.nu, uint(20), t)
-	assert.Equal(problem.nz, uint(3), t)
-
-	delay := make([]float64, 20)
-	for i := 0; i < 20; i++ {
-		assert.Equal(problem.marginals[i].InvCDF(0), 0.0, t)
-		delay[i] = problem.marginals[i].InvCDF(1)
-	}
-	assert.EqualWithin(delay, []float64{
-		0.0020, 0.0006, 0.0076, 0.0062, 0.0004, 0.0038, 0.0006, 0.0062, 0.0036, 0.0056,
-		0.0038, 0.0010, 0.0068, 0.0070, 0.0078, 0.0044, 0.0004, 0.0058, 0.0056, 0.0040,
-	}, 1e-15, t)
-
-	assert.Equal(len(problem.multiplier), 3*20, t)
 
 	schedule := system.schedule
 	assert.Equal(schedule.Mapping, []uint{
@@ -43,4 +28,9 @@ func TestNewProblem(t *testing.T) {
 		0.267, 0.237, 0.079, 0.152, 0.113, 0.170, 0.079, 0.141, 0.113, 0.242,
 	}, 1e-15, t)
 	assert.EqualWithin(schedule.Span, 0.291, 1e-15, t)
+
+	model := problem.model
+	assert.Equal(model.nu, uint(20), t)
+	assert.Equal(model.nz, uint(3), t)
+	assert.Equal(len(model.correlator), 3*20, t)
 }
