@@ -50,6 +50,8 @@ func command(config *internal.Config) error {
 	np := uint(len(points)) / ni
 
 	if config.Verbose {
+		fmt.Println(problem)
+		fmt.Println(target)
 		fmt.Printf("Evaluating the model with reduction %.2f at %v points...\n",
 			config.Probability.VarThreshold, np)
 	}
