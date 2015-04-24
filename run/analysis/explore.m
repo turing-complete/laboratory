@@ -27,25 +27,29 @@ function explore()
     end
   end
 
-  if x < 0 || y < 0
-    error('Cannot find the sweep dimensions.')
-  end
-
-  X = reshape(points(x, :), nn, nn);
-  Y = reshape(points(y, :), nn, nn);
-
-  MN = min(values(:));
-  MX = max(values(:));
-
-  for z = 1:no
-    Z = reshape(values(z, :), nn, nn);
-
-    mn = min(Z(:));
-    mx = max(Z(:));
-
+  if x < 0
+    error('Cannot find any sweep dimension.')
+  elseif y < 0
     figure;
-    surf(X, Y, Z);
-    zlim([MN, MX]);
-    title(sprintf('Output %d(Input %d, Input %d), Range %f', z-1, x-1, y-1, mx-mn));
+    line(points(x, :), values);
+    title(sprintf('Outputs(Input %d)', x-1));
+  else
+    X = reshape(points(x, :), nn, nn);
+    Y = reshape(points(y, :), nn, nn);
+
+    MN = min(values(:));
+    MX = max(values(:));
+
+    for z = 1:no
+      Z = reshape(values(z, :), nn, nn);
+
+      mn = min(Z(:));
+      mx = max(Z(:));
+
+      figure;
+      surf(X, Y, Z);
+      zlim([MN, MX]);
+      title(sprintf('Output %d(Input %d, Input %d), Range %f', z-1, x-1, y-1, mx-mn));
+    end
   end
 end
