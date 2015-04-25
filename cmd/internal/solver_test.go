@@ -3,7 +3,7 @@ package internal
 import (
 	"testing"
 
-	"github.com/ready-steady/adhier/grid/newcot"
+	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/ready-steady/assert"
 )
 

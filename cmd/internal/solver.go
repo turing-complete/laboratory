@@ -4,24 +4,24 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ready-steady/adhier"
-	"github.com/ready-steady/adhier/basis/linhat"
-	"github.com/ready-steady/adhier/grid/newcot"
+	"github.com/ready-steady/adapt"
+	"github.com/ready-steady/adapt/basis/linhat"
+	"github.com/ready-steady/adapt/grid/newcot"
 )
 
 type Solver struct {
-	adhier.Interpolator
+	adapt.Interpolator
 }
 
 type Solution struct {
-	adhier.Surrogate
+	adapt.Surrogate
 }
 
 func NewSolver(problem *Problem, target Target) (*Solver, error) {
 	ni, _ := target.Dimensions()
 
-	var grid adhier.Grid
-	var basis adhier.Basis
+	var grid adapt.Grid
+	var basis adapt.Basis
 
 	switch problem.Config.Interpolation.Rule {
 	case "closed":
@@ -32,8 +32,8 @@ func NewSolver(problem *Problem, target Target) (*Solver, error) {
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	interpolator := adhier.New(grid, basis,
-		(*adhier.Config)(&problem.Config.Interpolation.Config))
+	interpolator := adapt.New(grid, basis,
+		(*adapt.Config)(&problem.Config.Interpolation.Config))
 
 	return &Solver{*interpolator}, nil
 }
