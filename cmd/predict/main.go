@@ -57,13 +57,13 @@ func command(config *internal.Config) error {
 		return err
 	}
 
-	if config.Verbose {
-		fmt.Println("Sampling the surrogate model...")
-	}
-
 	ni, no := target.Dimensions()
 	ns := uint(len(points)) / ni
 	np := uint(len(solution.Steps))
+
+	if config.Verbose {
+		fmt.Printf("Evaluating the surrogate model %d times at %d points...\n", np, ns)
+	}
 
 	values := make([]float64, np*ns*no)
 	moments := make([]float64, np*no)
@@ -106,12 +106,12 @@ func command(config *internal.Config) error {
 
 func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
 	config := &problem.Config.Assessment
-	if config.Samples == 0 {
+	if config.SurrogateSamples == 0 {
 		return nil, errors.New("the number of samples should be positive")
 	}
 
 	ni, _ := target.Dimensions()
 	sequence := sequence.NewSobol(ni, internal.NewSeed(config.Seed))
 
-	return sequence.Next(config.Samples), nil
+	return sequence.Next(config.SurrogateSamples), nil
 }
