@@ -7,7 +7,7 @@
 	},
 
 	"probability": {
-		"maxModes": 2,
+		"modes": 2,
 		"minScale": -0.1,
 		"maxScale": 0.1,
 		"transition": 0.2,

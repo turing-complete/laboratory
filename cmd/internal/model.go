@@ -110,7 +110,7 @@ func computeCorrelator(c *ProbabilityConfig, s *system, taskIndex []uint) ([]flo
 }
 
 func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
-	if c.MaxModes == 0 {
+	if c.Modes == 0 {
 		return nil, errors.New("the number of modes should be positive")
 	}
 	if c.MinScale <= -1 || c.MaxScale <= -1 {
@@ -125,17 +125,15 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 
 	result := make([]mode, count)
 	for i := range result {
-		count := uint(uniform.Sample(generator)*float64(c.MaxModes)) + 1
-
 		Σ := 0.0
-		values := make([]float64, count)
-		probabilities := make([]float64, count)
-		for j := uint(0); j < count; j++ {
+		values := make([]float64, c.Modes)
+		probabilities := make([]float64, c.Modes)
+		for j := range values {
 			values[j] = uniform.Sample(generator)
 			probabilities[j] = uniform.Sample(generator)
 			Σ += probabilities[j]
 		}
-		for j := uint(0); j < count; j++ {
+		for j := range values {
 			values[j] *= c.MaxScale - c.MinScale
 			values[j] += c.MinScale
 			probabilities[j] /= Σ
