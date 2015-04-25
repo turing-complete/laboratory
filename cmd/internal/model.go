@@ -4,9 +4,7 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ready-steady/probability/gaussian"
-	"github.com/ready-steady/probability/generator"
-	"github.com/ready-steady/probability/uniform"
+	"github.com/ready-steady/probability"
 	"github.com/ready-steady/staircase"
 	"github.com/ready-steady/statistics/correlation"
 
@@ -14,7 +12,7 @@ import (
 )
 
 var (
-	standardGaussian = gaussian.New(0, 1)
+	standardGaussian = probability.NewGaussian(0, 1)
 )
 
 type model struct {
@@ -119,8 +117,8 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 		return nil, errors.New("the scaling factors should be greater than -1")
 	}
 
-	generator := generator.New(NewSeed(c.Seed))
-	uniform := uniform.New(0, 1)
+	generator := probability.NewGenerator(NewSeed(c.Seed))
+	uniform := probability.NewUniform(0, 1)
 
 	result := make([]mode, count)
 	for i := range result {
