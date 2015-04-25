@@ -45,8 +45,6 @@ type ProbabilityConfig struct {
 	MaxScale float64 // > 0
 	// The relative length of transition from one mode to another.
 	Transition float64 // ∈ (0, 0.5]
-	// The steepness of transition from one mode to another.
-	Steepness float64 // ≥ 0
 
 	// The strength of correlations between tasks.
 	CorrLength float64 // > 0

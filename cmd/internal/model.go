@@ -116,6 +116,9 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 	if c.MinScale <= -1 || c.MaxScale <= -1 {
 		return nil, errors.New("the scaling factors should be greater than -1")
 	}
+	if c.Transition <= 0 || c.Transition > 0.5 {
+		return nil, errors.New("the transition parameter should be in (0, 0.5]")
+	}
 
 	generator := probability.NewGenerator(NewSeed(c.Seed))
 	uniform := probability.NewUniform(0, 1)
@@ -138,11 +141,7 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 			probabilities[j] /= Σ
 		}
 
-		mode, err := staircase.New(probabilities, values, c.Transition, c.Steepness)
-		if err != nil {
-			return nil, err
-		}
-		result[i] = mode
+		result[i] = staircase.New(probabilities, values, c.Transition)
 	}
 
 	return result, nil

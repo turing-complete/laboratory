@@ -45,6 +45,7 @@ func TestParseNaturalIndex(t *testing.T) {
 		{"[0:2:10]", 0, 10, []uint{0, 2, 4, 6, 8, 10}},
 		{"[0:5:15]", 0, 10, nil},
 		{"", 0, 10, []uint{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10}},
+		{"[]", 0, 5, []uint{0, 1, 2, 3, 4, 5}},
 	}
 
 	for _, c := range cases {

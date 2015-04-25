@@ -10,6 +10,7 @@
 		"maxModes": 2,
 		"minScale": -0.1,
 		"maxScale": 0.1,
+		"transition": 0.2,
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},

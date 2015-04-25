@@ -95,6 +95,8 @@ func parseNaturalIndex(line string, min, max uint) ([]uint, error) {
 }
 
 var (
+	emptyPattern = regexp.MustCompile(`^(^\[\s*]$)?$`)
+
 	arrayPattern = regexp.MustCompile(`^\[([^:]*)]$`)
 	commaPattern = regexp.MustCompile(`\s*,\s*`)
 
@@ -110,7 +112,7 @@ func parseRealIndex(line string, min, max float64) ([]float64, error) {
 	index := make([]float64, 0)
 
 	line = strings.Trim(line, " \t")
-	if len(line) == 0 {
+	if emptyPattern.MatchString(line) {
 		start, step, end := min, 1.0, max
 		for start < end || math.Abs(start-end) < ε {
 			index = append(index, start)
