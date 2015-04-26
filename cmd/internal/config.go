@@ -89,6 +89,8 @@ type AssessmentConfig struct {
 	Seed int64
 	// The number of samples to draw.
 	Samples uint
+	// The number of bins used for comparing distributions.
+	Bins uint
 }
 
 func NewConfig(path string) (*Config, error) {

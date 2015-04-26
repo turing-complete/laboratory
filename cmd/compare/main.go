@@ -1,12 +1,12 @@
 package main
 
 import (
+	"errors"
 	"flag"
 	"math"
 
-	"github.com/ready-steady/linear/metric"
-	"github.com/ready-steady/sort"
 	"github.com/ready-steady/statistics/distribution"
+	"github.com/ready-steady/statistics/metric"
 
 	"../internal"
 )
@@ -23,11 +23,18 @@ var (
 	outputFile    = flag.String("o", "", "an output file (required)")
 )
 
+type Config *internal.AssessmentConfig
+
 func main() {
 	internal.Run(command)
 }
 
-func command(_ *internal.Config) error {
+func command(globalConfig *internal.Config) error {
+	config := &globalConfig.Assessment
+	if config.Bins == 0 {
+		return errors.New("the number of bins should be positive")
+	}
+
 	reference, err := internal.Open(*referenceFile)
 	if err != nil {
 		return err
@@ -88,13 +95,16 @@ func command(_ *internal.Config) error {
 
 	for i := uint(0); i < nq; i++ {
 		r := slice(rvalues, no, i*momentCount, 1)
+
 		o := cumulate(slice(ovalues, no, i*momentCount, 1), steps)
+		for j := uint(0); j < ns; j++ {
+			εo = append(εo, assess(r, nil, o[j], nil, config)...)
+		}
+
 		p := divide(slice(pvalues, no, i*momentCount, 1), ns)
 		m := divide(slice(pmoments, no, i*momentCount, momentCount), ns)
-
 		for j := uint(0); j < ns; j++ {
-			εo = append(εo, assess(r, nil, o[j], nil)...)
-			εp = append(εp, assess(r, nil, p[j], m[j])...)
+			εp = append(εp, assess(r, nil, p[j], m[j], config)...)
 		}
 	}
 
@@ -113,19 +123,19 @@ func command(_ *internal.Config) error {
 	return nil
 }
 
-func assess(data1, moments1, data2, moments2 []float64) []float64 {
-	μ1, v1 := computeExpVar(data1, moments1)
-	μ2, v2 := computeExpVar(data2, moments2)
+func assess(data1, moments1, data2, moments2 []float64, config Config) []float64 {
+	μ1, v1 := computeMoments(data1, moments1, config)
+	μ2, v2 := computeMoments(data2, moments2, config)
 
 	result := make([]float64, metricCount)
 	result[0] = math.Abs((μ1 - μ2) / μ1)
 	result[1] = math.Abs((v1 - v2) / v1)
-	result[2] = computeDistance(data1, data2)
+	result[2] = computeDistance(data1, data2, config)
 
 	return result
 }
 
-func computeExpVar(data, moments []float64) (float64, float64) {
+func computeMoments(data, moments []float64, _ Config) (float64, float64) {
 	var μ float64
 	if len(moments) > 0 {
 		μ = moments[0]
@@ -146,25 +156,43 @@ func computeExpVar(data, moments []float64) (float64, float64) {
 	return μ, v
 }
 
-func computeDistance(data1, data2 []float64) float64 {
-	edges := detect(data1, data2)
+func computeDistance(data1, data2 []float64, config Config) float64 {
+	edges := detect(data1, data2, config)
 
 	cdf1 := distribution.CDF(data1, edges)
 	cdf2 := distribution.CDF(data2, edges)
 
-	return metric.Uniform(cdf1, cdf2)
+	return metric.NRMSE(cdf1, cdf2)
 }
 
-func detect(data1, data2 []float64) []float64 {
-	n1, n2 := len(data1), len(data2)
+func detect(data1, data2 []float64, config Config) []float64 {
+	min, max := math.Inf(1), math.Inf(-1)
+	for _, x := range data1 {
+		if min > x {
+			min = x
+		}
+		if max < x {
+			max = x
+		}
+	}
+	for _, x := range data2 {
+		if min > x {
+			min = x
+		}
+		if max < x {
+			max = x
+		}
+	}
 
-	edges := make([]float64, 1+n1+n2+1)
-	edges[0] = math.Inf(-1)
-	copy(edges[1:], data1)
-	copy(edges[1+n1:], data2)
-	edges[1+n1+n2] = -edges[0]
+	bins := config.Bins
 
-	return edges[:sort.Unique(edges)]
+	edges := make([]float64, bins+1)
+	edges[0], edges[bins] = math.Inf(-1), math.Inf(1)
+	for i := uint(1); i < bins; i++ {
+		edges[i] = min + (max-min)*float64(i-1)/float64(bins-2)
+	}
+
+	return edges
 }
 
 func cumulate(data []float64, steps []uint) [][]float64 {

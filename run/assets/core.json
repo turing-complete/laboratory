@@ -23,7 +23,8 @@
 
 	"assessment": {
 		"seed": 0,
-		"samples": 10000
+		"samples": 100000,
+		"bins": 100
 	},
 
 	"verbose": true

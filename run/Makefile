@@ -45,7 +45,7 @@ $$($(1)_sweep): sweep
 	@./sweep -c $$($(1)_config) -n 100 -s "[0,1]" -o $$@
 
 $$($(1)_reference): observe
-	@./observe -c $$($(1)_config) -o $$@
+	@./observe -c $$($(1)_config) -s 0x42424242 -n 1000000 -o $$@
 
 $$($(1)_observe): observe
 	@./observe -c $$($(1)_config) -o $$@
