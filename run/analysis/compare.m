@@ -1,5 +1,28 @@
-function compare()
+function compare(extended)
   use('Interaction');
+
+  filename = locate('compare');
+  steps = h5read(filename, '/steps');
+  oerror = h5read(filename, '/observe');
+  perror = h5read(filename, '/predict');
+
+  nk = size(oerror, 2);
+  nq = size(oerror, 3);
+
+  count = cumsum(steps);
+
+  for i = 1:nq
+    o = oerror(:, 2:end, i);
+    p = perror(:, 2:end, i);
+
+    Plot.figure(800, 400);
+    line(count(2:end), log10(o)');
+    line(count(2:end), log10(p)', 'LineStyle', '--');
+    legend('Expectation', 'Variance', 'Distribution');
+  end
+
+  if ~exist('extended', 'var'); return; end
+
   use('Statistics');
 
   filename = locate('reference');
@@ -14,26 +37,7 @@ function compare()
   pvalues = h5read(filename, '/values');
   pvalues = pvalues(1:2:end, :);
 
-  filename = locate('compare');
-  steps = h5read(filename, '/steps');
-  oerror = h5read(filename, '/observe');
-  perror = h5read(filename, '/predict');
-
-  nk = size(oerror, 2);
-  nq = size(oerror, 3);
   ns = size(pvalues, 2) / nk;
-
-  count = cumsum(steps);
-
-  for i = 1:nq
-    o = oerror(:, 2:end, i);
-    p = perror(:, 2:end, i);
-
-    Plot.figure(800, 400);
-    line(count(2:end), log10(o)');
-    line(count(2:end), log10(p)', 'LineStyle', '--');
-    legend('Expectation', 'Variance', 'Distribution');
-  end
 
   pvalues = pvalues(:, (end-ns+1):end);
   ovalues = ovalues(:, 1:count(end));
