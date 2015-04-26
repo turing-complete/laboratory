@@ -29,7 +29,7 @@ function compare()
     Plot.figure(800, 400);
     line(count(2:end), log10(o)');
     line(count(2:end), log10(p)', 'LineStyle', '--');
-    legend('Expectation', 'Variance', 'Density');
+    legend('Expectation', 'Variance', 'Distribution');
   end
 
   for i = 1:nq
