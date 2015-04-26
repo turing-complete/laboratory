@@ -6,6 +6,10 @@ function compare()
   rvalues = h5read(filename, '/values');
   rvalues = rvalues(1:2:end, :);
 
+  filename = locate('observe');
+  ovalues = h5read(filename, '/values');
+  ovalues = ovalues(1:2:end, :);
+
   filename = locate('predict');
   pvalues = h5read(filename, '/values');
   pvalues = pvalues(1:2:end, :);
@@ -19,8 +23,6 @@ function compare()
   nq = size(oerror, 3);
   ns = size(pvalues, 2) / nk;
 
-  pvalues = pvalues(:, (end-ns+1):end);
-
   count = cumsum(steps);
 
   for i = 1:nq
@@ -33,30 +35,37 @@ function compare()
     legend('Expectation', 'Variance', 'Distribution');
   end
 
+  pvalues = pvalues(:, (end-ns+1):end);
+  ovalues = ovalues(:, 1:count(end));
+
   for i = 1:nq
-    r = rvalues(i, :);
-    p = pvalues(i, :);
-
-    [Fr, Fp] = distribute(r, p);
-    error = Error.computeNRMSE(Fr, Fp);
-
-    Plot.figure(800, 400);
-    title(sprintf('Histogram (error %.4e)', error));
-    subplot(1, 2, 1);
-    hist(r, 100);
-    title('Reference');
-    subplot(1, 2, 2);
-    hist(p, 100);
-    title('Predict');
-
-    Plot.figure(800, 400);
-    title(sprintf('Empirical CDF (error %.4e)', error));
-    hold on;
-    ecdf(r);
-    ecdf(p);
-    hold off;
-    legend('Reference', 'Predict');
+    plotDistributions('Reference', rvalues(i, :), 'Observe', ovalues(i, :));
+    plotDistributions('Reference', rvalues(i, :), 'Predict', pvalues(i, :));
   end
+end
+
+function plotDistributions(name1, data1, name2, data2)
+  bins = 100;
+
+  [F1, F2] = distribute(data1, data2);
+  error = Error.computeNRMSE(F1, F2);
+
+  Plot.figure(800, 400);
+  title(sprintf('Histogram (error %.4e)', error));
+  subplot(1, 2, 1);
+  hist(data1, bins);
+  title(name1);
+  subplot(1, 2, 2);
+  hist(data2, bins);
+  title(name2);
+
+  Plot.figure(800, 400);
+  title(sprintf('Empirical CDF (error %.4e)', error));
+  hold on;
+  ecdf(data1);
+  ecdf(data2);
+  hold off;
+  legend(name1, name2);
 end
 
 function [cdf1, cdf2] = distribute(data1, data2)
