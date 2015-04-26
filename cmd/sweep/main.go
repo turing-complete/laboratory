@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"math"
 	"runtime"
 	"strings"
 
@@ -15,9 +16,10 @@ import (
 
 var (
 	outputFile     = flag.String("o", "", "an output file (required)")
+	varThreshold   = flag.Float64("t", math.Inf(1), "the variance-reduction threshold")
 	parameterIndex = flag.String("s", "[]", "the parameters to sweep")
-	numberOfNodes  = flag.Uint("n", 10, "the number of nodes per parameter")
 	defaultNode    = flag.Float64("d", 0.5, "the default value of parameters")
+	nodeCount      = flag.Uint("n", 10, "the number of nodes per parameter")
 )
 
 func main() {
@@ -30,6 +32,8 @@ func command(config *internal.Config) error {
 		return err
 	}
 	defer output.Close()
+
+	config.Probability.VarThreshold = *varThreshold
 
 	problem, err := internal.NewProblem(config)
 	if err != nil {
@@ -74,7 +78,7 @@ func command(config *internal.Config) error {
 
 func generate(target internal.Target, rule string) ([]float64, error) {
 	ni, _ := target.Dimensions()
-	nn := *numberOfNodes
+	nn := *nodeCount
 
 	index, err := detect(target)
 	if err != nil {
