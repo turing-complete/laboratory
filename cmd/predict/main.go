@@ -84,6 +84,7 @@ func command(globalConfig *internal.Config) error {
 
 	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the surrogate model %d times at %d points...\n", np, ns)
+		fmt.Printf("%10s %15s\n", "Step", "Nodes")
 	}
 
 	values := make([]float64, np*ns*no)
@@ -93,7 +94,7 @@ func command(globalConfig *internal.Config) error {
 		nn += solution.Steps[i]
 
 		if globalConfig.Verbose {
-			fmt.Printf("%5d: %10d\n", i, nn)
+			fmt.Printf("%10d %15d\n", i, nn)
 		}
 
 		s := *solution
