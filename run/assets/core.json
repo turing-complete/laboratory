@@ -16,7 +16,7 @@
 	},
 
 	"interpolation": {
-		"rule": "closed",
+		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 10
 	},
