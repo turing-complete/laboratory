@@ -51,7 +51,7 @@ function plotDistributions(name1, data1, name2, data2)
   error = Error.computeNRMSE(F1, F2);
 
   Plot.figure(800, 400);
-  title(sprintf('Histogram (error %.4e)', error));
+  title(sprintf('Histogram (samples %d, error %.4e)', length(data2), error));
   subplot(1, 2, 1);
   hist(data1, bins);
   title(name1);
@@ -60,7 +60,7 @@ function plotDistributions(name1, data1, name2, data2)
   title(name2);
 
   Plot.figure(800, 400);
-  title(sprintf('Empirical CDF (error %.4e)', error));
+  title(sprintf('Empirical CDF (samples %d, error %.4e)', length(data2), error));
   hold on;
   ecdf(data1);
   ecdf(data2);
