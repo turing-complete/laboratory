@@ -184,13 +184,13 @@ func detect(data1, data2 []float64, config Config) []float64 {
 		}
 	}
 
-	bins := config.Bins
+	n := config.Bins
 
-	edges := make([]float64, bins+1)
-	edges[0], edges[bins] = math.Inf(-1), math.Inf(1)
-	for i := uint(1); i < bins; i++ {
-		edges[i] = min + (max-min)*float64(i-1)/float64(bins-2)
+	edges := make([]float64, n+1)
+	for i := uint(0); i < n; i++ {
+		edges[i] = min + (max-min)*float64(i)/float64(n)
 	}
+	edges[n] = math.Inf(1)
 
 	return edges
 }

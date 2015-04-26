@@ -1,5 +1,6 @@
 function compare()
   use('Interaction');
+  use('Statistics');
 
   filename = locate('reference');
   rvalues = h5read(filename, '/values');
@@ -36,7 +37,8 @@ function compare()
     r = rvalues(i, :);
     p = pvalues(i, :);
 
-    [~, ~, error] = kstest2(r, p);
+    [Fr, Fp] = distribute(r, p);
+    error = Error.computeNRMSE(Fr, Fp);
 
     Plot.figure(800, 400);
     title(sprintf('Histogram (error %.4e)', error));
@@ -55,4 +57,19 @@ function compare()
     hold off;
     legend('Reference', 'Predict');
   end
+end
+
+function [cdf1, cdf2] = distribute(data1, data2)
+  bins = 100;
+
+  edges = linspace(min(min(data1), min(data2)), max(max(data1), max(data2)), bins + 1);
+  edges(end) = Inf;
+
+  cdf1 = histc(data1, edges);
+  cdf1 = cdf1(1:end-1);
+  cdf1 = cumsum(cdf1) / sum(cdf1);
+
+  cdf2 = histc(data2, edges);
+  cdf2 = cdf2(1:end-1);
+  cdf2 = cumsum(cdf2) / sum(cdf2);
 end
