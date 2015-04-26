@@ -4,7 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"math"
+	"strconv"
 
 	"github.com/ready-steady/sequence"
 
@@ -14,15 +14,33 @@ import (
 var (
 	constructFile = flag.String("construct", "", "an output of `construct` (required)")
 	outputFile    = flag.String("o", "", "an output file (required)")
-	sampleSeed    = flag.Float64("s", math.NaN(), "a seed for generating samples")
-	sampleCount   = flag.Float64("n", math.NaN(), "the number of samples")
+	sampleSeed    = flag.String("s", "", "a seed for generating samples")
+	sampleCount   = flag.String("n", "", "the number of samples")
 )
+
+type Config *internal.AssessmentConfig
 
 func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config) error {
+func command(globalConfig *internal.Config) error {
+	config := &globalConfig.Assessment
+	if len(*sampleSeed) > 0 {
+		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
+			return err
+		} else {
+			config.Seed = number
+		}
+	}
+	if len(*sampleCount) > 0 {
+		if number, err := strconv.ParseUint(*sampleCount, 0, 64); err != nil {
+			return err
+		} else {
+			config.Samples = uint(number)
+		}
+	}
+
 	construct, err := internal.Open(*constructFile)
 	if err != nil {
 		return err
@@ -35,14 +53,7 @@ func command(config *internal.Config) error {
 	}
 	defer output.Close()
 
-	if !math.IsNaN(*sampleSeed) {
-		config.Assessment.Seed = int64(*sampleSeed)
-	}
-	if !math.IsNaN(*sampleCount) {
-		config.Assessment.Samples = uint(*sampleCount)
-	}
-
-	problem, err := internal.NewProblem(config)
+	problem, err := internal.NewProblem(globalConfig)
 	if err != nil {
 		return err
 	}
@@ -62,7 +73,7 @@ func command(config *internal.Config) error {
 		return err
 	}
 
-	points, err := generate(&config.Assessment, target)
+	points, err := generate(config, target)
 	if err != nil {
 		return err
 	}
@@ -71,7 +82,7 @@ func command(config *internal.Config) error {
 	ns := uint(len(points)) / ni
 	np := uint(len(solution.Steps))
 
-	if config.Verbose {
+	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the surrogate model %d times at %d points...\n", np, ns)
 	}
 
@@ -81,7 +92,7 @@ func command(config *internal.Config) error {
 	for i, nn := uint(0), uint(0); i < np; i++ {
 		nn += solution.Steps[i]
 
-		if config.Verbose {
+		if globalConfig.Verbose {
 			fmt.Printf("%5d: %10d\n", i, nn)
 		}
 
@@ -94,7 +105,7 @@ func command(config *internal.Config) error {
 		copy(moments[i*no:(i+1)*no], solver.Integrate(&s))
 	}
 
-	if config.Verbose {
+	if globalConfig.Verbose {
 		fmt.Println("Done.")
 	}
 
@@ -114,7 +125,7 @@ func command(config *internal.Config) error {
 	return nil
 }
 
-func generate(config *internal.AssessmentConfig, target internal.Target) ([]float64, error) {
+func generate(config Config, target internal.Target) ([]float64, error) {
 	if config.Samples == 0 {
 		return nil, errors.New("the number of samples should be positive")
 	}

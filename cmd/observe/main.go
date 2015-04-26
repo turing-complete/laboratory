@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math"
 	"runtime"
+	"strconv"
 
 	"github.com/ready-steady/sequence"
 
@@ -14,30 +15,42 @@ import (
 
 var (
 	outputFile  = flag.String("o", "", "an output file (required)")
-	sampleSeed  = flag.Float64("s", math.NaN(), "a seed for generating samples")
-	sampleCount = flag.Float64("n", math.NaN(), "the number of samples")
+	sampleSeed  = flag.String("s", "", "a seed for generating samples")
+	sampleCount = flag.String("n", "", "the number of samples")
 )
+
+type Config *internal.AssessmentConfig
 
 func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config) error {
+func command(globalConfig *internal.Config) error {
+	globalConfig.Probability.VarThreshold = math.Inf(1)
+
+	config := &globalConfig.Assessment
+	if len(*sampleSeed) > 0 {
+		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
+			return err
+		} else {
+			config.Seed = number
+		}
+	}
+	if len(*sampleCount) > 0 {
+		if number, err := strconv.ParseUint(*sampleCount, 0, 64); err != nil {
+			return err
+		} else {
+			config.Samples = uint(number)
+		}
+	}
+
 	output, err := internal.Create(*outputFile)
 	if err != nil {
 		return err
 	}
 	defer output.Close()
 
-	config.Probability.VarThreshold = math.Inf(1)
-	if !math.IsNaN(*sampleSeed) {
-		config.Assessment.Seed = int64(*sampleSeed)
-	}
-	if !math.IsNaN(*sampleCount) {
-		config.Assessment.Samples = uint(*sampleCount)
-	}
-
-	problem, err := internal.NewProblem(config)
+	problem, err := internal.NewProblem(globalConfig)
 	if err != nil {
 		return err
 	}
@@ -47,7 +60,7 @@ func command(config *internal.Config) error {
 		return err
 	}
 
-	points, err := generate(&config.Assessment, target)
+	points, err := generate(config, target)
 	if err != nil {
 		return err
 	}
@@ -55,13 +68,13 @@ func command(config *internal.Config) error {
 	ni, no := target.Dimensions()
 	ns := uint(len(points)) / ni
 
-	if config.Verbose {
+	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the original model at %d points...\n", ns)
 	}
 
 	values := internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
 
-	if config.Verbose {
+	if globalConfig.Verbose {
 		fmt.Println("Done.")
 	}
 
@@ -75,7 +88,7 @@ func command(config *internal.Config) error {
 	return nil
 }
 
-func generate(config *internal.AssessmentConfig, target internal.Target) ([]float64, error) {
+func generate(config Config, target internal.Target) ([]float64, error) {
 	if config.Samples == 0 {
 		return nil, errors.New("the number of samples should be positive")
 	}
