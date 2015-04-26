@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"math"
 
 	"github.com/ready-steady/sequence"
 
@@ -13,6 +14,8 @@ import (
 var (
 	constructFile = flag.String("construct", "", "an output of `construct` (required)")
 	outputFile    = flag.String("o", "", "an output file (required)")
+	sampleSeed    = flag.Float64("s", math.NaN(), "a seed for generating samples")
+	sampleCount   = flag.Float64("n", math.NaN(), "the number of samples")
 )
 
 func main() {
@@ -31,6 +34,13 @@ func command(config *internal.Config) error {
 		return err
 	}
 	defer output.Close()
+
+	if !math.IsNaN(*sampleSeed) {
+		config.Assessment.Seed = int64(*sampleSeed)
+	}
+	if !math.IsNaN(*sampleCount) {
+		config.Assessment.Samples = uint(*sampleCount)
+	}
 
 	problem, err := internal.NewProblem(config)
 	if err != nil {
@@ -52,7 +62,7 @@ func command(config *internal.Config) error {
 		return err
 	}
 
-	points, err := generate(problem, target)
+	points, err := generate(&config.Assessment, target)
 	if err != nil {
 		return err
 	}
@@ -104,14 +114,13 @@ func command(config *internal.Config) error {
 	return nil
 }
 
-func generate(problem *internal.Problem, target internal.Target) ([]float64, error) {
-	config := &problem.Config.Assessment
-	if config.SurrogateSamples == 0 {
+func generate(config *internal.AssessmentConfig, target internal.Target) ([]float64, error) {
+	if config.Samples == 0 {
 		return nil, errors.New("the number of samples should be positive")
 	}
 
 	ni, _ := target.Dimensions()
 	sequence := sequence.NewSobol(ni, internal.NewSeed(config.Seed))
 
-	return sequence.Next(config.SurrogateSamples), nil
+	return sequence.Next(config.Samples), nil
 }

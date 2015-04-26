@@ -87,10 +87,8 @@ type InterpolationConfig struct {
 type AssessmentConfig struct {
 	// The seed for generating samples.
 	Seed int64
-	// The number of samples used to compute the gold standard.
-	ReferenceSamples uint
-	// The number of samples to draw from the interpolant.
-	SurrogateSamples uint
+	// The number of samples to draw.
+	Samples uint
 }
 
 func NewConfig(path string) (*Config, error) {

@@ -23,8 +23,7 @@
 
 	"assessment": {
 		"seed": 0,
-		"referenceSamples": 10000,
-		"surrogateSamples": 10000
+		"samples": 10000
 	},
 
 	"verbose": true

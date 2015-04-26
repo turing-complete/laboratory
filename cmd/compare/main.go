@@ -16,9 +16,10 @@ const (
 )
 
 var (
-	observeFile = flag.String("observe", "", "an output file of `observe` (required)")
-	predictFile = flag.String("predict", "", "an output file of `predict` (required)")
-	outputFile  = flag.String("o", "", "an output file (required)")
+	referenceFile = flag.String("reference", "", "an output file of `observe` (required)")
+	observeFile   = flag.String("observe", "", "an output file of `observe` (required)")
+	predictFile   = flag.String("predict", "", "an output file of `predict` (required)")
+	outputFile    = flag.String("o", "", "an output file (required)")
 )
 
 func main() {
@@ -26,6 +27,12 @@ func main() {
 }
 
 func command(_ *internal.Config) error {
+	reference, err := internal.Open(*referenceFile)
+	if err != nil {
+		return err
+	}
+	defer reference.Close()
+
 	observe, err := internal.Open(*observeFile)
 	if err != nil {
 		return err
@@ -44,18 +51,23 @@ func command(_ *internal.Config) error {
 	}
 	defer output.Close()
 
-	observations := []float64{}
-	if err := observe.Get("values", &observations); err != nil {
+	rvalues := []float64{}
+	if err := reference.Get("values", &rvalues); err != nil {
 		return err
 	}
 
-	predictions := []float64{}
-	if err := predict.Get("values", &predictions); err != nil {
+	ovalues := []float64{}
+	if err := observe.Get("values", &ovalues); err != nil {
 		return err
 	}
 
-	moments := []float64{}
-	if err := predict.Get("moments", &moments); err != nil {
+	pvalues := []float64{}
+	if err := predict.Get("values", &pvalues); err != nil {
+		return err
+	}
+
+	pmoments := []float64{}
+	if err := predict.Get("moments", &pmoments); err != nil {
 		return err
 	}
 
@@ -74,17 +86,14 @@ func command(_ *internal.Config) error {
 	εp := make([]float64, 0, nq*ns*metricCount)
 
 	for i := uint(0); i < nq; i++ {
-		observations := slice(observations, no, i*momentCount, 1)
-		predictions := slice(predictions, no, i*momentCount, 1)
-		moments := slice(moments, no, i*momentCount, momentCount)
-
-		data1 := cumulate(observations, steps)
-		data2 := divide(predictions, ns)
-		mean2 := divide(moments, ns)
+		r := slice(rvalues, no, i*momentCount, 1)
+		o := cumulate(slice(ovalues, no, i*momentCount, 1), steps)
+		p := divide(slice(pvalues, no, i*momentCount, 1), ns)
+		m := divide(slice(pmoments, no, i*momentCount, momentCount), ns)
 
 		for j := uint(0); j < ns; j++ {
-			εo = append(εo, compare(observations, data1[j], nil)...)
-			εp = append(εp, compare(observations, data2[j], mean2[j])...)
+			εo = append(εo, compare(r, o[j], nil)...)
+			εp = append(εp, compare(r, p[j], m[j])...)
 		}
 	}
 
