@@ -1,11 +1,9 @@
 function compare()
   use('Interaction');
 
-  filename = locate('observe');
-  ovalues = h5read(filename, '/values');
-  ovalues = ovalues(1:2:end, :);
-
-  ns = size(ovalues, 2);
+  filename = locate('reference');
+  rvalues = h5read(filename, '/values');
+  rvalues = rvalues(1:2:end, :);
 
   filename = locate('predict');
   pvalues = h5read(filename, '/values');
@@ -16,9 +14,9 @@ function compare()
   oerror = h5read(filename, '/observe');
   perror = h5read(filename, '/predict');
 
-  nm = size(oerror, 1);
   nk = size(oerror, 2);
   nq = size(oerror, 3);
+  ns = size(pvalues, 2) / nk;
 
   pvalues = pvalues(:, (end-ns+1):end);
 
@@ -35,23 +33,23 @@ function compare()
   end
 
   for i = 1:nq
-    o = ovalues(i, :);
+    r = rvalues(i, :);
     p = pvalues(i, :);
 
-    [~, ~, delta] = kstest2(o, p);
+    [~, ~, delta] = kstest2(r, p);
 
     Plot.figure(800, 400);
     title(sprintf('CDF (delta %.4e)',delta));
     hold on;
-    ecdf(o);
+    ecdf(r);
     ecdf(p);
     hold off;
-    legend('Observe', 'Predict');
+    legend('Reference', 'Predict');
 
     Plot.figure(800, 400);
     subplot(1, 2, 1);
-    hist(o, 100);
-    title('Observe');
+    hist(r, 100);
+    title('Reference');
     subplot(1, 2, 2);
     hist(p, 100);
     title('Predict');
