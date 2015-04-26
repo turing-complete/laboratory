@@ -36,22 +36,23 @@ function compare()
     r = rvalues(i, :);
     p = pvalues(i, :);
 
-    [~, ~, delta] = kstest2(r, p);
+    [~, ~, error] = kstest2(r, p);
 
     Plot.figure(800, 400);
-    title(sprintf('CDF (delta %.4e)',delta));
-    hold on;
-    ecdf(r);
-    ecdf(p);
-    hold off;
-    legend('Reference', 'Predict');
-
-    Plot.figure(800, 400);
+    title(sprintf('Histogram (error %.4e)', error));
     subplot(1, 2, 1);
     hist(r, 100);
     title('Reference');
     subplot(1, 2, 2);
     hist(p, 100);
     title('Predict');
+
+    Plot.figure(800, 400);
+    title(sprintf('Empirical CDF (error %.4e)', error));
+    hold on;
+    ecdf(r);
+    ecdf(p);
+    hold off;
+    legend('Reference', 'Predict');
   end
 end
