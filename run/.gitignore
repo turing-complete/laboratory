@@ -1,8 +1,7 @@
-/construct
+/sweep
 /observe
+/construct
 /predict
 /compare
-/report
-/explore
 
 /data/*.h5

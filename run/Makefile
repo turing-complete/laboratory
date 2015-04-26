@@ -2,7 +2,7 @@ pwd := $(shell pwd)
 cmd := $(dir $(pwd))cmd
 pkg := $(dir $(pwd))pkg
 
-bins := explore observe
+bins := sweep observe
 bins += construct predict
 bins += compare
 
@@ -32,7 +32,7 @@ $(1)_hash_base := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config_base) 
 $(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
 $(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) $$($(1)_config_base) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config) $$($(1)_config_base) | md5))
 
-$(1)_explore := data/$(1)_$$($(1)_hash_base)_explore.h5
+$(1)_sweep := data/$(1)_$$($(1)_hash_base)_sweep.h5
 $(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
 $(1)_observe := data/$(1)_$$($(1)_hash_base)_observe.h5
 
@@ -41,8 +41,8 @@ $(1)_predict := data/$(1)_$$($(1)_hash)_predict.h5
 
 $(1)_compare := data/$(1)_$$($(1)_hash)_compare.h5
 
-$$($(1)_explore): explore
-	@./explore -c $$($(1)_config) -n 100 -s "[0,1]" -o $$@
+$$($(1)_sweep): sweep
+	@./sweep -c $$($(1)_config) -n 100 -s "[0,1]" -o $$@
 
 $$($(1)_reference): observe
 	@./observe -c $$($(1)_config) -o $$@
@@ -59,7 +59,7 @@ $$($(1)_predict): $$($(1)_construct) predict
 $$($(1)_compare): $$($(1)_reference) $$($(1)_observe) $$($(1)_predict) compare
 	@./compare -c $$($(1)_config) -reference $$($(1)_reference) -observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
 
-$(1)_explore: $$($(1)_explore)
+$(1)_sweep: $$($(1)_sweep)
 
 $(1)_reference: $$($(1)_reference)
 
