@@ -3,7 +3,7 @@ cmd := $(dir $(pwd))cmd
 pkg := $(dir $(pwd))pkg
 
 bins := sweep observe
-bins += construct predict
+bins += approximate predict
 bins += compare
 
 srcs := $(shell find $(cmd)/internal -name '*.go')
@@ -36,7 +36,7 @@ $(1)_sweep := data/$(1)_$$($(1)_hash_base)_sweep.h5
 $(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
 $(1)_observe := data/$(1)_$$($(1)_hash_base)_observe.h5
 
-$(1)_construct := data/$(1)_$$($(1)_hash)_construct.h5
+$(1)_approximate := data/$(1)_$$($(1)_hash)_approximate.h5
 $(1)_predict := data/$(1)_$$($(1)_hash)_predict.h5
 
 $(1)_compare := data/$(1)_$$($(1)_hash)_compare.h5
@@ -50,11 +50,11 @@ $$($(1)_reference): observe
 $$($(1)_observe): observe
 	@./observe -c $$($(1)_config) -o $$@
 
-$$($(1)_construct): construct
-	@./construct -c $$($(1)_config) -o $$@
+$$($(1)_approximate): approximate
+	@./approximate -c $$($(1)_config) -o $$@
 
-$$($(1)_predict): $$($(1)_construct) predict
-	@./predict -c $$($(1)_config) -construct $$< -o $$@
+$$($(1)_predict): $$($(1)_approximate) predict
+	@./predict -c $$($(1)_config) -approximate $$< -o $$@
 
 $$($(1)_compare): $$($(1)_reference) $$($(1)_observe) $$($(1)_predict) compare
 	@./compare -c $$($(1)_config) -reference $$($(1)_reference) -observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
@@ -65,7 +65,7 @@ $(1)_reference: $$($(1)_reference)
 
 $(1)_observe: $$($(1)_observe)
 
-$(1)_construct: $$($(1)_construct)
+$(1)_approximate: $$($(1)_approximate)
 
 $(1)_predict: $$($(1)_predict)
 

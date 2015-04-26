@@ -12,10 +12,10 @@ import (
 )
 
 var (
-	constructFile = flag.String("construct", "", "an output of `construct` (required)")
-	outputFile    = flag.String("o", "", "an output file (required)")
-	sampleSeed    = flag.String("s", "", "a seed for generating samples")
-	sampleCount   = flag.String("n", "", "the number of samples")
+	approximateFile = flag.String("approximate", "", "an output of `approximate` (required)")
+	outputFile      = flag.String("o", "", "an output file (required)")
+	sampleSeed      = flag.String("s", "", "a seed for generating samples")
+	sampleCount     = flag.String("n", "", "the number of samples")
 )
 
 type Config *internal.AssessmentConfig
@@ -41,11 +41,11 @@ func command(globalConfig *internal.Config) error {
 		}
 	}
 
-	construct, err := internal.Open(*constructFile)
+	approximate, err := internal.Open(*approximateFile)
 	if err != nil {
 		return err
 	}
-	defer construct.Close()
+	defer approximate.Close()
 
 	output, err := internal.Create(*outputFile)
 	if err != nil {
@@ -69,7 +69,7 @@ func command(globalConfig *internal.Config) error {
 	}
 
 	solution := new(internal.Solution)
-	if err = construct.Get("solution", solution); err != nil {
+	if err = approximate.Get("solution", solution); err != nil {
 		return err
 	}
 
