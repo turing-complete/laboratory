@@ -6,19 +6,24 @@ function compare(extended)
   oerror = h5read(filename, '/observe');
   perror = h5read(filename, '/predict');
 
+  nm = size(oerror, 1);
   nk = size(oerror, 2);
   nq = size(oerror, 3);
 
   count = cumsum(steps);
 
+  labels = {'Expectation', 'Variance', 'Distribution'};
   for i = 1:nq
     o = oerror(:, 2:end, i);
     p = perror(:, 2:end, i);
 
-    Plot.figure(800, 400);
-    line(count(2:end), log10(o)', 'Marker', 'o');
-    line(count(2:end), log10(p)', 'Marker', 'o', 'LineStyle', '--');
-    legend('Expectation', 'Variance', 'Distribution');
+    Plot.figure(1200, 300);
+    for j = 1:nm
+      subplot(1, nm, j);
+      semilogy(count(2:end), [o(j, :); p(j, :)], 'Marker', 'o');
+      legend('Observe', 'Predict');
+      Plot.title(labels{j});
+    end
   end
 
   if ~exist('extended', 'var'); return; end
