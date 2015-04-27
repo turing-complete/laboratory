@@ -19,8 +19,15 @@ type Target interface {
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
-	if len(config.Stencil) == 0 {
-		config.Stencil = []bool{true, false}
+	nt, ni := len(config.Tolerance), len(config.Importance)
+	if nt == 0 {
+		return nil, errors.New("the tolerance should not be empty")
+	}
+	if ni == 0 {
+		return nil, errors.New("the importance should not be empty")
+	}
+	if nt != ni {
+		return nil, errors.New("the tolerance and importance should have the same number of elements")
 	}
 
 	switch config.Name {
@@ -43,20 +50,18 @@ func String(target Target) string {
 func Refine(target Target, _, surplus []float64, _ float64) float64 {
 	config := target.Config()
 
-	stencil := config.Stencil
+	tolerance, importance := config.Tolerance, config.Importance
 
-	no, ns := uint(len(surplus)), uint(len(stencil))
+	no, nt := uint(len(surplus)), uint(len(tolerance))
 
 	score := 0.0
 	for i := uint(0); i < no; i++ {
-		if stencil[i%ns] {
-			score += surplus[i] * surplus[i]
+		j := i % nt
+		if w := importance[j]; w > 0 {
+			if δ := math.Abs(surplus[i]); δ > tolerance[j] {
+				score += w * δ
+			}
 		}
-	}
-	score = math.Sqrt(score)
-
-	if score <= config.Tolerance {
-		score = 0
 	}
 
 	return score

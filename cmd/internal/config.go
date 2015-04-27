@@ -59,11 +59,10 @@ type TargetConfig struct {
 	// “total-energy,” and “temperature-profile.”
 	Name string
 
-	// The error tolerance.
-	Tolerance float64
-	// The patter that is replicated onto a surplus in order to identify the
-	// elements that should be used for the error estimation.
-	Stencil []bool
+	// The error tolerance for each element of a surplus.
+	Tolerance []float64
+	// The error magnifier for each element of a surplus.
+	Importance []float64
 
 	// The cores that should be considered.
 	CoreIndex string // ⊂ {0, ..., #cores-1}
