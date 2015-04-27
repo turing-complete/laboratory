@@ -8,8 +8,6 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/ready-steady/sequence"
-
 	"../internal"
 )
 
@@ -44,6 +42,10 @@ func command(globalConfig *internal.Config) error {
 		}
 	}
 
+	if config.Samples == 0 {
+		return errors.New("the number of samples should be positive")
+	}
+
 	output, err := internal.Create(*outputFile)
 	if err != nil {
 		return err
@@ -60,13 +62,10 @@ func command(globalConfig *internal.Config) error {
 		return err
 	}
 
-	points, err := generate(config, target)
-	if err != nil {
-		return err
-	}
-
 	ni, no := target.Dimensions()
-	ns := uint(len(points)) / ni
+	ns := config.Samples
+
+	points := internal.Generate(ni, ns, config.Seed)
 
 	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the original model at %d points...\n", ns)
@@ -86,15 +85,4 @@ func command(globalConfig *internal.Config) error {
 	}
 
 	return nil
-}
-
-func generate(config Config, target internal.Target) ([]float64, error) {
-	if config.Samples == 0 {
-		return nil, errors.New("the number of samples should be positive")
-	}
-
-	ni, _ := target.Dimensions()
-	sequence := sequence.NewSobol(ni, internal.NewSeed(config.Seed))
-
-	return sequence.Next(config.Samples), nil
 }

@@ -120,7 +120,7 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 		return nil, errors.New("the transition parameter should be in (0, 0.5]")
 	}
 
-	generator := probability.NewGenerator(NewSeed(c.Seed))
+	generator := probability.NewGenerator(newSeed(c.Seed))
 	uniform := probability.NewUniform(0, 1)
 
 	result := make([]mode, count)

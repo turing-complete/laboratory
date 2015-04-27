@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/ready-steady/sequence"
-
 	"../internal"
 )
 
@@ -39,6 +37,10 @@ func command(globalConfig *internal.Config) error {
 		} else {
 			config.Samples = uint(number)
 		}
+	}
+
+	if config.Samples == 0 {
+		return errors.New("the number of samples should be positive")
 	}
 
 	approximate, err := internal.Open(*approximateFile)
@@ -73,14 +75,11 @@ func command(globalConfig *internal.Config) error {
 		return err
 	}
 
-	points, err := generate(config, target)
-	if err != nil {
-		return err
-	}
-
 	ni, no := target.Dimensions()
-	ns := uint(len(points)) / ni
 	np := uint(len(solution.Steps))
+	ns := config.Samples
+
+	points := internal.Generate(ni, ns, config.Seed)
 
 	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the surrogate model %d times at %d points...\n", np, ns)
@@ -124,15 +123,4 @@ func command(globalConfig *internal.Config) error {
 	}
 
 	return nil
-}
-
-func generate(config Config, target internal.Target) ([]float64, error) {
-	if config.Samples == 0 {
-		return nil, errors.New("the number of samples should be positive")
-	}
-
-	ni, _ := target.Dimensions()
-	sequence := sequence.NewSobol(ni, internal.NewSeed(config.Seed))
-
-	return sequence.Next(config.Samples), nil
 }

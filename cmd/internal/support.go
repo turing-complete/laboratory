@@ -12,6 +12,7 @@ import (
 	"unsafe"
 
 	"github.com/ready-steady/linear/matrix"
+	"github.com/ready-steady/sequence"
 )
 
 var (
@@ -19,11 +20,15 @@ var (
 	pInfinity = math.Inf(1)
 )
 
-func NewSeed(value int64) int64 {
-	if value < 0 {
-		value = time.Now().Unix()
+func newSeed(seed int64) int64 {
+	if seed < 0 {
+		seed = time.Now().Unix()
 	}
-	return value
+	return seed
+}
+
+func Generate(ni, ns uint, seed int64) []float64 {
+	return sequence.NewSobol(ni, newSeed(seed)).Next(ns)
 }
 
 func combine(A, x, y []float64, m, n uint) {
