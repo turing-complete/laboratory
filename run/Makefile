@@ -25,12 +25,16 @@ cases += 009_090_delay 009_090_energy
 cases += 016_160_delay 016_160_energy
 cases += 025_250_delay 025_250_energy
 
+define hash
+$(1) := $$(shell hash md5sum 2>/dev/null && (cat $(2) | md5sum | cut -d' ' -f1) || (cat $(2) | md5))
+endef
+
 define define_case
 $(1)_config_base := assets/$(1).json
-$(1)_hash_base := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config_base) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config_base) | md5))
+$(call hash,$(1)_hash_base,$$($(1)_config_base))
 
 $(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
-$(1)_hash := $$(shell hash md5sum 2>/dev/null && (cat $$($(1)_config) $$($(1)_config_base) | md5sum | cut -d' ' -f1) || (cat $$($(1)_config) $$($(1)_config_base) | md5))
+$(call hash,$(1)_hash,$$($(1)_config) $$($(1)_config_base))
 
 $(1)_sweep := data/$(1)_$$($(1)_hash_base)_sweep.h5
 $(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
