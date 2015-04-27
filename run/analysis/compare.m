@@ -16,8 +16,8 @@ function compare(extended)
     p = perror(:, 2:end, i);
 
     Plot.figure(800, 400);
-    line(count(2:end), log10(o)');
-    line(count(2:end), log10(p)', 'LineStyle', '--');
+    line(count(2:end), log10(o)', 'Marker', 'o');
+    line(count(2:end), log10(p)', 'Marker', 'o', 'LineStyle', '--');
     legend('Expectation', 'Variance', 'Distribution');
   end
 
