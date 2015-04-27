@@ -135,16 +135,16 @@ func assess(data1, moments1, data2, moments2 []float64, config Config) []float64
 	return result
 }
 
-func computeMoments(data, moments []float64, _ Config) (float64, float64) {
+func computeMoments(data, moments []float64, config Config) (float64, float64) {
 	var μ float64
-	if len(moments) > 0 {
+	if config.Analytic && len(moments) > 0 {
 		μ = moments[0]
 	} else {
 		μ = distribution.Mean(data)
 	}
 
 	var v float64
-	if len(moments) > 1 {
+	if config.Analytic && len(moments) > 1 {
 		v = moments[1] - μ*μ
 		if v < 0 {
 			v = distribution.Variance(data)
