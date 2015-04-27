@@ -21,8 +21,9 @@ function compare(extended)
     for j = 1:nm
       subplot(1, nm, j);
       semilogy(count(2:end), [o(j, :); p(j, :)], 'Marker', 'o');
-      legend('Observe', 'Predict');
       Plot.title(labels{j});
+      Plot.label('Evaluations', 'log(Error)');
+      Plot.legend('Observe', 'Predict');
     end
   end
 
