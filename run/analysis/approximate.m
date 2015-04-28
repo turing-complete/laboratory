@@ -24,22 +24,8 @@ function approximate
     warning('found %d nonunique indices out of %d', nn-nu, nn);
   end
 
-  na = sum(admissibility(indices));
+  na = sum(admit(indices));
   if na ~= nn
     warning('found %d inadmissible indices out of %d', nn-na, nn);
-  end
-end
-
-function good = admissibility(indices)
-  [nn, ni] = size(indices);
-
-  good = false(nn, 1);
-  indices = bitshift(bitshift(indices, 32), -32);
-  indices = int32(indices);
-
-  for i = 1:nn
-    I = repmat(indices(i, :), ni, 1) - int32(eye(ni));
-    I(any(I < 0, 1), :) = [];
-    good(i) = all(ismember(I, indices, 'rows'));
   end
 end
