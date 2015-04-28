@@ -17,9 +17,16 @@ function approximate
     Plot.title('Output %d', i-1);
   end
 
-  good = admissibility(indices);
-  if any(~good)
-    warning('found %d inadmissible indices out of %d', sum(~good), length(good));
+  nn = size(indices, 1);
+
+  nu = size(unique(indices, 'rows'), 1);
+  if nu ~= nn
+    warning('found %d nonunique indices out of %d', nn-nu, nn);
+  end
+
+  na = sum(admissibility(indices));
+  if na ~= nn
+    warning('found %d inadmissible indices out of %d', nn-na, nn);
   end
 end
 
