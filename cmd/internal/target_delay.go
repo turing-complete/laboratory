@@ -31,8 +31,8 @@ func (t *delayTarget) Compute(node []float64, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *delayTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return Refine(t, node, surplus, volume)
+func (t *delayTarget) Score(node, surplus []float64, volume float64) float64 {
+	return Score(t, node, surplus, volume)
 }
 
 func (t *delayTarget) Monitor(level, np, na uint) {

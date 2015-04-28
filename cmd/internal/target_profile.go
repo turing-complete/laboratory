@@ -81,8 +81,8 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return Refine(t, node, surplus, volume)
+func (t *profileTarget) Score(node, surplus []float64, volume float64) float64 {
+	return Score(t, node, surplus, volume)
 }
 
 func (t *profileTarget) Monitor(level, np, na uint) {

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"math"
 	"strconv"
 
 	"../internal"
@@ -23,6 +24,10 @@ func main() {
 }
 
 func command(globalConfig *internal.Config) error {
+	const (
+		maxSteps = 10
+	)
+
 	config := &globalConfig.Assessment
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
@@ -76,34 +81,48 @@ func command(globalConfig *internal.Config) error {
 	}
 
 	ni, no := target.Dimensions()
-	np := uint(len(solution.Steps))
 	ns := config.Samples
 
 	points := internal.Generate(ni, ns, config.Seed)
 
 	if globalConfig.Verbose {
-		fmt.Printf("Evaluating the surrogate model %d times at %d points...\n", np, ns)
-		fmt.Printf("%10s %15s\n", "Step", "Nodes")
+		fmt.Printf("Evaluating the surrogate model at %d points...\n", ns)
+		fmt.Printf("%10s %15s %15s\n", "Step", "Accepted Nodes", "Rejected Nodes")
 	}
 
-	values := make([]float64, np*ns*no)
-	moments := make([]float64, np*no)
+	nk := uint(len(solution.Accept))
 
-	for i, nn := uint(0), uint(0); i < np; i++ {
-		nn += solution.Steps[i]
+	steps := make([]uint, nk)
+	values := make([]float64, 0, ns*no)
+	moments := make([]float64, 0, no)
+
+	k, Δ := uint(0), float64(nk)/math.Min(maxSteps, float64(nk))
+
+	for i, na, nr := uint(0), uint(0), uint(0); i < nk; i++ {
+		na += solution.Accept[i]
+		nr += solution.Reject[i]
+
+		steps[k] += solution.Accept[i] + solution.Reject[i]
 
 		if globalConfig.Verbose {
-			fmt.Printf("%10d %15d\n", i, nn)
+			fmt.Printf("%10d %15d %15d\n", i, na, nr)
 		}
 
-		s := *solution
-		s.Nodes = nn
-		s.Indices = s.Indices[:nn*ni]
-		s.Surpluses = s.Surpluses[:nn*no]
+		if i != uint(float64(k)*Δ+0.5) {
+			continue
+		}
+		k++
 
-		copy(values[i*ns*no:(i+1)*ns*no], solver.Evaluate(&s, points))
-		copy(moments[i*no:(i+1)*no], solver.Integrate(&s))
+		s := *solution
+		s.Nodes = na
+		s.Indices = s.Indices[:na*ni]
+		s.Surpluses = s.Surpluses[:na*no]
+
+		values = append(values, solver.Evaluate(&s, points)...)
+		moments = append(moments, solver.Integrate(&s)...)
 	}
+
+	nk, steps = k, steps[:k]
 
 	if globalConfig.Verbose {
 		fmt.Println("Done.")
@@ -115,10 +134,13 @@ func command(globalConfig *internal.Config) error {
 	if err := output.Put("points", points, ni, ns); err != nil {
 		return err
 	}
-	if err := output.Put("values", values, no, ns, np); err != nil {
+	if err := output.Put("steps", steps); err != nil {
 		return err
 	}
-	if err := output.Put("moments", moments, no, np); err != nil {
+	if err := output.Put("values", values, no, ns, nk); err != nil {
+		return err
+	}
+	if err := output.Put("moments", moments, no, nk); err != nil {
 		return err
 	}
 

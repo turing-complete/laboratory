@@ -38,8 +38,8 @@ func (t *energyTarget) Compute(node, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *energyTarget) Refine(node, surplus []float64, volume float64) float64 {
-	return Refine(t, node, surplus, volume)
+func (t *energyTarget) Score(node, surplus []float64, volume float64) float64 {
+	return Score(t, node, surplus, volume)
 }
 
 func (t *energyTarget) Monitor(level, np, na uint) {

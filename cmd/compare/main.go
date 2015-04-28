@@ -69,6 +69,11 @@ func command(globalConfig *internal.Config) error {
 		return err
 	}
 
+	psteps := []uint{}
+	if err := predict.Get("steps", &psteps); err != nil {
+		return err
+	}
+
 	pvalues := []float64{}
 	if err := predict.Get("values", &pvalues); err != nil {
 		return err
@@ -84,39 +89,37 @@ func command(globalConfig *internal.Config) error {
 		return err
 	}
 
-	steps := solution.Steps
-
 	no := solution.Outputs
 	nq := no / momentCount
-	ns := uint(len(steps))
+	nk := uint(len(psteps))
 
-	εo := make([]float64, 0, nq*ns*metricCount)
-	εp := make([]float64, 0, nq*ns*metricCount)
+	εo := make([]float64, 0, nq*nk*metricCount)
+	εp := make([]float64, 0, nq*nk*metricCount)
 
 	for i := uint(0); i < nq; i++ {
 		r := slice(rvalues, no, i*momentCount, 1)
 
-		o := cumulate(slice(ovalues, no, i*momentCount, 1), steps)
-		for j := uint(0); j < ns; j++ {
+		o := cumulate(slice(ovalues, no, i*momentCount, 1), psteps)
+		for j := uint(0); j < nk; j++ {
 			εo = append(εo, assess(r, nil, o[j], nil, config)...)
 		}
 
-		p := divide(slice(pvalues, no, i*momentCount, 1), ns)
-		m := divide(slice(pmoments, no, i*momentCount, momentCount), ns)
-		for j := uint(0); j < ns; j++ {
+		p := divide(slice(pvalues, no, i*momentCount, 1), nk)
+		m := divide(slice(pmoments, no, i*momentCount, momentCount), nk)
+		for j := uint(0); j < nk; j++ {
 			εp = append(εp, assess(r, nil, p[j], m[j], config)...)
 		}
 	}
 
-	if err := output.Put("steps", steps); err != nil {
+	if err := output.Put("steps", psteps); err != nil {
 		return err
 	}
 
-	if err := output.Put("observe", εo, metricCount, ns, nq); err != nil {
+	if err := output.Put("observe", εo, metricCount, nk, nq); err != nil {
 		return err
 	}
 
-	if err := output.Put("predict", εp, metricCount, ns, nq); err != nil {
+	if err := output.Put("predict", εp, metricCount, nk, nq); err != nil {
 		return err
 	}
 

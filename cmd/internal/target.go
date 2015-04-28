@@ -10,7 +10,7 @@ import (
 type Target interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
-	Refine([]float64, []float64, float64) float64
+	Score([]float64, []float64, float64) float64
 	Monitor(uint, uint, uint)
 
 	Config() *TargetConfig
@@ -19,15 +19,10 @@ type Target interface {
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
-	nt, ni := len(config.Tolerance), len(config.Importance)
-	if nt == 0 {
-		return nil, errors.New("the tolerance should not be empty")
-	}
-	if ni == 0 {
-		return nil, errors.New("the importance should not be empty")
-	}
-	if nt != ni {
-		return nil, errors.New("the tolerance and importance should have the same number of elements")
+	nj, nf, ni := len(config.Rejection), len(config.Refinement), len(config.Importance)
+	if nj == 0 || nj != nf || nf != ni {
+		return nil, errors.New("the rejection, refinement, and importance " +
+			"should not be empty and should have the same number of elements")
 	}
 
 	switch config.Name {
@@ -47,21 +42,27 @@ func String(target Target) string {
 	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
 }
 
-func Refine(target Target, _, surplus []float64, _ float64) float64 {
+func Score(target Target, _, surplus []float64, _ float64) float64 {
 	config := target.Config()
 
-	tolerance, importance := config.Tolerance, config.Importance
+	rejection, refinement, importance := config.Rejection, config.Refinement, config.Importance
 
-	no, nt := uint(len(surplus)), uint(len(tolerance))
+	no, nj := uint(len(surplus)), uint(len(rejection))
 
-	score := 0.0
+	score, reject := 0.0, true
 	for i := uint(0); i < no; i++ {
-		j := i % nt
-		if w := importance[j]; w > 0 {
-			if δ := math.Abs(surplus[i]); δ > tolerance[j] {
-				score += w * δ
-			}
+		j := i % nj
+		ε := math.Abs(surplus[i])
+		if ε >= rejection[j] {
+			reject = false
 		}
+		if ε > refinement[j] {
+			score += importance[j] * ε
+		}
+	}
+
+	if reject {
+		score = -1
 	}
 
 	return score

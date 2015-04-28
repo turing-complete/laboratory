@@ -59,8 +59,10 @@ type TargetConfig struct {
 	// “total-energy,” and “temperature-profile.”
 	Name string
 
-	// The error tolerance for each element of a surplus.
-	Tolerance []float64
+	// The rejection threshold for each element of a surplus.
+	Rejection []float64
+	// The refinement threshold for each element of a surplus.
+	Refinement []float64
 	// The error magnifier for each element of a surplus.
 	Importance []float64
 
