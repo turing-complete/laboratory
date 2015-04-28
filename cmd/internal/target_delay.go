@@ -35,6 +35,6 @@ func (t *delayTarget) Score(node, surplus []float64, volume float64) float64 {
 	return Score(t, node, surplus, volume)
 }
 
-func (t *delayTarget) Monitor(level, np, na uint) {
-	Monitor(t, level, np, na)
+func (t *delayTarget) Monitor(level, na, nr, nc uint) {
+	Monitor(t, level, na, nr, nc)
 }

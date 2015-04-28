@@ -11,7 +11,7 @@ type Target interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
 	Score([]float64, []float64, float64) float64
-	Monitor(uint, uint, uint)
+	Monitor(uint, uint, uint, uint)
 
 	Config() *TargetConfig
 }
@@ -68,14 +68,15 @@ func Score(target Target, _, surplus []float64, _ float64) float64 {
 	return score
 }
 
-func Monitor(target Target, k, np, na uint) {
+func Monitor(target Target, k, na, nr, nc uint) {
 	if !target.Config().Verbose {
 		return
 	}
 	if k == 0 {
-		fmt.Printf("%10s %15s %15s\n", "Step", "Passive Nodes", "Active Nodes")
+		fmt.Printf("%10s %15s %15s %15s\n", "Step",
+			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
 	}
-	fmt.Printf("%10d %15d %15d\n", k, np, na)
+	fmt.Printf("%10d %15d %15d %15d\n", k, na, nr, nc)
 }
 
 func Invoke(target Target, points []float64, nw uint) []float64 {

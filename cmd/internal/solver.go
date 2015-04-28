@@ -39,9 +39,7 @@ func NewSolver(problem *Problem, target Target) (*Solver, error) {
 }
 
 func (s *Solver) Compute(target Target) *Solution {
-	surrogate := s.Interpolator.Compute(target)
-	target.Monitor(surrogate.Level, surrogate.Nodes, 0)
-	return &Solution{*surrogate}
+	return &Solution{*s.Interpolator.Compute(target)}
 }
 
 func (s *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
