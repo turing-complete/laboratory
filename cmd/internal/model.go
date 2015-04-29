@@ -134,8 +134,7 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 			Σ += probabilities[j]
 		}
 		for j := range values {
-			values[j] *= c.MaxOffset - c.MinOffset
-			values[j] += c.MinOffset
+			values[j] = c.MinOffset + (c.MaxOffset-c.MinOffset)*values[j]
 			probabilities[j] /= Σ
 		}
 
