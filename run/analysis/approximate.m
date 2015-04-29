@@ -23,9 +23,4 @@ function approximate
   if nu ~= nn
     warning('found %d nonunique indices out of %d', nn-nu, nn);
   end
-
-  na = sum(admit(indices));
-  if na ~= nn
-    warning('found %d inadmissible indices out of %d', nn-na, nn);
-  end
 end
