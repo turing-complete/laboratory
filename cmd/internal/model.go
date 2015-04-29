@@ -113,8 +113,8 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 	if c.Modes == 0 {
 		return nil, errors.New("the number of modes should be positive")
 	}
-	if c.MinScale <= -1 || c.MaxScale <= -1 {
-		return nil, errors.New("the scaling factors should be greater than -1")
+	if c.MinOffset <= -1 || c.MaxOffset <= -1 {
+		return nil, errors.New("the offsets should be greater than -1")
 	}
 	if c.Transition <= 0 || c.Transition > 0.5 {
 		return nil, errors.New("the transition parameter should be in (0, 0.5]")
@@ -134,8 +134,8 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 			Σ += probabilities[j]
 		}
 		for j := range values {
-			values[j] *= c.MaxScale - c.MinScale
-			values[j] += c.MinScale
+			values[j] *= c.MaxOffset - c.MinOffset
+			values[j] += c.MinOffset
 			probabilities[j] /= Σ
 		}
 

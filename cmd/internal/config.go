@@ -39,10 +39,10 @@ type ProbabilityConfig struct {
 	Seed int64
 	// The number of modes per task.
 	Modes uint // > 0
-	// The minimal scaling factor of a mode.
-	MinScale float64 // > 0
-	// The maximal scaling factor of a mode.
-	MaxScale float64 // > 0
+	// The minimal relative offset of a mode.
+	MinOffset float64 // > -1
+	// The maximal relative offset of a mode.
+	MaxOffset float64 // > -1
 	// The relative length of transition from one mode to another.
 	Transition float64 // ∈ (0, 0.5]
 
