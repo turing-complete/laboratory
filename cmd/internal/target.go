@@ -14,9 +14,9 @@ type Target adapt.Target
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
-	nj, nf, ni := len(config.Rejection), len(config.Refinement), len(config.Importance)
-	if nj == 0 || nj != nf || nf != ni {
-		return nil, errors.New("the rejection, refinement, and importance " +
+	nj, nf := len(config.Rejection), len(config.Refinement)
+	if nj == 0 || nj != nf {
+		return nil, errors.New("the rejection and refinement " +
 			"should not be empty and should have the same number of elements")
 	}
 
