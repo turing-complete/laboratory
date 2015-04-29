@@ -1,5 +1,9 @@
 package internal
 
+import (
+	"github.com/ready-steady/adapt"
+)
+
 type profileTarget struct {
 	problem *Problem
 	config  *TargetConfig
@@ -42,10 +46,6 @@ func (t *profileTarget) String() string {
 	return String(t)
 }
 
-func (t *profileTarget) Config() *TargetConfig {
-	return t.config
-}
-
 func (t *profileTarget) Dimensions() (uint, uint) {
 	nci, nsi := uint(len(t.coreIndex)), uint(len(t.timeIndex))
 	return t.problem.model.nz, nsi * nci * 2
@@ -81,10 +81,12 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Score(node, surplus []float64, volume float64) float64 {
-	return Score(t, node, surplus, volume)
+func (t *profileTarget) Monitor(progress *adapt.Progress) {
+	if t.config.Verbose {
+		Monitor(t, progress)
+	}
 }
 
-func (t *profileTarget) Monitor(level, na, nr, nc uint) {
-	Monitor(t, level, na, nr, nc)
+func (t *profileTarget) Score(location *adapt.Location, progress *adapt.Progress) float64 {
+	return Score(t, t.config, location, progress)
 }

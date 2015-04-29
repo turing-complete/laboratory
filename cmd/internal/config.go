@@ -63,8 +63,6 @@ type TargetConfig struct {
 	Rejection []float64
 	// The refinement threshold for each element of a surplus.
 	Refinement []float64
-	// The error magnifier for each element of a surplus.
-	Importance []float64
 
 	// The cores that should be considered.
 	CoreIndex string // ⊂ {0, ..., #cores-1}

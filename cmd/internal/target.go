@@ -5,16 +5,11 @@ import (
 	"fmt"
 	"math"
 	"sync"
+
+	"github.com/ready-steady/adapt"
 )
 
-type Target interface {
-	Dimensions() (uint, uint)
-	Compute([]float64, []float64)
-	Score([]float64, []float64, float64) float64
-	Monitor(uint, uint, uint, uint)
-
-	Config() *TargetConfig
-}
+type Target adapt.Target
 
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
@@ -42,22 +37,33 @@ func String(target Target) string {
 	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
 }
 
-func Score(target Target, _, surplus []float64, _ float64) float64 {
-	config := target.Config()
+func Monitor(target Target, progress *adapt.Progress) {
+	if progress.Iteration == 0 {
+		fmt.Printf("%10s %15s %15s %15s\n", "Iteration",
+			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
+	}
+	fmt.Printf("%10d %15d %15d %15d\n", progress.Iteration,
+		progress.Accepted, progress.Rejected, progress.Current)
+}
 
-	rejection, refinement, importance := config.Rejection, config.Refinement, config.Importance
+func Score(target Target, config *TargetConfig,
+	location *adapt.Location, progress *adapt.Progress) float64 {
 
-	no, nj := uint(len(surplus)), uint(len(rejection))
+	rejection := config.Rejection
+	refinement := config.Refinement
+
+	_, no := target.Dimensions()
+	nj := uint(len(rejection))
 
 	score, reject := 0.0, true
 	for i := uint(0); i < no; i++ {
 		j := i % nj
-		ε := math.Abs(surplus[i])
+		ε := math.Abs(location.Surplus[i])
 		if ε >= rejection[j] {
 			reject = false
 		}
 		if ε > refinement[j] {
-			score += importance[j] * ε
+			score += ε
 		}
 	}
 
@@ -66,17 +72,6 @@ func Score(target Target, _, surplus []float64, _ float64) float64 {
 	}
 
 	return score
-}
-
-func Monitor(target Target, k, na, nr, nc uint) {
-	if !target.Config().Verbose {
-		return
-	}
-	if k == 0 {
-		fmt.Printf("%10s %15s %15s %15s\n", "Step",
-			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
-	}
-	fmt.Printf("%10d %15d %15d %15d\n", k, na, nr, nc)
 }
 
 func Invoke(target Target, points []float64, nw uint) []float64 {

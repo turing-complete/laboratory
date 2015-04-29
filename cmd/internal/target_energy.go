@@ -1,5 +1,9 @@
 package internal
 
+import (
+	"github.com/ready-steady/adapt"
+)
+
 type energyTarget struct {
 	problem *Problem
 	config  *TargetConfig
@@ -14,10 +18,6 @@ func newEnergyTarget(p *Problem, c *TargetConfig) *energyTarget {
 
 func (t *energyTarget) String() string {
 	return String(t)
-}
-
-func (t *energyTarget) Config() *TargetConfig {
-	return t.config
 }
 
 func (t *energyTarget) Dimensions() (uint, uint) {
@@ -38,10 +38,12 @@ func (t *energyTarget) Compute(node, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *energyTarget) Score(node, surplus []float64, volume float64) float64 {
-	return Score(t, node, surplus, volume)
+func (t *energyTarget) Monitor(progress *adapt.Progress) {
+	if t.config.Verbose {
+		Monitor(t, progress)
+	}
 }
 
-func (t *energyTarget) Monitor(level, na, nr, nc uint) {
-	Monitor(t, level, na, nr, nc)
+func (t *energyTarget) Score(location *adapt.Location, progress *adapt.Progress) float64 {
+	return Score(t, t.config, location, progress)
 }
