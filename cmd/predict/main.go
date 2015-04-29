@@ -87,7 +87,7 @@ func command(globalConfig *internal.Config) error {
 
 	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the surrogate model at %d points...\n", ns)
-		fmt.Printf("%10s %15s %15s\n", "Step", "Accepted Nodes", "Rejected Nodes")
+		fmt.Printf("%10s %15s %15s\n", "Iteration", "Accepted Nodes", "Rejected Nodes")
 	}
 
 	nk := uint(len(solution.Accept))
@@ -96,7 +96,7 @@ func command(globalConfig *internal.Config) error {
 	values := make([]float64, 0, ns*no)
 	moments := make([]float64, 0, no)
 
-	k, Δ := uint(0), float64(nk)/math.Min(maxSteps, float64(nk))
+	k, Δ := uint(0), float64(nk-1)/(math.Min(maxSteps, float64(nk))-1)
 
 	for i, na, nr := uint(0), uint(0), uint(0); i < nk; i++ {
 		na += solution.Accept[i]
@@ -104,11 +104,17 @@ func command(globalConfig *internal.Config) error {
 
 		steps[k] += solution.Accept[i] + solution.Reject[i]
 
+		skip := i != uint(float64(k)*Δ+0.5)
+
 		if globalConfig.Verbose {
-			fmt.Printf("%10d %15d %15d\n", i, na, nr)
+			fmt.Printf("%10d %15d %15d", i, na, nr)
+			if skip {
+				fmt.Printf(" (skip)")
+			}
+			fmt.Printf("\n")
 		}
 
-		if i != uint(float64(k)*Δ+0.5) {
+		if skip {
 			continue
 		}
 		k++
