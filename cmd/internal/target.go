@@ -14,8 +14,10 @@ type Target adapt.Target
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
-	if len(config.Importance) == 0 {
-		return nil, errors.New("the importance should not be empty")
+	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
+	if ni == 0 || ni != nj || nj != nf {
+		return nil, errors.New("the importance, refinement, and rejection " +
+			"should not be empty and should have the same number of elements")
 	}
 
 	switch config.Name {
@@ -48,33 +50,36 @@ func Score(target Target, config *TargetConfig,
 	location *adapt.Location, progress *adapt.Progress) float64 {
 
 	_, no := target.Dimensions()
+	nj := uint(len(config.Importance))
 
-	importance := config.Importance
-	ni := uint(len(importance))
-
-	score, norm := 0.0, 0.0
+	score, reject, refine := 0.0, true, false
 	for i := uint(0); i < no; i++ {
-		α := importance[i%ni]
-		if α == 0 {
+		j := i % nj
+
+		if config.Importance[j] == 0 {
 			continue
 		}
 
-		s := α * location.Volume * location.Surplus[i]
-		score += s * s
+		s := location.Surplus[i] * location.Volume
+		if progress.Integral[i] != 0 {
+			s /= progress.Integral[i]
+		}
+		s = math.Abs(s)
 
-		n := α * progress.Integral[i]
-		norm += n * n
+		if s >= config.Rejection[j] {
+			reject = false
+		}
+		if s > config.Refinement[j] {
+			refine = true
+		}
+
+		score += config.Importance[j] * s
 	}
 
-	score, norm = math.Sqrt(score), math.Sqrt(norm)
-	if norm > 0 {
-		score /= norm
-	}
-
-	if score < config.Rejection {
+	if reject {
 		return -1
 	}
-	if score < config.Refinement {
+	if !refine {
 		return 0
 	}
 

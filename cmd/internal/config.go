@@ -59,11 +59,12 @@ type TargetConfig struct {
 	// “total-energy,” and “temperature-profile.”
 	Name string
 
+	// The weights for output dimensions.
 	Importance []float64
-	// The rejection threshold.
-	Rejection float64
-	// The refinement threshold.
-	Refinement float64
+	// The rejection threshold for output dimensions.
+	Rejection []float64
+	// The refinement threshold for output dimensions.
+	Refinement []float64
 
 	// The cores that should be considered.
 	CoreIndex string // ⊂ {0, ..., #cores-1}
