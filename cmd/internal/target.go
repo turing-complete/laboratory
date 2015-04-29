@@ -14,10 +14,8 @@ type Target adapt.Target
 func NewTarget(problem *Problem) (Target, error) {
 	config := problem.Config.Target
 
-	nj, nf := len(config.Rejection), len(config.Refinement)
-	if nj == 0 || nj != nf {
-		return nil, errors.New("the rejection and refinement " +
-			"should not be empty and should have the same number of elements")
+	if len(config.Importance) == 0 {
+		return nil, errors.New("the importance should not be empty")
 	}
 
 	switch config.Name {
@@ -49,26 +47,35 @@ func Monitor(target Target, progress *adapt.Progress) {
 func Score(target Target, config *TargetConfig,
 	location *adapt.Location, progress *adapt.Progress) float64 {
 
-	rejection := config.Rejection
-	refinement := config.Refinement
-
 	_, no := target.Dimensions()
-	nj := uint(len(rejection))
 
-	score, reject := 0.0, true
+	importance := config.Importance
+	ni := uint(len(importance))
+
+	score, norm := 0.0, 0.0
 	for i := uint(0); i < no; i++ {
-		j := i % nj
-		ε := math.Abs(location.Surplus[i])
-		if ε >= rejection[j] {
-			reject = false
+		α := importance[i%ni]
+		if α == 0 {
+			continue
 		}
-		if ε > refinement[j] {
-			score += ε
-		}
+
+		s := α * location.Volume * location.Surplus[i]
+		score += s * s
+
+		n := α * progress.Integral[i]
+		norm += n * n
 	}
 
-	if reject {
-		score = -1
+	score, norm = math.Sqrt(score), math.Sqrt(norm)
+	if norm > 0 {
+		score /= norm
+	}
+
+	if score < config.Rejection {
+		return -1
+	}
+	if score < config.Refinement {
+		return 0
 	}
 
 	return score

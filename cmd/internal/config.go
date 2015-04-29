@@ -59,10 +59,11 @@ type TargetConfig struct {
 	// “total-energy,” and “temperature-profile.”
 	Name string
 
-	// The rejection threshold for each element of a surplus.
-	Rejection []float64
-	// The refinement threshold for each element of a surplus.
-	Refinement []float64
+	Importance []float64
+	// The rejection threshold.
+	Rejection float64
+	// The refinement threshold.
+	Refinement float64
 
 	// The cores that should be considered.
 	CoreIndex string // ⊂ {0, ..., #cores-1}
