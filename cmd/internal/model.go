@@ -3,6 +3,7 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"sort"
 
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/staircase"
@@ -137,6 +138,7 @@ func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
 			values[j] = c.MinOffset + (c.MaxOffset-c.MinOffset)*values[j]
 			probabilities[j] /= Σ
 		}
+		sort.Float64s(values)
 
 		result[i] = staircase.New(probabilities, values, c.Transition)
 	}
