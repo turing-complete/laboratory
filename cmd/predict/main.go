@@ -104,20 +104,14 @@ func command(globalConfig *internal.Config) error {
 
 		steps[k] += solution.Accept[i] + solution.Reject[i]
 
-		skip := i != uint(float64(k)*Δ+0.5)
-
-		if globalConfig.Verbose {
-			fmt.Printf("%10d %15d %15d", i, na, nr)
-			if skip {
-				fmt.Printf(" (skip)")
-			}
-			fmt.Printf("\n")
-		}
-
-		if skip {
+		if i != uint(float64(k)*Δ+0.5) {
 			continue
 		}
 		k++
+
+		if globalConfig.Verbose {
+			fmt.Printf("%10d %15d %15d\n", i, na, nr)
+		}
 
 		s := *solution
 		s.Nodes = na
