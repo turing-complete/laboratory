@@ -86,8 +86,8 @@ type InterpolationConfig struct {
 
 // AssessmentConfig is a configuration of the assessment procedure.
 type AssessmentConfig struct {
-	// A flag to use analytically computed expectations and variances.
-	Analytic bool
+	// A flag to use the analytically computed moments.
+	Analytic []bool
 	// The seed for generating samples.
 	Seed int64
 	// The number of samples to draw.

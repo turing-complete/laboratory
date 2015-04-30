@@ -28,7 +28,7 @@
 	},
 
 	"assessment": {
-		"analytic": true,
+		"analytic": [true, true],
 		"seed": 0,
 		"samples": 100000,
 		"bins": 100
