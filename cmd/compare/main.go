@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"flag"
 	"math"
 
@@ -31,9 +30,6 @@ func main() {
 
 func command(globalConfig *internal.Config) error {
 	config := &globalConfig.Assessment
-	if config.Bins == 0 {
-		return errors.New("the number of bins should be positive")
-	}
 
 	reference, err := internal.Open(*referenceFile)
 	if err != nil {
@@ -159,43 +155,8 @@ func computeMoments(data, moments []float64, config Config) (float64, float64) {
 	return μ, v
 }
 
-func computeDistance(data1, data2 []float64, config Config) float64 {
-	edges := detect(data1, data2, config)
-
-	cdf1 := distribution.CDF(data1, edges)
-	cdf2 := distribution.CDF(data2, edges)
-
-	return metric.NRMSE(cdf1, cdf2)
-}
-
-func detect(data1, data2 []float64, config Config) []float64 {
-	min, max := math.Inf(1), math.Inf(-1)
-	for _, x := range data1 {
-		if min > x {
-			min = x
-		}
-		if max < x {
-			max = x
-		}
-	}
-	for _, x := range data2 {
-		if min > x {
-			min = x
-		}
-		if max < x {
-			max = x
-		}
-	}
-
-	n := config.Bins
-
-	edges := make([]float64, n+1)
-	for i := uint(0); i < n; i++ {
-		edges[i] = min + (max-min)*float64(i)/float64(n)
-	}
-	edges[n] = math.Inf(1)
-
-	return edges
+func computeDistance(data1, data2 []float64, _ Config) float64 {
+	return metric.KolmogorovSmirnov(data1, data2)
 }
 
 func cumulate(data []float64, steps []uint) [][]float64 {

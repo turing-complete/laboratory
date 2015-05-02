@@ -30,8 +30,7 @@
 	"assessment": {
 		"analytic": [true, false],
 		"seed": 0,
-		"samples": 100000,
-		"bins": 100
+		"samples": 100000
 	},
 
 	"verbose": true
