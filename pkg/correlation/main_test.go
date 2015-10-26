@@ -4,9 +4,9 @@ import (
 	"math"
 	"testing"
 
+	"github.com/ready-steady/assert"
 	"github.com/ready-steady/simulation/system"
 	"github.com/ready-steady/statistics/decomposition"
-	"github.com/ready-steady/support/assert"
 )
 
 func TestCorrelateSmall(t *testing.T) {
