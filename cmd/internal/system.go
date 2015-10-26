@@ -3,10 +3,10 @@ package internal
 import (
 	"fmt"
 
-	"github.com/ready-steady/simulation/power"
-	asystem "github.com/ready-steady/simulation/system"
-	"github.com/ready-steady/simulation/temperature/analytic"
-	"github.com/ready-steady/simulation/time"
+	"github.com/simulated-reality/power"
+	asystem "github.com/simulated-reality/system"
+	"github.com/simulated-reality/temperature/analytic"
+	"github.com/simulated-reality/time"
 )
 
 type system struct {

@@ -3,7 +3,7 @@ package correlation
 import (
 	"math"
 
-	"github.com/ready-steady/simulation/system"
+	"github.com/simulated-reality/system"
 )
 
 func Compute(application *system.Application, index []uint, length float64) []float64 {
