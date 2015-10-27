@@ -1,23 +1,20 @@
-pwd := $(shell pwd)
-cmd := $(dir $(pwd))cmd
-pkg := $(dir $(pwd))pkg
+root := $(dir $(shell pwd))
 
-bins := sweep observe
-bins += approximate predict
-bins += compare
+commands := sweep observe
+commands += approximate predict
+commands += compare
 
-srcs := $(shell find $(cmd)/internal -name '*.go')
-srcs += $(shell find $(pkg) -name '*.go')
+dependencies := $(shell find $(root)/internal -name '*.go')
 
-all: $(bins)
+all: $(commands)
 
-define define_bin
-$(1): $(srcs) $(shell find $(cmd)/$(1) -name '*.go')
-	cd $(cmd)/$(1) && go build
-	mv $(cmd)/$(1)/$(1) $(1)
+define define_command
+$(1): $(dependencies) $(shell find $(root)cmd/$(1) -name '*.go')
+	cd $(root)cmd/$(1) && go build
+	mv $(root)cmd/$(1)/$(1) $(1)
 endef
 
-$(foreach bin,$(bins),$(eval $(call define_bin,$(bin))))
+$(foreach command,$(commands),$(eval $(call define_command,$(command))))
 
 cases := 001_010_delay 001_010_energy 001_010_profile
 cases += 004_040_delay 004_040_energy
@@ -84,7 +81,7 @@ assets/%:
 	$(MAKE) -C assets $*
 
 clean: flush
-	rm -f $(bins)
+	rm -f $(commands)
 
 flush:
 	rm -f data/*.h5
