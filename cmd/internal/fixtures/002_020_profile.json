@@ -19,7 +19,7 @@
 		"name": "temperature-profile",
 		"importance": [1, 0],
 		"rejection": [0, 0],
-		"refinement": [1, 0],
+		"refinement": [1e-7, 0],
 		"timeIndex": "[0:0.1:1]"
 	},
 
