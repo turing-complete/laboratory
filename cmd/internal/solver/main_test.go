@@ -5,9 +5,9 @@ import (
 
 	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/ready-steady/assert"
-	"github.com/simulated-reality/laboratory/internal/config"
-	"github.com/simulated-reality/laboratory/internal/problem"
-	"github.com/simulated-reality/laboratory/internal/target"
+	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/cmd/internal/problem"
+	"github.com/simulated-reality/laboratory/cmd/internal/target"
 )
 
 func TestSolverCompute(t *testing.T) {

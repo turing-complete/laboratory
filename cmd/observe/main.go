@@ -8,12 +8,12 @@ import (
 	"runtime"
 	"strconv"
 
-	"github.com/simulated-reality/laboratory/internal/config"
-	"github.com/simulated-reality/laboratory/internal/database"
-	"github.com/simulated-reality/laboratory/internal/problem"
-	"github.com/simulated-reality/laboratory/internal/shell"
-	"github.com/simulated-reality/laboratory/internal/support"
-	"github.com/simulated-reality/laboratory/internal/target"
+	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/cmd/internal/database"
+	"github.com/simulated-reality/laboratory/cmd/internal/problem"
+	"github.com/simulated-reality/laboratory/cmd/internal/shell"
+	"github.com/simulated-reality/laboratory/cmd/internal/support"
+	"github.com/simulated-reality/laboratory/cmd/internal/target"
 )
 
 var (

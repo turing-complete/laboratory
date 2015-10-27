@@ -7,8 +7,8 @@ import (
 	"sync"
 
 	"github.com/ready-steady/adapt"
-	"github.com/simulated-reality/laboratory/internal/config"
-	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/cmd/internal/problem"
 )
 
 type Target adapt.Target

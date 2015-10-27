@@ -8,11 +8,11 @@ import (
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/staircase"
 	"github.com/ready-steady/statistics/correlation"
-	"github.com/simulated-reality/laboratory/internal/config"
-	"github.com/simulated-reality/laboratory/internal/support"
-	"github.com/simulated-reality/laboratory/internal/system"
+	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/cmd/internal/support"
+	"github.com/simulated-reality/laboratory/cmd/internal/system"
 
-	acorrelation "github.com/simulated-reality/laboratory/internal/correlation"
+	acorrelation "github.com/simulated-reality/laboratory/cmd/internal/correlation"
 )
 
 var (

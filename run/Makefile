@@ -4,7 +4,7 @@ commands := sweep observe
 commands += approximate predict
 commands += compare
 
-dependencies := $(shell find $(root)/internal -name '*.go')
+dependencies := $(shell find $(root)/cmd/internal -name '*.go')
 
 all: $(commands)
 

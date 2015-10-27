@@ -6,10 +6,10 @@ import (
 
 	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
-	"github.com/simulated-reality/laboratory/internal/config"
-	"github.com/simulated-reality/laboratory/internal/database"
-	"github.com/simulated-reality/laboratory/internal/shell"
-	"github.com/simulated-reality/laboratory/internal/solver"
+	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/cmd/internal/database"
+	"github.com/simulated-reality/laboratory/cmd/internal/shell"
+	"github.com/simulated-reality/laboratory/cmd/internal/solver"
 )
 
 const (
