@@ -10,7 +10,7 @@ import (
 	"github.com/ready-steady/statistics/correlation"
 	"github.com/simulated-reality/laboratory/internal/config"
 
-	acorrelation "github.com/simulated-reality/laboratory/pkg/correlation"
+	acorrelation "github.com/simulated-reality/laboratory/internal/correlation"
 )
 
 var (
