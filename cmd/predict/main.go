@@ -7,10 +7,10 @@ import (
 	"math"
 	"strconv"
 
-	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/database"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/shell"
 	"github.com/simulated-reality/laboratory/internal/solver"
 	"github.com/simulated-reality/laboratory/internal/support"
 	"github.com/simulated-reality/laboratory/internal/target"
@@ -26,7 +26,7 @@ var (
 type Config *config.Assessment
 
 func main() {
-	internal.Run(command)
+	shell.Run(command)
 }
 
 func command(globalConfig *config.Config) error {

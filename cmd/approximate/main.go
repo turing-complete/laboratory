@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/database"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/shell"
 	"github.com/simulated-reality/laboratory/internal/solver"
 	"github.com/simulated-reality/laboratory/internal/target"
 )
@@ -17,7 +17,7 @@ var (
 )
 
 func main() {
-	internal.Run(command)
+	shell.Run(command)
 }
 
 func command(config *config.Config) error {

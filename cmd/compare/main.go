@@ -6,9 +6,9 @@ import (
 
 	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
-	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/database"
+	"github.com/simulated-reality/laboratory/internal/shell"
 	"github.com/simulated-reality/laboratory/internal/solver"
 )
 
@@ -27,7 +27,7 @@ var (
 type Config *config.Assessment
 
 func main() {
-	internal.Run(command)
+	shell.Run(command)
 }
 
 func command(globalConfig *config.Config) error {
