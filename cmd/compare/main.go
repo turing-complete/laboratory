@@ -8,7 +8,7 @@ import (
 	"github.com/ready-steady/statistics/metric"
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
-	"github.com/simulated-reality/laboratory/internal/file"
+	"github.com/simulated-reality/laboratory/internal/database"
 )
 
 const (
@@ -32,25 +32,25 @@ func main() {
 func command(globalConfig *config.Config) error {
 	config := &globalConfig.Assessment
 
-	reference, err := file.Open(*referenceFile)
+	reference, err := database.Open(*referenceFile)
 	if err != nil {
 		return err
 	}
 	defer reference.Close()
 
-	observe, err := file.Open(*observeFile)
+	observe, err := database.Open(*observeFile)
 	if err != nil {
 		return err
 	}
 	defer observe.Close()
 
-	predict, err := file.Open(*predictFile)
+	predict, err := database.Open(*predictFile)
 	if err != nil {
 		return err
 	}
 	defer predict.Close()
 
-	output, err := file.Create(*outputFile)
+	output, err := database.Create(*outputFile)
 	if err != nil {
 		return err
 	}
