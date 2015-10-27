@@ -4,11 +4,12 @@ import (
 	"fmt"
 
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/system"
 )
 
 type Problem struct {
 	Config *config.Config
-	system *system
+	system *system.System
 	model  *model
 }
 
@@ -17,7 +18,7 @@ func (p *Problem) String() string {
 }
 
 func NewProblem(config *config.Config) (*Problem, error) {
-	system, err := newSystem(&config.System)
+	system, err := system.New(&config.System)
 	if err != nil {
 		return nil, err
 	}

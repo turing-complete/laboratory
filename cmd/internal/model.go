@@ -10,6 +10,7 @@ import (
 	"github.com/ready-steady/statistics/correlation"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/support"
+	"github.com/simulated-reality/laboratory/internal/system"
 
 	acorrelation "github.com/simulated-reality/laboratory/internal/correlation"
 )
@@ -30,8 +31,8 @@ type model struct {
 
 type mode *staircase.Staircase
 
-func newModel(c *config.Probability, s *system) (*model, error) {
-	nt := s.nt
+func newModel(c *config.Probability, s *system.System) (*model, error) {
+	nt := uint(s.Application.Len())
 
 	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
 	if err != nil {
@@ -95,7 +96,9 @@ func (m *model) transform(z []float64) []float64 {
 	return modes
 }
 
-func computeCorrelator(c *config.Probability, s *system, taskIndex []uint) ([]float64, error) {
+func computeCorrelator(c *config.Probability, s *system.System,
+	taskIndex []uint) ([]float64, error) {
+
 	if c.CorrLength < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
@@ -103,7 +106,7 @@ func computeCorrelator(c *config.Probability, s *system, taskIndex []uint) ([]fl
 		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
-	C := acorrelation.Compute(s.application, taskIndex, c.CorrLength)
+	C := acorrelation.Compute(s.Application, taskIndex, c.CorrLength)
 	correlator, _, err := correlation.Decompose(C, uint(len(taskIndex)), c.VarThreshold)
 	if err != nil {
 		return nil, err

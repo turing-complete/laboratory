@@ -28,8 +28,8 @@ func (t *energyTarget) Dimensions() (uint, uint) {
 func (t *energyTarget) Compute(node, value []float64) {
 	s, m := t.problem.system, t.problem.model
 
-	schedule := s.computeSchedule(m.transform(node))
-	time, power := s.computeTime(schedule), s.computePower(schedule)
+	schedule := s.ComputeSchedule(m.transform(node))
+	time, power := s.ComputeTime(schedule), s.DistributePower(schedule)
 
 	value[0] = 0
 	for i := range time {

@@ -16,7 +16,8 @@ type profileTarget struct {
 
 func newProfileTarget(p *Problem, c *config.Target) (*profileTarget, error) {
 	// The cores of interest.
-	coreIndex, err := support.ParseNaturalIndex(c.CoreIndex, 0, p.system.nc-1)
+	coreIndex, err := support.ParseNaturalIndex(c.CoreIndex, 0,
+		uint(p.system.Platform.Len())-1)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +31,7 @@ func newProfileTarget(p *Problem, c *config.Target) (*profileTarget, error) {
 		timeIndex = timeIndex[1:]
 	}
 	for i := range timeIndex {
-		timeIndex[i] *= p.system.schedule.Span
+		timeIndex[i] *= p.system.Span()
 	}
 
 	target := &profileTarget{
@@ -60,8 +61,8 @@ func (t *profileTarget) Compute(node, value []float64) {
 
 	s, m := t.problem.system, t.problem.model
 
-	schedule := s.computeSchedule(m.transform(node))
-	P, ΔT, timeIndex := s.power.Partition(schedule, t.timeIndex, ε)
+	schedule := s.ComputeSchedule(m.transform(node))
+	P, ΔT, timeIndex := s.PartitionPower(schedule, t.timeIndex, ε)
 	for i := range timeIndex {
 		if timeIndex[i] == 0 {
 			panic("the timeline of interest should not contain time 0")
@@ -69,10 +70,11 @@ func (t *profileTarget) Compute(node, value []float64) {
 		timeIndex[i]--
 	}
 
-	Q := s.temperature.Compute(P, ΔT)
+	Q := s.ComputeTemperature(P, ΔT)
 
 	coreIndex := t.coreIndex
-	nc, nci, nsi := s.nc, uint(len(coreIndex)), uint(len(timeIndex))
+	nc := uint(s.Platform.Len())
+	nci, nsi := uint(len(coreIndex)), uint(len(timeIndex))
 
 	for i, k := uint(0), uint(0); i < nsi; i++ {
 		for j := uint(0); j < nci; j++ {
