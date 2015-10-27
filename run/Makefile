@@ -11,7 +11,7 @@ all: $(commands)
 define define_command
 $(1): $(dependencies) $(shell find $(root)src/$(1) -name '*.go')
 	cd $(root)src/$(1) && go build
-	mv $(root)src/$(1)/$(1) $(1)
+	@mv $(root)src/$(1)/$(1) $(1)
 endef
 
 $(foreach command,$(commands),$(eval $(call define_command,$(command))))
@@ -81,9 +81,9 @@ assets/%:
 	$(MAKE) -C assets $*
 
 clean: flush
-	rm -f $(commands)
+	@rm -f $(commands)
 
 flush:
-	rm -f data/*.h5
+	@rm -f data/*.h5
 
 .PHONY: all clean flush
