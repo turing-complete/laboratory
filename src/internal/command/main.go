@@ -1,4 +1,4 @@
-package shell
+package command
 
 import (
 	"errors"
@@ -17,7 +17,7 @@ var (
 	verbose     = flag.Bool("v", false, "a flag for displaying diagnostic information")
 )
 
-func Run(command func(*config.Config) error) {
+func Run(function func(*config.Config) error) {
 	flag.Usage = usage
 	flag.Parse()
 
@@ -43,7 +43,7 @@ func Run(command func(*config.Config) error) {
 		config.Verbose = true
 	}
 
-	if err = command(config); err != nil {
+	if err = function(config); err != nil {
 		fail(err)
 	}
 }

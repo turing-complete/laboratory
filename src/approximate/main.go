@@ -4,10 +4,10 @@ import (
 	"flag"
 	"fmt"
 
+	"github.com/simulated-reality/laboratory/src/internal/command"
 	"github.com/simulated-reality/laboratory/src/internal/config"
 	"github.com/simulated-reality/laboratory/src/internal/database"
 	"github.com/simulated-reality/laboratory/src/internal/problem"
-	"github.com/simulated-reality/laboratory/src/internal/shell"
 	"github.com/simulated-reality/laboratory/src/internal/solver"
 	"github.com/simulated-reality/laboratory/src/internal/target"
 )
@@ -17,10 +17,10 @@ var (
 )
 
 func main() {
-	shell.Run(command)
+	command.Run(function)
 }
 
-func command(config *config.Config) error {
+func function(config *config.Config) error {
 	output, err := database.Create(*outputFile)
 	if err != nil {
 		return err

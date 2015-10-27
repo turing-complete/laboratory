@@ -8,10 +8,10 @@ import (
 	"runtime"
 	"strconv"
 
+	"github.com/simulated-reality/laboratory/src/internal/command"
 	"github.com/simulated-reality/laboratory/src/internal/config"
 	"github.com/simulated-reality/laboratory/src/internal/database"
 	"github.com/simulated-reality/laboratory/src/internal/problem"
-	"github.com/simulated-reality/laboratory/src/internal/shell"
 	"github.com/simulated-reality/laboratory/src/internal/support"
 	"github.com/simulated-reality/laboratory/src/internal/target"
 )
@@ -25,10 +25,10 @@ var (
 type Config *config.Assessment
 
 func main() {
-	shell.Run(command)
+	command.Run(function)
 }
 
-func command(globalConfig *config.Config) error {
+func function(globalConfig *config.Config) error {
 	globalConfig.Probability.VarThreshold = math.Inf(1)
 
 	config := &globalConfig.Assessment
