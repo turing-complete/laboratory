@@ -1,4 +1,4 @@
-package model
+package uncertainty
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ var (
 	standardGaussian = probability.NewGaussian(0, 1)
 )
 
-type Model struct {
+type Uncertainty struct {
 	taskIndex  []uint
 	correlator []float64
 	modes      []mode
@@ -31,7 +31,7 @@ type Model struct {
 
 type mode *staircase.Staircase
 
-func New(c *config.Probability, s *system.System) (*Model, error) {
+func New(c *config.Uncertainty, s *system.System) (*Uncertainty, error) {
 	nt := uint(s.Application.Len())
 
 	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
@@ -52,7 +52,7 @@ func New(c *config.Probability, s *system.System) (*Model, error) {
 		return nil, err
 	}
 
-	model := &Model{
+	uncertainty := &Uncertainty{
 		taskIndex:  taskIndex,
 		correlator: correlator,
 		modes:      modes,
@@ -62,19 +62,19 @@ func New(c *config.Probability, s *system.System) (*Model, error) {
 		nz: nz,
 	}
 
-	return model, nil
+	return uncertainty, nil
 }
 
-func (m *Model) Len() int {
-	return int(m.nz)
+func (u *Uncertainty) Len() int {
+	return int(u.nz)
 }
 
-func (m *Model) String() string {
-	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, m.nu, m.nz)
+func (u *Uncertainty) String() string {
+	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, u.nu, u.nz)
 }
 
-func (m *Model) Transform(z []float64) []float64 {
-	nt, nu, nz := m.nt, m.nu, m.nz
+func (self *Uncertainty) Transform(z []float64) []float64 {
+	nt, nu, nz := self.nt, self.nu, self.nz
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)
@@ -85,7 +85,7 @@ func (m *Model) Transform(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	support.Combine(m.correlator, n, u, nu, nz)
+	support.Combine(self.correlator, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
@@ -93,14 +93,14 @@ func (m *Model) Transform(z []float64) []float64 {
 	}
 
 	modes := make([]float64, nt)
-	for i, tid := range m.taskIndex {
-		modes[tid] = (*staircase.Staircase)(m.modes[i]).Evaluate(u[i])
+	for i, tid := range self.taskIndex {
+		modes[tid] = (*staircase.Staircase)(self.modes[i]).Evaluate(u[i])
 	}
 
 	return modes
 }
 
-func computeCorrelator(c *config.Probability, s *system.System,
+func computeCorrelator(c *config.Uncertainty, s *system.System,
 	taskIndex []uint) ([]float64, error) {
 
 	if c.CorrLength < 0 {
@@ -119,7 +119,7 @@ func computeCorrelator(c *config.Probability, s *system.System,
 	return correlator, nil
 }
 
-func computeModes(c *config.Probability, count uint) ([]mode, error) {
+func computeModes(c *config.Uncertainty, count uint) ([]mode, error) {
 	if c.Modes == 0 {
 		return nil, errors.New("the number of modes should be positive")
 	}

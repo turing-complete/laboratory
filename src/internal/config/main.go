@@ -13,7 +13,7 @@ type Config struct {
 	Inherit string
 
 	System        System        // Platform and application
-	Probability   Probability   // Probability model
+	Uncertainty   Uncertainty   // Probability model
 	Target        Target        // Quantity of interest
 	Interpolation Interpolation // Interpolation
 	Assessment    Assessment    // Assessment
@@ -30,8 +30,8 @@ type System struct {
 	analytic.Config
 }
 
-// Probability is a configuration of the probability model.
-type Probability struct {
+// Uncertainty is a configuration of the probability model.
+type Uncertainty struct {
 	// The tasks whose execution times should be considered as uncertain.
 	TaskIndex string // ⊂ {0, ..., #tasks-1}
 

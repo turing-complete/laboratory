@@ -1,4 +1,4 @@
-package model
+package uncertainty
 
 import (
 	"testing"
@@ -11,9 +11,9 @@ import (
 func TestNew(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	system, _ := system.New(&config.System)
-	model, _ := New(&config.Probability, system)
+	uncertainty, _ := New(&config.Uncertainty, system)
 
-	assert.Equal(model.nu, uint(20), t)
-	assert.Equal(model.nz, uint(3), t)
-	assert.Equal(len(model.correlator), 3*20, t)
+	assert.Equal(uncertainty.nu, uint(20), t)
+	assert.Equal(uncertainty.nz, uint(3), t)
+	assert.Equal(len(uncertainty.correlator), 3*20, t)
 }

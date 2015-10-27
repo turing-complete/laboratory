@@ -23,13 +23,13 @@ func (t *delay) String() string {
 }
 
 func (t *delay) Dimensions() (uint, uint) {
-	return uint(t.problem.Model.Len()), 2
+	return uint(t.problem.Uncertainty.Len()), 2
 }
 
 func (t *delay) Compute(node []float64, value []float64) {
-	s, m := t.problem.System, t.problem.Model
+	s, u := t.problem.System, t.problem.Uncertainty
 
-	value[0] = s.ComputeSchedule(m.Transform(node)).Span
+	value[0] = s.ComputeSchedule(u.Transform(node)).Span
 	value[1] = value[0] * value[0]
 }
 

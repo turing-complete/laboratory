@@ -1,7 +1,7 @@
 {
 	"inherit": "assets/025_250.json",
 
-	"probability": {
+	"uncertainty": {
 		"varThreshold": 0.9
 	},
 

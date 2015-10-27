@@ -4,7 +4,7 @@
 		"ambience": 45
 	},
 
-	"probability": {
+	"uncertainty": {
 		"seed": 0,
 		"modes": 2,
 		"minOffset": -0.1,

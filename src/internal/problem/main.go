@@ -4,18 +4,19 @@ import (
 	"fmt"
 
 	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/model"
 	"github.com/simulated-reality/laboratory/src/internal/system"
+	"github.com/simulated-reality/laboratory/src/internal/uncertainty"
 )
 
 type Problem struct {
-	Config *config.Config
-	System *system.System
-	Model  *model.Model
+	Config      *config.Config
+	System      *system.System
+	Uncertainty *uncertainty.Uncertainty
 }
 
 func (p *Problem) String() string {
-	return fmt.Sprintf(`{"system": %s, "model": %s}`, p.System, p.Model)
+	return fmt.Sprintf(`{"system": %s, "uncertainty": %s}`, p.System,
+		p.Uncertainty)
 }
 
 func New(config *config.Config) (*Problem, error) {
@@ -24,15 +25,15 @@ func New(config *config.Config) (*Problem, error) {
 		return nil, err
 	}
 
-	model, err := model.New(&config.Probability, system)
+	uncertainty, err := uncertainty.New(&config.Uncertainty, system)
 	if err != nil {
 		return nil, err
 	}
 
 	problem := &Problem{
-		Config: config,
-		System: system,
-		Model:  model,
+		Config:      config,
+		System:      system,
+		Uncertainty: uncertainty,
 	}
 
 	return problem, nil

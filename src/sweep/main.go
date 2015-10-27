@@ -36,7 +36,7 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	config.Probability.VarThreshold = *varThreshold
+	config.Uncertainty.VarThreshold = *varThreshold
 
 	problem, err := problem.New(config)
 	if err != nil {
@@ -60,7 +60,7 @@ func function(config *config.Config) error {
 		fmt.Println(problem)
 		fmt.Println(aTarget)
 		fmt.Printf("Evaluating the model with reduction %.2f at %v points...\n",
-			config.Probability.VarThreshold, np)
+			config.Uncertainty.VarThreshold, np)
 	}
 
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))

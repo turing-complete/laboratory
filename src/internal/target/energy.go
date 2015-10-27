@@ -23,13 +23,13 @@ func (t *energy) String() string {
 }
 
 func (t *energy) Dimensions() (uint, uint) {
-	return uint(t.problem.Model.Len()), 2
+	return uint(t.problem.Uncertainty.Len()), 2
 }
 
 func (t *energy) Compute(node, value []float64) {
-	s, m := t.problem.System, t.problem.Model
+	s, u := t.problem.System, t.problem.Uncertainty
 
-	schedule := s.ComputeSchedule(m.Transform(node))
+	schedule := s.ComputeSchedule(u.Transform(node))
 	time, power := s.ComputeTime(schedule), s.DistributePower(schedule)
 
 	value[0] = 0

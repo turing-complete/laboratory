@@ -1,7 +1,7 @@
 {
 	"inherit": "assets/001_010.json",
 
-	"probability": {
+	"uncertainty": {
 		"taskIndex": "[]",
 		"corrLength": 0,
 		"varThreshold": 1

@@ -6,7 +6,7 @@
 		"ambience": 318.15
 	},
 
-	"probability": {
+	"uncertainty": {
 		"modes": 2,
 		"minOffset": -0.1,
 		"maxOffset": 0.1,

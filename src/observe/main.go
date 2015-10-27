@@ -29,7 +29,7 @@ func main() {
 }
 
 func function(globalConfig *config.Config) error {
-	globalConfig.Probability.VarThreshold = math.Inf(1)
+	globalConfig.Uncertainty.VarThreshold = math.Inf(1)
 
 	config := &globalConfig.Assessment
 	if len(*sampleSeed) > 0 {
