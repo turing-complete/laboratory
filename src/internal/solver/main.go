@@ -7,8 +7,8 @@ import (
 	"github.com/ready-steady/adapt"
 	"github.com/ready-steady/adapt/basis/linhat"
 	"github.com/ready-steady/adapt/grid/newcot"
-	"github.com/simulated-reality/laboratory/cmd/internal/problem"
-	"github.com/simulated-reality/laboratory/cmd/internal/target"
+	"github.com/simulated-reality/laboratory/src/internal/problem"
+	"github.com/simulated-reality/laboratory/src/internal/target"
 )
 
 type Solver struct {

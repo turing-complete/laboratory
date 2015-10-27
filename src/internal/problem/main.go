@@ -3,9 +3,9 @@ package problem
 import (
 	"fmt"
 
-	"github.com/simulated-reality/laboratory/cmd/internal/config"
-	"github.com/simulated-reality/laboratory/cmd/internal/model"
-	"github.com/simulated-reality/laboratory/cmd/internal/system"
+	"github.com/simulated-reality/laboratory/src/internal/config"
+	"github.com/simulated-reality/laboratory/src/internal/model"
+	"github.com/simulated-reality/laboratory/src/internal/system"
 )
 
 type Problem struct {

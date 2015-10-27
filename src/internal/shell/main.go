@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"runtime/pprof"
 
-	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/src/internal/config"
 )
 
 var (

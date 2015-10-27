@@ -4,14 +4,14 @@ commands := sweep observe
 commands += approximate predict
 commands += compare
 
-dependencies := $(shell find $(root)/cmd/internal -name '*.go')
+dependencies := $(shell find $(root)/src/internal -name '*.go')
 
 all: $(commands)
 
 define define_command
-$(1): $(dependencies) $(shell find $(root)cmd/$(1) -name '*.go')
-	cd $(root)cmd/$(1) && go build
-	mv $(root)cmd/$(1)/$(1) $(1)
+$(1): $(dependencies) $(shell find $(root)src/$(1) -name '*.go')
+	cd $(root)src/$(1) && go build
+	mv $(root)src/$(1)/$(1) $(1)
 endef
 
 $(foreach command,$(commands),$(eval $(call define_command,$(command))))

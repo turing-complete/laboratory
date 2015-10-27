@@ -3,7 +3,7 @@ package system
 import (
 	"fmt"
 
-	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/src/internal/config"
 	"github.com/simulated-reality/power"
 	"github.com/simulated-reality/system"
 	"github.com/simulated-reality/temperature/analytic"

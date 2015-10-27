@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/ready-steady/assert"
-	"github.com/simulated-reality/laboratory/cmd/internal/config"
+	"github.com/simulated-reality/laboratory/src/internal/config"
 )
 
 func TestNew(t *testing.T) {
