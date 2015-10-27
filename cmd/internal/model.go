@@ -9,6 +9,7 @@ import (
 	"github.com/ready-steady/staircase"
 	"github.com/ready-steady/statistics/correlation"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/support"
 
 	acorrelation "github.com/simulated-reality/laboratory/internal/correlation"
 )
@@ -32,7 +33,7 @@ type mode *staircase.Staircase
 func newModel(c *config.Probability, s *system) (*model, error) {
 	nt := s.nt
 
-	taskIndex, err := parseNaturalIndex(c.TaskIndex, 0, nt-1)
+	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,7 @@ func (m *model) transform(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	combine(m.correlator, n, u, nu, nz)
+	support.Combine(m.correlator, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
@@ -122,7 +123,7 @@ func computeModes(c *config.Probability, count uint) ([]mode, error) {
 		return nil, errors.New("the transition parameter should be in (0, 0.5]")
 	}
 
-	generator := probability.NewGenerator(newSeed(c.Seed))
+	generator := probability.NewGenerator(support.NewSeed(c.Seed))
 	uniform := probability.NewUniform(0, 1)
 
 	result := make([]mode, count)

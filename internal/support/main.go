@@ -1,4 +1,4 @@
-package internal
+package support
 
 import (
 	"errors"
@@ -20,18 +20,7 @@ var (
 	pInfinity = math.Inf(1)
 )
 
-func newSeed(seed int64) int64 {
-	if seed < 0 {
-		seed = time.Now().Unix()
-	}
-	return seed
-}
-
-func Generate(ni, ns uint, seed int64) []float64 {
-	return sequence.NewSobol(ni, newSeed(seed)).Next(ns)
-}
-
-func combine(A, x, y []float64, m, n uint) {
+func Combine(A, x, y []float64, m, n uint) {
 	infinite, z := false, make([]float64, n)
 
 	for i := range x {
@@ -71,22 +60,19 @@ func combine(A, x, y []float64, m, n uint) {
 	}
 }
 
-func stringify(node []float64) string {
-	const (
-		sizeOfFloat64 = 8
-	)
-
-	var bytes []byte
-	header := (*reflect.SliceHeader)(unsafe.Pointer(&bytes))
-	header.Data = ((*reflect.SliceHeader)(unsafe.Pointer(&node))).Data
-	header.Cap = sizeOfFloat64 * len(node)
-	header.Len = header.Cap
-
-	return string(bytes)
+func Generate(ni, ns uint, seed int64) []float64 {
+	return sequence.NewSobol(ni, NewSeed(seed)).Next(ns)
 }
 
-func parseNaturalIndex(line string, min, max uint) ([]uint, error) {
-	realIndex, err := parseRealIndex(line, float64(min), float64(max))
+func NewSeed(seed int64) int64 {
+	if seed < 0 {
+		seed = time.Now().Unix()
+	}
+	return seed
+}
+
+func ParseNaturalIndex(line string, min, max uint) ([]uint, error) {
+	realIndex, err := ParseRealIndex(line, float64(min), float64(max))
 	if err != nil {
 		return nil, err
 	}
@@ -109,7 +95,7 @@ var (
 	colonPattern = regexp.MustCompile(`\s*:\s*`)
 )
 
-func parseRealIndex(line string, min, max float64) ([]float64, error) {
+func ParseRealIndex(line string, min, max float64) ([]float64, error) {
 	const (
 		ε = 1e-8
 	)
@@ -186,4 +172,18 @@ func parseRealIndex(line string, min, max float64) ([]float64, error) {
 	}
 
 	return index, nil
+}
+
+func stringify(node []float64) string {
+	const (
+		sizeOfFloat64 = 8
+	)
+
+	var bytes []byte
+	header := (*reflect.SliceHeader)(unsafe.Pointer(&bytes))
+	header.Data = ((*reflect.SliceHeader)(unsafe.Pointer(&node))).Data
+	header.Cap = sizeOfFloat64 * len(node)
+	header.Len = header.Cap
+
+	return string(bytes)
 }

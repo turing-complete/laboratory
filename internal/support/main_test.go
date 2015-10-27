@@ -1,4 +1,4 @@
-package internal
+package support
 
 import (
 	"math"
@@ -18,7 +18,7 @@ func TestCombine(t *testing.T) {
 
 	test := func(x, y []float64) {
 		z := make([]float64, m)
-		combine(A, x, z, m, n)
+		Combine(A, x, z, m, n)
 		assert.Equal(z, y, t)
 	}
 
@@ -49,7 +49,7 @@ func TestParseNaturalIndex(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result, err := parseNaturalIndex(c.line, c.min, c.max)
+		result, err := ParseNaturalIndex(c.line, c.min, c.max)
 		if c.result != nil {
 			assert.Success(err, t)
 		}
@@ -74,7 +74,7 @@ func TestParseRealIndex(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		result, err := parseRealIndex(c.line, c.min, c.max)
+		result, err := ParseRealIndex(c.line, c.min, c.max)
 		if c.result != nil {
 			assert.Success(err, t)
 		}

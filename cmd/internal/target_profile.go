@@ -3,6 +3,7 @@ package internal
 import (
 	"github.com/ready-steady/adapt"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/support"
 )
 
 type profileTarget struct {
@@ -15,13 +16,13 @@ type profileTarget struct {
 
 func newProfileTarget(p *Problem, c *config.Target) (*profileTarget, error) {
 	// The cores of interest.
-	coreIndex, err := parseNaturalIndex(c.CoreIndex, 0, p.system.nc-1)
+	coreIndex, err := support.ParseNaturalIndex(c.CoreIndex, 0, p.system.nc-1)
 	if err != nil {
 		return nil, err
 	}
 
 	// The time moments of interest.
-	timeIndex, err := parseRealIndex(c.TimeIndex, 0, 1)
+	timeIndex, err := support.ParseRealIndex(c.TimeIndex, 0, 1)
 	if err != nil {
 		return nil, err
 	}

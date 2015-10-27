@@ -11,6 +11,7 @@ import (
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/file"
+	"github.com/simulated-reality/laboratory/internal/support"
 )
 
 var (
@@ -67,7 +68,7 @@ func command(globalConfig *config.Config) error {
 	ni, no := target.Dimensions()
 	ns := config.Samples
 
-	points := internal.Generate(ni, ns, config.Seed)
+	points := support.Generate(ni, ns, config.Seed)
 
 	if globalConfig.Verbose {
 		fmt.Printf("Evaluating the original model at %d points...\n", ns)
