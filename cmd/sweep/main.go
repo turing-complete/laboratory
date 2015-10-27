@@ -14,6 +14,7 @@ import (
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/file"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/target"
 )
 
 var (
@@ -42,27 +43,27 @@ func command(config *config.Config) error {
 		return err
 	}
 
-	target, err := internal.NewTarget(problem)
+	aTarget, err := target.New(problem)
 	if err != nil {
 		return err
 	}
 
-	points, err := generate(target, config.Interpolation.Rule)
+	points, err := generate(aTarget, config.Interpolation.Rule)
 	if err != nil {
 		return err
 	}
 
-	ni, no := target.Dimensions()
+	ni, no := aTarget.Dimensions()
 	np := uint(len(points)) / ni
 
 	if config.Verbose {
 		fmt.Println(problem)
-		fmt.Println(target)
+		fmt.Println(aTarget)
 		fmt.Printf("Evaluating the model with reduction %.2f at %v points...\n",
 			config.Probability.VarThreshold, np)
 	}
 
-	values := internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
+	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 
 	if config.Verbose {
 		fmt.Println("Done.")
@@ -78,7 +79,7 @@ func command(config *config.Config) error {
 	return nil
 }
 
-func generate(target internal.Target, rule string) ([]float64, error) {
+func generate(target target.Target, rule string) ([]float64, error) {
 	ni, _ := target.Dimensions()
 	nn := *nodeCount
 
@@ -114,7 +115,7 @@ func generate(target internal.Target, rule string) ([]float64, error) {
 	return linear.Tensor(parameters...), nil
 }
 
-func detect(target internal.Target) ([]uint, error) {
+func detect(target target.Target) ([]uint, error) {
 	ni, _ := target.Dimensions()
 
 	index := []uint{}

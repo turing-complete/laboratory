@@ -1,4 +1,4 @@
-package internal
+package target
 
 import (
 	"errors"
@@ -13,7 +13,7 @@ import (
 
 type Target adapt.Target
 
-func NewTarget(problem *problem.Problem) (Target, error) {
+func New(problem *problem.Problem) (Target, error) {
 	config := problem.Config.Target
 
 	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
@@ -24,11 +24,11 @@ func NewTarget(problem *problem.Problem) (Target, error) {
 
 	switch config.Name {
 	case "end-to-end-delay":
-		return newDelayTarget(problem, &config), nil
+		return newDelay(problem, &config), nil
 	case "total-energy":
-		return newEnergyTarget(problem, &config), nil
+		return newEnergy(problem, &config), nil
 	case "temperature-profile":
-		return newProfileTarget(problem, &config)
+		return newProfile(problem, &config)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

@@ -12,6 +12,7 @@ import (
 	"github.com/simulated-reality/laboratory/internal/file"
 	"github.com/simulated-reality/laboratory/internal/problem"
 	"github.com/simulated-reality/laboratory/internal/support"
+	"github.com/simulated-reality/laboratory/internal/target"
 )
 
 var (
@@ -69,7 +70,7 @@ func command(globalConfig *config.Config) error {
 		return err
 	}
 
-	target, err := internal.NewTarget(problem)
+	target, err := target.New(problem)
 	if err != nil {
 		return err
 	}

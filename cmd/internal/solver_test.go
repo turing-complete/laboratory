@@ -7,12 +7,13 @@ import (
 	"github.com/ready-steady/assert"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/target"
 )
 
 func TestSolverCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	problem, _ := problem.New(config)
-	target, _ := NewTarget(problem)
+	target, _ := target.New(problem)
 	solver, _ := NewSolver(problem, target)
 	solution := solver.Compute(target)
 	surrogate := &solution.Surrogate

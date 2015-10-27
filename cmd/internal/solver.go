@@ -8,6 +8,7 @@ import (
 	"github.com/ready-steady/adapt/basis/linhat"
 	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/target"
 )
 
 type Solver struct {
@@ -18,7 +19,7 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func NewSolver(problem *problem.Problem, target Target) (*Solver, error) {
+func NewSolver(problem *problem.Problem, target target.Target) (*Solver, error) {
 	ni, _ := target.Dimensions()
 
 	var grid adapt.Grid
@@ -39,7 +40,7 @@ func NewSolver(problem *problem.Problem, target Target) (*Solver, error) {
 	return &Solver{*interpolator}, nil
 }
 
-func (s *Solver) Compute(target Target) *Solution {
+func (s *Solver) Compute(target target.Target) *Solution {
 	return &Solution{*s.Interpolator.Compute(target)}
 }
 

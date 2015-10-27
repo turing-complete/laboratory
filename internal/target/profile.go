@@ -1,4 +1,4 @@
-package internal
+package target
 
 import (
 	"github.com/ready-steady/adapt"
@@ -7,7 +7,7 @@ import (
 	"github.com/simulated-reality/laboratory/internal/support"
 )
 
-type profileTarget struct {
+type profile struct {
 	problem *problem.Problem
 	config  *config.Target
 
@@ -15,8 +15,8 @@ type profileTarget struct {
 	timeIndex []float64
 }
 
-func newProfileTarget(p *problem.Problem,
-	c *config.Target) (*profileTarget, error) {
+func newProfile(p *problem.Problem,
+	c *config.Target) (*profile, error) {
 
 	// The cores of interest.
 	coreIndex, err := support.ParseNaturalIndex(c.CoreIndex, 0,
@@ -37,7 +37,7 @@ func newProfileTarget(p *problem.Problem,
 		timeIndex[i] *= p.System.Span()
 	}
 
-	target := &profileTarget{
+	target := &profile{
 		problem: p,
 		config:  c,
 
@@ -48,16 +48,16 @@ func newProfileTarget(p *problem.Problem,
 	return target, nil
 }
 
-func (t *profileTarget) String() string {
+func (t *profile) String() string {
 	return String(t)
 }
 
-func (t *profileTarget) Dimensions() (uint, uint) {
+func (t *profile) Dimensions() (uint, uint) {
 	nci, nsi := uint(len(t.coreIndex)), uint(len(t.timeIndex))
 	return uint(t.problem.Model.Len()), nsi * nci * 2
 }
 
-func (t *profileTarget) Compute(node, value []float64) {
+func (t *profile) Compute(node, value []float64) {
 	const (
 		ε = 1e-10
 	)
@@ -88,12 +88,14 @@ func (t *profileTarget) Compute(node, value []float64) {
 	}
 }
 
-func (t *profileTarget) Monitor(progress *adapt.Progress) {
+func (t *profile) Monitor(progress *adapt.Progress) {
 	if t.config.Verbose {
 		Monitor(t, progress)
 	}
 }
 
-func (t *profileTarget) Score(location *adapt.Location, progress *adapt.Progress) float64 {
+func (t *profile) Score(location *adapt.Location,
+	progress *adapt.Progress) float64 {
+
 	return Score(t, t.config, location, progress)
 }

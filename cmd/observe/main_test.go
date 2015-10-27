@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/ready-steady/probability"
-	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/target"
 )
 
 func BenchmarkInvokeJobQueue(b *testing.B) {
@@ -19,14 +19,14 @@ func BenchmarkInvokeNoJobQueue(b *testing.B) {
 	benchmarkInvoke(invokeNoJobQueue, b)
 }
 
-func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testing.B) {
+func benchmarkInvoke(invoke func(target.Target, []float64) []float64, b *testing.B) {
 	const (
 		sampleCount = 1000
 	)
 
 	config, _ := config.New("fixtures/002_020_profile.json")
 	problem, _ := problem.New(config)
-	target, _ := internal.NewTarget(problem)
+	target, _ := target.New(problem)
 
 	ni, _ := target.Dimensions()
 
@@ -40,11 +40,11 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 	}
 }
 
-func invokeJobQueue(target internal.Target, points []float64) []float64 {
-	return internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
+func invokeJobQueue(aTarget target.Target, points []float64) []float64 {
+	return target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 }
 
-func invokeNoJobQueue(target internal.Target, points []float64) []float64 {
+func invokeNoJobQueue(target target.Target, points []float64) []float64 {
 	ic, oc := target.Dimensions()
 	pc := uint(len(points)) / ic
 

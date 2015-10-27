@@ -1,4 +1,4 @@
-package internal
+package target
 
 import (
 	"github.com/ready-steady/adapt"
@@ -6,27 +6,27 @@ import (
 	"github.com/simulated-reality/laboratory/internal/problem"
 )
 
-type energyTarget struct {
+type energy struct {
 	problem *problem.Problem
 	config  *config.Target
 }
 
-func newEnergyTarget(p *problem.Problem, c *config.Target) *energyTarget {
-	return &energyTarget{
+func newEnergy(p *problem.Problem, c *config.Target) *energy {
+	return &energy{
 		problem: p,
 		config:  c,
 	}
 }
 
-func (t *energyTarget) String() string {
+func (t *energy) String() string {
 	return String(t)
 }
 
-func (t *energyTarget) Dimensions() (uint, uint) {
+func (t *energy) Dimensions() (uint, uint) {
 	return uint(t.problem.Model.Len()), 2
 }
 
-func (t *energyTarget) Compute(node, value []float64) {
+func (t *energy) Compute(node, value []float64) {
 	s, m := t.problem.System, t.problem.Model
 
 	schedule := s.ComputeSchedule(m.Transform(node))
@@ -40,12 +40,12 @@ func (t *energyTarget) Compute(node, value []float64) {
 	value[1] = value[0] * value[0]
 }
 
-func (t *energyTarget) Monitor(progress *adapt.Progress) {
+func (t *energy) Monitor(progress *adapt.Progress) {
 	if t.config.Verbose {
 		Monitor(t, progress)
 	}
 }
 
-func (t *energyTarget) Score(location *adapt.Location, progress *adapt.Progress) float64 {
+func (t *energy) Score(location *adapt.Location, progress *adapt.Progress) float64 {
 	return Score(t, t.config, location, progress)
 }

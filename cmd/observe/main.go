@@ -13,6 +13,7 @@ import (
 	"github.com/simulated-reality/laboratory/internal/file"
 	"github.com/simulated-reality/laboratory/internal/problem"
 	"github.com/simulated-reality/laboratory/internal/support"
+	"github.com/simulated-reality/laboratory/internal/target"
 )
 
 var (
@@ -61,12 +62,12 @@ func command(globalConfig *config.Config) error {
 		return err
 	}
 
-	target, err := internal.NewTarget(problem)
+	aTarget, err := target.New(problem)
 	if err != nil {
 		return err
 	}
 
-	ni, no := target.Dimensions()
+	ni, no := aTarget.Dimensions()
 	ns := config.Samples
 
 	points := support.Generate(ni, ns, config.Seed)
@@ -75,7 +76,7 @@ func command(globalConfig *config.Config) error {
 		fmt.Printf("Evaluating the original model at %d points...\n", ns)
 	}
 
-	values := internal.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
+	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 
 	if globalConfig.Verbose {
 		fmt.Println("Done.")
