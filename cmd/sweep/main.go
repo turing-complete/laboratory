@@ -10,8 +10,7 @@ import (
 	"strings"
 
 	"github.com/ready-steady/linear"
-
-	"../internal"
+	"github.com/simulated-reality/laboratory/cmd/internal"
 )
 
 var (

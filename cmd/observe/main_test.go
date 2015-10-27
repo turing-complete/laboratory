@@ -6,8 +6,7 @@ import (
 	"testing"
 
 	"github.com/ready-steady/probability"
-
-	"../internal"
+	"github.com/simulated-reality/laboratory/cmd/internal"
 )
 
 func BenchmarkInvokeJobQueue(b *testing.B) {

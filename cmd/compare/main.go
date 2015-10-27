@@ -6,8 +6,7 @@ import (
 
 	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
-
-	"../internal"
+	"github.com/simulated-reality/laboratory/cmd/internal"
 )
 
 const (

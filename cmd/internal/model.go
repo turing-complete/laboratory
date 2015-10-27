@@ -8,8 +8,7 @@ import (
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/staircase"
 	"github.com/ready-steady/statistics/correlation"
-
-	acorrelation "../../pkg/correlation"
+	acorrelation "github.com/simulated-reality/laboratory/pkg/correlation"
 )
 
 var (

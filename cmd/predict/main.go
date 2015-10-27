@@ -7,7 +7,7 @@ import (
 	"math"
 	"strconv"
 
-	"../internal"
+	"github.com/simulated-reality/laboratory/cmd/internal"
 )
 
 var (

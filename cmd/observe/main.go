@@ -8,7 +8,7 @@ import (
 	"runtime"
 	"strconv"
 
-	"../internal"
+	"github.com/simulated-reality/laboratory/cmd/internal"
 )
 
 var (
