@@ -8,6 +8,8 @@ import (
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/staircase"
 	"github.com/ready-steady/statistics/correlation"
+	"github.com/simulated-reality/laboratory/internal/config"
+
 	acorrelation "github.com/simulated-reality/laboratory/pkg/correlation"
 )
 
@@ -27,7 +29,7 @@ type model struct {
 
 type mode *staircase.Staircase
 
-func newModel(c *ProbabilityConfig, s *system) (*model, error) {
+func newModel(c *config.Probability, s *system) (*model, error) {
 	nt := s.nt
 
 	taskIndex, err := parseNaturalIndex(c.TaskIndex, 0, nt-1)
@@ -92,7 +94,7 @@ func (m *model) transform(z []float64) []float64 {
 	return modes
 }
 
-func computeCorrelator(c *ProbabilityConfig, s *system, taskIndex []uint) ([]float64, error) {
+func computeCorrelator(c *config.Probability, s *system, taskIndex []uint) ([]float64, error) {
 	if c.CorrLength < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
@@ -109,7 +111,7 @@ func computeCorrelator(c *ProbabilityConfig, s *system, taskIndex []uint) ([]flo
 	return correlator, nil
 }
 
-func computeModes(c *ProbabilityConfig, count uint) ([]mode, error) {
+func computeModes(c *config.Probability, count uint) ([]mode, error) {
 	if c.Modes == 0 {
 		return nil, errors.New("the number of modes should be positive")
 	}

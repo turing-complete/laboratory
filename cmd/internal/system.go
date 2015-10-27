@@ -3,10 +3,12 @@ package internal
 import (
 	"fmt"
 
+	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/power"
-	asystem "github.com/simulated-reality/system"
 	"github.com/simulated-reality/temperature/analytic"
 	"github.com/simulated-reality/time"
+
+	asystem "github.com/simulated-reality/system"
 )
 
 type system struct {
@@ -24,7 +26,7 @@ type system struct {
 	nt uint
 }
 
-func newSystem(config *SystemConfig) (*system, error) {
+func newSystem(config *config.System) (*system, error) {
 	platform, application, err := asystem.Load(config.Specification)
 	if err != nil {
 		return nil, err

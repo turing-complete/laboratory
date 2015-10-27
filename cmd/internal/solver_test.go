@@ -5,10 +5,11 @@ import (
 
 	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/ready-steady/assert"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 func TestSolverCompute(t *testing.T) {
-	config, _ := NewConfig("fixtures/002_020_profile.json")
+	config, _ := config.New("fixtures/002_020_profile.json")
 	problem, _ := NewProblem(config)
 	target, _ := NewTarget(problem)
 	solver, _ := NewSolver(problem, target)

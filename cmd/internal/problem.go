@@ -2,10 +2,12 @@ package internal
 
 import (
 	"fmt"
+
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 type Problem struct {
-	Config *Config
+	Config *config.Config
 	system *system
 	model  *model
 }
@@ -14,7 +16,7 @@ func (p *Problem) String() string {
 	return fmt.Sprintf(`{"system": %s, "model": %s}`, p.system, p.model)
 }
 
-func NewProblem(config *Config) (*Problem, error) {
+func NewProblem(config *config.Config) (*Problem, error) {
 	system, err := newSystem(&config.System)
 	if err != nil {
 		return nil, err

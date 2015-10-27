@@ -1,4 +1,4 @@
-package internal
+package config
 
 import (
 	"encoding/json"
@@ -12,26 +12,26 @@ import (
 type Config struct {
 	Inherit string
 
-	System        SystemConfig        // Platform and application
-	Probability   ProbabilityConfig   // Probability model
-	Target        TargetConfig        // Quantity of interest
-	Interpolation InterpolationConfig // Interpolation
-	Assessment    AssessmentConfig    // Assessment
+	System        System        // Platform and application
+	Probability   Probability   // Probability model
+	Target        Target        // Quantity of interest
+	Interpolation Interpolation // Interpolation
+	Assessment    Assessment    // Assessment
 
 	// A flag to display diagnostic information.
 	Verbose bool
 }
 
-// SystemConfig is a configuration of the system.
-type SystemConfig struct {
+// System is a configuration of the system.
+type System struct {
 	// A TGFF file describing the platform and application to analyze.
 	Specification string
 
 	analytic.Config
 }
 
-// ProbabilityConfig is a configuration of the probability model.
-type ProbabilityConfig struct {
+// Probability is a configuration of the probability model.
+type Probability struct {
 	// The tasks whose execution times should be considered as uncertain.
 	TaskIndex string // ⊂ {0, ..., #tasks-1}
 
@@ -53,8 +53,8 @@ type ProbabilityConfig struct {
 	VarThreshold float64 // ∈ (0, 1]
 }
 
-// TargetConfig is a configuration of the quantity of interest.
-type TargetConfig struct {
+// Target is a configuration of the quantity of interest.
+type Target struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “temperature-profile.”
 	Name string
@@ -76,16 +76,16 @@ type TargetConfig struct {
 	Verbose bool
 }
 
-// InterpolationConfig is a configuration of the interpolation algorithm.
-type InterpolationConfig struct {
+// Interpolation is a configuration of the interpolation algorithm.
+type Interpolation struct {
 	// The quadrature rule to use, which is either “closed” or “open.”
 	Rule string
 
 	adapt.Config
 }
 
-// AssessmentConfig is a configuration of the assessment procedure.
-type AssessmentConfig struct {
+// Assessment is a configuration of the assessment procedure.
+type Assessment struct {
 	// A flag to use the analytically computed moments.
 	Analytic []bool
 	// The seed for generating samples.
@@ -94,7 +94,7 @@ type AssessmentConfig struct {
 	Samples uint
 }
 
-func NewConfig(path string) (*Config, error) {
+func New(path string) (*Config, error) {
 	paths := []string{path}
 	for {
 		config := Config{}

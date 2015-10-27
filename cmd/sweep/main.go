@@ -11,6 +11,7 @@ import (
 
 	"github.com/ready-steady/linear"
 	"github.com/simulated-reality/laboratory/cmd/internal"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 var (
@@ -25,7 +26,7 @@ func main() {
 	internal.Run(command)
 }
 
-func command(config *internal.Config) error {
+func command(config *config.Config) error {
 	output, err := internal.Create(*outputFile)
 	if err != nil {
 		return err

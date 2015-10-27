@@ -4,10 +4,11 @@ import (
 	"testing"
 
 	"github.com/ready-steady/assert"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 func TestNewProblem(t *testing.T) {
-	config, _ := NewConfig("fixtures/002_020_profile.json")
+	config, _ := config.New("fixtures/002_020_profile.json")
 	problem, _ := NewProblem(config)
 
 	system := problem.system

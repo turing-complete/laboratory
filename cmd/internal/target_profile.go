@@ -2,17 +2,18 @@ package internal
 
 import (
 	"github.com/ready-steady/adapt"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 type profileTarget struct {
 	problem *Problem
-	config  *TargetConfig
+	config  *config.Target
 
 	coreIndex []uint
 	timeIndex []float64
 }
 
-func newProfileTarget(p *Problem, c *TargetConfig) (*profileTarget, error) {
+func newProfileTarget(p *Problem, c *config.Target) (*profileTarget, error) {
 	// The cores of interest.
 	coreIndex, err := parseNaturalIndex(c.CoreIndex, 0, p.system.nc-1)
 	if err != nil {

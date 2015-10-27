@@ -2,14 +2,15 @@ package internal
 
 import (
 	"github.com/ready-steady/adapt"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 type delayTarget struct {
 	problem *Problem
-	config  *TargetConfig
+	config  *config.Target
 }
 
-func newDelayTarget(p *Problem, c *TargetConfig) *delayTarget {
+func newDelayTarget(p *Problem, c *config.Target) *delayTarget {
 	return &delayTarget{
 		problem: p,
 		config:  c,

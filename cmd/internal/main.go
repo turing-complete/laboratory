@@ -7,6 +7,8 @@ import (
 	"os"
 	"runtime"
 	"runtime/pprof"
+
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 var (
@@ -15,7 +17,7 @@ var (
 	verbose     = flag.Bool("v", false, "a flag for displaying diagnostic information")
 )
 
-func Run(command func(*Config) error) {
+func Run(command func(*config.Config) error) {
 	flag.Usage = usage
 	flag.Parse()
 
@@ -33,7 +35,7 @@ func Run(command func(*Config) error) {
 	if len(*configFile) == 0 {
 		fail(errors.New("expected a filename"))
 	}
-	config, err := NewConfig(*configFile)
+	config, err := config.New(*configFile)
 	if err != nil {
 		fail(err)
 	}

@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/ready-steady/adapt"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 type Target adapt.Target
@@ -46,7 +47,7 @@ func Monitor(target Target, progress *adapt.Progress) {
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 
-func Score(target Target, config *TargetConfig,
+func Score(target Target, config *config.Target,
 	location *adapt.Location, progress *adapt.Progress) float64 {
 
 	_, no := target.Dimensions()

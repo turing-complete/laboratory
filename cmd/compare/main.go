@@ -7,6 +7,7 @@ import (
 	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
 	"github.com/simulated-reality/laboratory/cmd/internal"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 const (
@@ -21,13 +22,13 @@ var (
 	outputFile    = flag.String("o", "", "an output file (required)")
 )
 
-type Config *internal.AssessmentConfig
+type Config *config.Assessment
 
 func main() {
 	internal.Run(command)
 }
 
-func command(globalConfig *internal.Config) error {
+func command(globalConfig *config.Config) error {
 	config := &globalConfig.Assessment
 
 	reference, err := internal.Open(*referenceFile)

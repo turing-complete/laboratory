@@ -8,6 +8,7 @@ import (
 	"strconv"
 
 	"github.com/simulated-reality/laboratory/cmd/internal"
+	"github.com/simulated-reality/laboratory/internal/config"
 )
 
 var (
@@ -17,13 +18,13 @@ var (
 	sampleCount     = flag.String("n", "", "the number of samples")
 )
 
-type Config *internal.AssessmentConfig
+type Config *config.Assessment
 
 func main() {
 	internal.Run(command)
 }
 
-func command(globalConfig *internal.Config) error {
+func command(globalConfig *config.Config) error {
 	const (
 		maxSteps = 10
 	)
