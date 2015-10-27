@@ -11,6 +11,7 @@ import (
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/file"
+	"github.com/simulated-reality/laboratory/internal/problem"
 	"github.com/simulated-reality/laboratory/internal/support"
 )
 
@@ -55,7 +56,7 @@ func command(globalConfig *config.Config) error {
 	}
 	defer output.Close()
 
-	problem, err := internal.NewProblem(globalConfig)
+	problem, err := problem.New(globalConfig)
 	if err != nil {
 		return err
 	}

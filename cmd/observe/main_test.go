@@ -8,6 +8,7 @@ import (
 	"github.com/ready-steady/probability"
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/problem"
 )
 
 func BenchmarkInvokeJobQueue(b *testing.B) {
@@ -24,7 +25,7 @@ func benchmarkInvoke(invoke func(internal.Target, []float64) []float64, b *testi
 	)
 
 	config, _ := config.New("fixtures/002_020_profile.json")
-	problem, _ := internal.NewProblem(config)
+	problem, _ := problem.New(config)
 	target, _ := internal.NewTarget(problem)
 
 	ni, _ := target.Dimensions()

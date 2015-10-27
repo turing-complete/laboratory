@@ -3,21 +3,24 @@ package internal
 import (
 	"github.com/ready-steady/adapt"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/problem"
 	"github.com/simulated-reality/laboratory/internal/support"
 )
 
 type profileTarget struct {
-	problem *Problem
+	problem *problem.Problem
 	config  *config.Target
 
 	coreIndex []uint
 	timeIndex []float64
 }
 
-func newProfileTarget(p *Problem, c *config.Target) (*profileTarget, error) {
+func newProfileTarget(p *problem.Problem,
+	c *config.Target) (*profileTarget, error) {
+
 	// The cores of interest.
 	coreIndex, err := support.ParseNaturalIndex(c.CoreIndex, 0,
-		uint(p.system.Platform.Len())-1)
+		uint(p.System.Platform.Len())-1)
 	if err != nil {
 		return nil, err
 	}
@@ -31,7 +34,7 @@ func newProfileTarget(p *Problem, c *config.Target) (*profileTarget, error) {
 		timeIndex = timeIndex[1:]
 	}
 	for i := range timeIndex {
-		timeIndex[i] *= p.system.Span()
+		timeIndex[i] *= p.System.Span()
 	}
 
 	target := &profileTarget{
@@ -51,7 +54,7 @@ func (t *profileTarget) String() string {
 
 func (t *profileTarget) Dimensions() (uint, uint) {
 	nci, nsi := uint(len(t.coreIndex)), uint(len(t.timeIndex))
-	return uint(t.problem.model.Len()), nsi * nci * 2
+	return uint(t.problem.Model.Len()), nsi * nci * 2
 }
 
 func (t *profileTarget) Compute(node, value []float64) {
@@ -59,7 +62,7 @@ func (t *profileTarget) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	s, m := t.problem.system, t.problem.model
+	s, m := t.problem.System, t.problem.Model
 
 	schedule := s.ComputeSchedule(m.Transform(node))
 	P, ΔT, timeIndex := s.PartitionPower(schedule, t.timeIndex, ε)

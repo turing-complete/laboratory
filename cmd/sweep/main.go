@@ -13,6 +13,7 @@ import (
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/file"
+	"github.com/simulated-reality/laboratory/internal/problem"
 )
 
 var (
@@ -36,7 +37,7 @@ func command(config *config.Config) error {
 
 	config.Probability.VarThreshold = *varThreshold
 
-	problem, err := internal.NewProblem(config)
+	problem, err := problem.New(config)
 	if err != nil {
 		return err
 	}

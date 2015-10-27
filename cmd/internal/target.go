@@ -8,11 +8,12 @@ import (
 
 	"github.com/ready-steady/adapt"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/problem"
 )
 
 type Target adapt.Target
 
-func NewTarget(problem *Problem) (Target, error) {
+func NewTarget(problem *problem.Problem) (Target, error) {
 	config := problem.Config.Target
 
 	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)

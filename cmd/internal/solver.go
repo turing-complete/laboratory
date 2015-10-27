@@ -7,6 +7,7 @@ import (
 	"github.com/ready-steady/adapt"
 	"github.com/ready-steady/adapt/basis/linhat"
 	"github.com/ready-steady/adapt/grid/newcot"
+	"github.com/simulated-reality/laboratory/internal/problem"
 )
 
 type Solver struct {
@@ -17,7 +18,7 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func NewSolver(problem *Problem, target Target) (*Solver, error) {
+func NewSolver(problem *problem.Problem, target Target) (*Solver, error) {
 	ni, _ := target.Dimensions()
 
 	var grid adapt.Grid

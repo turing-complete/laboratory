@@ -3,14 +3,15 @@ package internal
 import (
 	"github.com/ready-steady/adapt"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/problem"
 )
 
 type energyTarget struct {
-	problem *Problem
+	problem *problem.Problem
 	config  *config.Target
 }
 
-func newEnergyTarget(p *Problem, c *config.Target) *energyTarget {
+func newEnergyTarget(p *problem.Problem, c *config.Target) *energyTarget {
 	return &energyTarget{
 		problem: p,
 		config:  c,
@@ -22,11 +23,11 @@ func (t *energyTarget) String() string {
 }
 
 func (t *energyTarget) Dimensions() (uint, uint) {
-	return uint(t.problem.model.Len()), 2
+	return uint(t.problem.Model.Len()), 2
 }
 
 func (t *energyTarget) Compute(node, value []float64) {
-	s, m := t.problem.system, t.problem.model
+	s, m := t.problem.System, t.problem.Model
 
 	schedule := s.ComputeSchedule(m.Transform(node))
 	time, power := s.ComputeTime(schedule), s.DistributePower(schedule)

@@ -1,4 +1,4 @@
-package internal
+package problem
 
 import (
 	"fmt"
@@ -10,15 +10,15 @@ import (
 
 type Problem struct {
 	Config *config.Config
-	system *system.System
-	model  *model.Model
+	System *system.System
+	Model  *model.Model
 }
 
 func (p *Problem) String() string {
-	return fmt.Sprintf(`{"system": %s, "model": %s}`, p.system, p.model)
+	return fmt.Sprintf(`{"system": %s, "model": %s}`, p.System, p.Model)
 }
 
-func NewProblem(config *config.Config) (*Problem, error) {
+func New(config *config.Config) (*Problem, error) {
 	system, err := system.New(&config.System)
 	if err != nil {
 		return nil, err
@@ -31,8 +31,8 @@ func NewProblem(config *config.Config) (*Problem, error) {
 
 	problem := &Problem{
 		Config: config,
-		system: system,
-		model:  model,
+		System: system,
+		Model:  model,
 	}
 
 	return problem, nil
