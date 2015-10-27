@@ -51,7 +51,7 @@ func (t *profileTarget) String() string {
 
 func (t *profileTarget) Dimensions() (uint, uint) {
 	nci, nsi := uint(len(t.coreIndex)), uint(len(t.timeIndex))
-	return t.problem.model.nz, nsi * nci * 2
+	return uint(t.problem.model.Len()), nsi * nci * 2
 }
 
 func (t *profileTarget) Compute(node, value []float64) {
@@ -61,7 +61,7 @@ func (t *profileTarget) Compute(node, value []float64) {
 
 	s, m := t.problem.system, t.problem.model
 
-	schedule := s.ComputeSchedule(m.transform(node))
+	schedule := s.ComputeSchedule(m.Transform(node))
 	P, ΔT, timeIndex := s.PartitionPower(schedule, t.timeIndex, ε)
 	for i := range timeIndex {
 		if timeIndex[i] == 0 {

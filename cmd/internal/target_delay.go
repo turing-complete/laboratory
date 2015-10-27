@@ -22,13 +22,13 @@ func (t *delayTarget) String() string {
 }
 
 func (t *delayTarget) Dimensions() (uint, uint) {
-	return t.problem.model.nz, 2
+	return uint(t.problem.model.Len()), 2
 }
 
 func (t *delayTarget) Compute(node []float64, value []float64) {
 	s, m := t.problem.system, t.problem.model
 
-	value[0] = s.ComputeSchedule(m.transform(node)).Span
+	value[0] = s.ComputeSchedule(m.Transform(node)).Span
 	value[1] = value[0] * value[0]
 }
 

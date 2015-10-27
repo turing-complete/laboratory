@@ -1,4 +1,4 @@
-package internal
+package model
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ var (
 	standardGaussian = probability.NewGaussian(0, 1)
 )
 
-type model struct {
+type Model struct {
 	taskIndex  []uint
 	correlator []float64
 	modes      []mode
@@ -31,7 +31,7 @@ type model struct {
 
 type mode *staircase.Staircase
 
-func newModel(c *config.Probability, s *system.System) (*model, error) {
+func New(c *config.Probability, s *system.System) (*Model, error) {
 	nt := uint(s.Application.Len())
 
 	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
@@ -52,7 +52,7 @@ func newModel(c *config.Probability, s *system.System) (*model, error) {
 		return nil, err
 	}
 
-	model := &model{
+	model := &Model{
 		taskIndex:  taskIndex,
 		correlator: correlator,
 		modes:      modes,
@@ -65,11 +65,15 @@ func newModel(c *config.Probability, s *system.System) (*model, error) {
 	return model, nil
 }
 
-func (m *model) String() string {
+func (m *Model) Len() int {
+	return int(m.nz)
+}
+
+func (m *Model) String() string {
 	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, m.nu, m.nz)
 }
 
-func (m *model) transform(z []float64) []float64 {
+func (m *Model) Transform(z []float64) []float64 {
 	nt, nu, nz := m.nt, m.nu, m.nz
 
 	n := make([]float64, nz)

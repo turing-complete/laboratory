@@ -4,13 +4,14 @@ import (
 	"fmt"
 
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/model"
 	"github.com/simulated-reality/laboratory/internal/system"
 )
 
 type Problem struct {
 	Config *config.Config
 	system *system.System
-	model  *model
+	model  *model.Model
 }
 
 func (p *Problem) String() string {
@@ -23,7 +24,7 @@ func NewProblem(config *config.Config) (*Problem, error) {
 		return nil, err
 	}
 
-	model, err := newModel(&config.Probability, system)
+	model, err := model.New(&config.Probability, system)
 	if err != nil {
 		return nil, err
 	}

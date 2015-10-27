@@ -22,13 +22,13 @@ func (t *energyTarget) String() string {
 }
 
 func (t *energyTarget) Dimensions() (uint, uint) {
-	return t.problem.model.nz, 2
+	return uint(t.problem.model.Len()), 2
 }
 
 func (t *energyTarget) Compute(node, value []float64) {
 	s, m := t.problem.system, t.problem.model
 
-	schedule := s.ComputeSchedule(m.transform(node))
+	schedule := s.ComputeSchedule(m.Transform(node))
 	time, power := s.ComputeTime(schedule), s.DistributePower(schedule)
 
 	value[0] = 0
