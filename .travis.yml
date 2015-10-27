@@ -8,8 +8,9 @@ addons:
 
 install:
   - go get -d -t ./...
-  - (cd $GOPATH/src/github.com/simulated-reality/hotspot && make install)
+  - (cd $GOPATH/src/github.com/ready-steady/hdf5 && make install)
   - (cd $GOPATH/src/github.com/ready-steady/lapack && make install)
+  - (cd $GOPATH/src/github.com/simulated-reality/hotspot && make install)
 
 script:
   - go test ./...
