@@ -1,4 +1,4 @@
-package internal
+package solver
 
 import (
 	"errors"
@@ -19,7 +19,7 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func NewSolver(problem *problem.Problem, target target.Target) (*Solver, error) {
+func New(problem *problem.Problem, target target.Target) (*Solver, error) {
 	ni, _ := target.Dimensions()
 
 	var grid adapt.Grid

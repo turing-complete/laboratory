@@ -11,6 +11,7 @@ import (
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/database"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/solver"
 	"github.com/simulated-reality/laboratory/internal/support"
 	"github.com/simulated-reality/laboratory/internal/target"
 )
@@ -75,12 +76,12 @@ func command(globalConfig *config.Config) error {
 		return err
 	}
 
-	solver, err := internal.NewSolver(problem, target)
+	aSolver, err := solver.New(problem, target)
 	if err != nil {
 		return err
 	}
 
-	solution := new(internal.Solution)
+	solution := new(solver.Solution)
 	if err = approximate.Get("solution", solution); err != nil {
 		return err
 	}
@@ -123,8 +124,8 @@ func command(globalConfig *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		values = append(values, solver.Evaluate(&s, points)...)
-		moments = append(moments, solver.Integrate(&s)...)
+		values = append(values, aSolver.Evaluate(&s, points)...)
+		moments = append(moments, aSolver.Integrate(&s)...)
 	}
 
 	nk, steps = k, steps[:k]

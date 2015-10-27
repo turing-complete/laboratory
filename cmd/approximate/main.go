@@ -8,6 +8,7 @@ import (
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/database"
 	"github.com/simulated-reality/laboratory/internal/problem"
+	"github.com/simulated-reality/laboratory/internal/solver"
 	"github.com/simulated-reality/laboratory/internal/target"
 )
 
@@ -36,7 +37,7 @@ func command(config *config.Config) error {
 		return err
 	}
 
-	solver, err := internal.NewSolver(problem, target)
+	solver, err := solver.New(problem, target)
 	if err != nil {
 		return err
 	}

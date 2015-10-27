@@ -9,6 +9,7 @@ import (
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
 	"github.com/simulated-reality/laboratory/internal/database"
+	"github.com/simulated-reality/laboratory/internal/solver"
 )
 
 const (
@@ -81,7 +82,7 @@ func command(globalConfig *config.Config) error {
 		return err
 	}
 
-	solution := new(internal.Solution)
+	solution := new(solver.Solution)
 	if err := predict.Get("solution", solution); err != nil {
 		return err
 	}
