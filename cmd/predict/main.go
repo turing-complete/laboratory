@@ -9,6 +9,7 @@ import (
 
 	"github.com/simulated-reality/laboratory/cmd/internal"
 	"github.com/simulated-reality/laboratory/internal/config"
+	"github.com/simulated-reality/laboratory/internal/file"
 )
 
 var (
@@ -49,13 +50,13 @@ func command(globalConfig *config.Config) error {
 		return errors.New("the number of samples should be positive")
 	}
 
-	approximate, err := internal.Open(*approximateFile)
+	approximate, err := file.Open(*approximateFile)
 	if err != nil {
 		return err
 	}
 	defer approximate.Close()
 
-	output, err := internal.Create(*outputFile)
+	output, err := file.Create(*outputFile)
 	if err != nil {
 		return err
 	}
