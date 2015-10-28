@@ -8,7 +8,7 @@ import (
 	"github.com/simulated-reality/laboratory/src/internal/system"
 )
 
-func TestNew(t *testing.T) {
+func TestNewModal(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	system, _ := system.New(&config.System)
 	uncertainty, _ := NewModal(&config.Uncertainty, system)
