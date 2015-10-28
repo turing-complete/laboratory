@@ -7,7 +7,7 @@ import (
 	"github.com/ready-steady/assert"
 )
 
-func TestCombine(t *testing.T) {
+func TestMultiply(t *testing.T) {
 	m, n := uint(4), uint(3)
 
 	A := []float64{
@@ -18,7 +18,7 @@ func TestCombine(t *testing.T) {
 
 	test := func(x, y []float64) {
 		z := make([]float64, m)
-		combine(A, x, z, m, n)
+		multiply(A, x, z, m, n)
 		assert.Equal(z, y, t)
 	}
 

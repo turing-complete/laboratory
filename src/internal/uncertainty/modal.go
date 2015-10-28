@@ -36,7 +36,7 @@ func NewModal(c *config.Uncertainty, s *system.System) (*Modal, error) {
 		return nil, err
 	}
 
-	correlator, err := computeCorrelator(c, s, taskIndex)
+	correlator, err := correlate(c, s, taskIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func NewModal(c *config.Uncertainty, s *system.System) (*Modal, error) {
 	nu := uint(len(taskIndex))
 	nz := uint(len(correlator)) / nu
 
-	modes, err := computeModes(c, nu)
+	modes, err := modulate(c, nu)
 	if err != nil {
 		return nil, err
 	}
@@ -82,7 +82,7 @@ func (m *Modal) Transform(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	combine(m.correlator, n, u, nu, nz)
+	multiply(m.correlator, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
@@ -97,7 +97,7 @@ func (m *Modal) Transform(z []float64) []float64 {
 	return modes
 }
 
-func computeModes(c *config.Uncertainty, count uint) ([]mode, error) {
+func modulate(c *config.Uncertainty, count uint) ([]mode, error) {
 	if c.Modes == 0 {
 		return nil, errors.New("the number of modes should be positive")
 	}
