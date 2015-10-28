@@ -1,4 +1,4 @@
-function filename = locale(type)
+function filename = locate(type)
   pattern = sprintf('_%s.h5', type);
 
   files = dir(pwd);
