@@ -5,7 +5,6 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"runtime"
 	"runtime/pprof"
 
 	"github.com/simulated-reality/laboratory/src/internal/config"
@@ -29,8 +28,6 @@ func Run(function func(*config.Config) error) {
 		pprof.StartCPUProfile(profile)
 		defer pprof.StopCPUProfile()
 	}
-
-	runtime.GOMAXPROCS(runtime.NumCPU())
 
 	if len(*configFile) == 0 {
 		fail(errors.New("expected a filename"))
