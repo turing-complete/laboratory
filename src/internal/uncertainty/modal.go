@@ -82,7 +82,7 @@ func (m *Modal) Transform(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	support.Combine(m.correlator, n, u, nu, nz)
+	combine(m.correlator, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
