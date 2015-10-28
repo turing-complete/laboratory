@@ -11,7 +11,7 @@ import (
 type Problem struct {
 	Config      *config.Config
 	System      *system.System
-	Uncertainty *uncertainty.Uncertainty
+	Uncertainty uncertainty.Uncertainty
 }
 
 func New(config *config.Config) (*Problem, error) {
@@ -20,7 +20,7 @@ func New(config *config.Config) (*Problem, error) {
 		return nil, err
 	}
 
-	uncertainty, err := uncertainty.New(&config.Uncertainty, system)
+	uncertainty, err := uncertainty.NewModal(&config.Uncertainty, system)
 	if err != nil {
 		return nil, err
 	}

@@ -11,7 +11,7 @@ import (
 func TestNew(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := New(&config.Uncertainty, system)
+	uncertainty, _ := NewModal(&config.Uncertainty, system)
 
 	assert.Equal(uncertainty.nu, uint(20), t)
 	assert.Equal(uncertainty.nz, uint(3), t)
