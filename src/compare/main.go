@@ -112,11 +112,9 @@ func function(globalConfig *config.Config) error {
 	if err := output.Put("steps", psteps); err != nil {
 		return err
 	}
-
 	if err := output.Put("observe", εo, metricCount, nk, nq); err != nil {
 		return err
 	}
-
 	if err := output.Put("predict", εp, metricCount, nk, nq); err != nil {
 		return err
 	}
