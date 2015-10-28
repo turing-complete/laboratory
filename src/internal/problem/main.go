@@ -14,11 +14,6 @@ type Problem struct {
 	Uncertainty *uncertainty.Uncertainty
 }
 
-func (p *Problem) String() string {
-	return fmt.Sprintf(`{"system": %s, "uncertainty": %s}`, p.System,
-		p.Uncertainty)
-}
-
 func New(config *config.Config) (*Problem, error) {
 	system, err := system.New(&config.System)
 	if err != nil {
@@ -37,4 +32,8 @@ func New(config *config.Config) (*Problem, error) {
 	}
 
 	return problem, nil
+}
+
+func (p *Problem) String() string {
+	return fmt.Sprintf(`{"system": %s, "uncertainty": %s}`, p.System, p.Uncertainty)
 }

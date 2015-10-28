@@ -18,10 +18,6 @@ func newDelay(p *problem.Problem, c *config.Target) *delay {
 	}
 }
 
-func (t *delay) String() string {
-	return String(t)
-}
-
 func (t *delay) Dimensions() (uint, uint) {
 	return uint(t.problem.Uncertainty.Len()), 2
 }
@@ -39,8 +35,10 @@ func (t *delay) Monitor(progress *adapt.Progress) {
 	}
 }
 
-func (t *delay) Score(location *adapt.Location,
-	progress *adapt.Progress) float64 {
-
+func (t *delay) Score(location *adapt.Location, progress *adapt.Progress) float64 {
 	return Score(t, t.config, location, progress)
+}
+
+func (t *delay) String() string {
+	return String(t)
 }

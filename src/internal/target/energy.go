@@ -18,10 +18,6 @@ func newEnergy(p *problem.Problem, c *config.Target) *energy {
 	}
 }
 
-func (t *energy) String() string {
-	return String(t)
-}
-
 func (t *energy) Dimensions() (uint, uint) {
 	return uint(t.problem.Uncertainty.Len()), 2
 }
@@ -48,4 +44,8 @@ func (t *energy) Monitor(progress *adapt.Progress) {
 
 func (t *energy) Score(location *adapt.Location, progress *adapt.Progress) float64 {
 	return Score(t, t.config, location, progress)
+}
+
+func (t *energy) String() string {
+	return String(t)
 }

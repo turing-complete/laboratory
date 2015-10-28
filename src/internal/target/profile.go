@@ -15,9 +15,7 @@ type profile struct {
 	timeIndex []float64
 }
 
-func newProfile(p *problem.Problem,
-	c *config.Target) (*profile, error) {
-
+func newProfile(p *problem.Problem, c *config.Target) (*profile, error) {
 	// The cores of interest.
 	coreIndex, err := support.ParseNaturalIndex(c.CoreIndex, 0,
 		uint(p.System.Platform.Len())-1)
@@ -46,10 +44,6 @@ func newProfile(p *problem.Problem,
 	}
 
 	return target, nil
-}
-
-func (t *profile) String() string {
-	return String(t)
 }
 
 func (t *profile) Dimensions() (uint, uint) {
@@ -94,8 +88,10 @@ func (t *profile) Monitor(progress *adapt.Progress) {
 	}
 }
 
-func (t *profile) Score(location *adapt.Location,
-	progress *adapt.Progress) float64 {
-
+func (t *profile) Score(location *adapt.Location, progress *adapt.Progress) float64 {
 	return Score(t, t.config, location, progress)
+}
+
+func (t *profile) String() string {
+	return String(t)
 }

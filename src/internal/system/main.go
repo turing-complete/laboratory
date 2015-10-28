@@ -90,8 +90,7 @@ func (s *System) Span() float64 {
 }
 
 func (s *System) String() string {
-	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, s.Platform.Len(),
-		s.Application.Len())
+	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, s.Platform.Len(), s.Application.Len())
 }
 
 func computeTime(schedule *time.Schedule) []float64 {

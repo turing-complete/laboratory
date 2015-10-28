@@ -48,8 +48,8 @@ func Monitor(target Target, progress *adapt.Progress) {
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 
-func Score(target Target, config *config.Target,
-	location *adapt.Location, progress *adapt.Progress) float64 {
+func Score(target Target, config *config.Target, location *adapt.Location,
+	progress *adapt.Progress) float64 {
 
 	_, no := target.Dimensions()
 	nj := uint(len(config.Importance))

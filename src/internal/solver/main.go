@@ -34,8 +34,7 @@ func New(problem *problem.Problem, target target.Target) (*Solver, error) {
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	interpolator := adapt.New(grid, basis,
-		(*adapt.Config)(&problem.Config.Interpolation.Config))
+	interpolator := adapt.New(grid, basis, (*adapt.Config)(&problem.Config.Interpolation.Config))
 
 	return &Solver{*interpolator}, nil
 }
