@@ -34,9 +34,32 @@ func New(problem *problem.Problem) (Target, error) {
 	}
 }
 
-func String(target Target) string {
+func Invoke(target Target, points []float64, nw uint) []float64 {
 	ni, no := target.Dimensions()
-	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
+	np := uint(len(points)) / ni
+
+	values := make([]float64, np*no)
+	jobs := make(chan uint, np)
+	group := sync.WaitGroup{}
+	group.Add(int(np))
+
+	for i := uint(0); i < nw; i++ {
+		go func() {
+			for j := range jobs {
+				target.Compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
+				group.Done()
+			}
+		}()
+	}
+
+	for i := uint(0); i < np; i++ {
+		jobs <- i
+	}
+
+	group.Wait()
+	close(jobs)
+
+	return values
 }
 
 func Monitor(target Target, progress *adapt.Progress) {
@@ -88,30 +111,7 @@ func Score(target Target, config *config.Target, location *adapt.Location,
 	return score
 }
 
-func Invoke(target Target, points []float64, nw uint) []float64 {
+func String(target Target) string {
 	ni, no := target.Dimensions()
-	np := uint(len(points)) / ni
-
-	values := make([]float64, np*no)
-	jobs := make(chan uint, np)
-	group := sync.WaitGroup{}
-	group.Add(int(np))
-
-	for i := uint(0); i < nw; i++ {
-		go func() {
-			for j := range jobs {
-				target.Compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
-				group.Done()
-			}
-		}()
-	}
-
-	for i := uint(0); i < np; i++ {
-		jobs <- i
-	}
-
-	group.Wait()
-	close(jobs)
-
-	return values
+	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
 }
