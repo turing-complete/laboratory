@@ -2,7 +2,6 @@ package uncertainty
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 
 	"github.com/ready-steady/probability"
@@ -12,84 +11,31 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
-var (
-	standardGaussian = probability.NewGaussian(0, 1)
-)
-
 type Modal struct {
-	taskIndex  []uint
-	correlator []float64
-	modes      []mode
-
-	nt uint
-	nu uint
-	nz uint
+	base
+	modes []mode
 }
 
 type mode *staircase.Staircase
 
 func NewModal(c *config.Uncertainty, s *system.System) (*Modal, error) {
-	nt := uint(s.Application.Len())
-
-	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
+	base, err := newBase(c, s)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(c, s, taskIndex)
+	modes, err := modulate(c, base.nu)
 	if err != nil {
 		return nil, err
 	}
 
-	nu := uint(len(taskIndex))
-	nz := uint(len(correlator)) / nu
-
-	modes, err := modulate(c, nu)
-	if err != nil {
-		return nil, err
-	}
-
-	model := &Modal{
-		taskIndex:  taskIndex,
-		correlator: correlator,
-		modes:      modes,
-
-		nt: nt,
-		nu: nu,
-		nz: nz,
-	}
-
-	return model, nil
-}
-
-func (m *Modal) Len() int {
-	return int(m.nz)
-}
-
-func (m *Modal) String() string {
-	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, m.nu, m.nz)
+	return &Modal{base: *base, modes: modes}, nil
 }
 
 func (m *Modal) Transform(z []float64) []float64 {
-	nt, nu, nz := m.nt, m.nu, m.nz
+	u := m.base.Transform(z)
 
-	n := make([]float64, nz)
-	u := make([]float64, nu)
-
-	// Independent uniform to independent Gaussian
-	for i := range n {
-		n[i] = standardGaussian.InvCDF(z[i])
-	}
-
-	// Independent Gaussian to dependent Gaussian
-	multiply(m.correlator, n, u, nu, nz)
-
-	// Dependent Gaussian to dependent uniform
-	for i := range u {
-		u[i] = standardGaussian.CDF(u[i])
-	}
-
-	modes := make([]float64, nt)
+	modes := make([]float64, m.nt)
 	for i, tid := range m.taskIndex {
 		modes[tid] = (*staircase.Staircase)(m.modes[i]).Evaluate(u[i])
 	}
