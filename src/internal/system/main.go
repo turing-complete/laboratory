@@ -85,6 +85,10 @@ func (s *System) PartitionPower(schedule *time.Schedule, points []float64,
 	return s.power.Partition(schedule, points, ε)
 }
 
+func (s *System) ReferenceTime() []float64 {
+	return s.reference
+}
+
 func (s *System) Span() float64 {
 	return s.schedule.Span
 }
