@@ -28,7 +28,7 @@ endef
 
 define define_case
 $(1)_config_base := assets/$(1).json
-$(call hash,$(1)_hash_base,assets/core.json $$($(1)_config_base))
+$(call hash,$(1)_hash_base,assets/base.json $$($(1)_config_base))
 
 $(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
 $(call hash,$(1)_hash,$$($(1)_config) $$($(1)_config_base))

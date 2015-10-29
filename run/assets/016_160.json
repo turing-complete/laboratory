@@ -1,5 +1,5 @@
 {
-	"inherit": "assets/core.json",
+	"inherit": "assets/base.json",
 
 	"system": {
 		"floorplan": "assets/016.flp",
