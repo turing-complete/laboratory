@@ -62,7 +62,12 @@ func Invoke(target Target, points []float64, nw uint) []float64 {
 	return values
 }
 
-func Monitor(target Target, progress *adapt.Progress) {
+func display(target Target) string {
+	ni, no := target.Dimensions()
+	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
+}
+
+func monitor(target Target, progress *adapt.Progress) {
 	if progress.Iteration == 0 {
 		fmt.Printf("%10s %15s %15s %15s\n", "Iteration",
 			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
@@ -71,7 +76,7 @@ func Monitor(target Target, progress *adapt.Progress) {
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 
-func Score(target Target, config *config.Target, location *adapt.Location,
+func score(target Target, config *config.Target, location *adapt.Location,
 	progress *adapt.Progress) float64 {
 
 	_, no := target.Dimensions()
@@ -109,9 +114,4 @@ func Score(target Target, config *config.Target, location *adapt.Location,
 	}
 
 	return score
-}
-
-func String(target Target) string {
-	ni, no := target.Dimensions()
-	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, ni, no)
 }

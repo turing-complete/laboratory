@@ -84,14 +84,14 @@ func (t *profile) Compute(node, value []float64) {
 
 func (t *profile) Monitor(progress *adapt.Progress) {
 	if t.config.Verbose {
-		Monitor(t, progress)
+		monitor(t, progress)
 	}
 }
 
 func (t *profile) Score(location *adapt.Location, progress *adapt.Progress) float64 {
-	return Score(t, t.config, location, progress)
+	return score(t, t.config, location, progress)
 }
 
 func (t *profile) String() string {
-	return String(t)
+	return display(t)
 }

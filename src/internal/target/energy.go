@@ -38,14 +38,14 @@ func (t *energy) Compute(node, value []float64) {
 
 func (t *energy) Monitor(progress *adapt.Progress) {
 	if t.config.Verbose {
-		Monitor(t, progress)
+		monitor(t, progress)
 	}
 }
 
 func (t *energy) Score(location *adapt.Location, progress *adapt.Progress) float64 {
-	return Score(t, t.config, location, progress)
+	return score(t, t.config, location, progress)
 }
 
 func (t *energy) String() string {
-	return String(t)
+	return display(t)
 }

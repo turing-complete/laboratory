@@ -31,14 +31,14 @@ func (t *delay) Compute(node []float64, value []float64) {
 
 func (t *delay) Monitor(progress *adapt.Progress) {
 	if t.config.Verbose {
-		Monitor(t, progress)
+		monitor(t, progress)
 	}
 }
 
 func (t *delay) Score(location *adapt.Location, progress *adapt.Progress) float64 {
-	return Score(t, t.config, location, progress)
+	return score(t, t.config, location, progress)
 }
 
 func (t *delay) String() string {
-	return String(t)
+	return display(t)
 }
