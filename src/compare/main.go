@@ -6,10 +6,10 @@ import (
 
 	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
-	"github.com/simulated-reality/laboratory/src/internal/command"
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/database"
-	"github.com/simulated-reality/laboratory/src/internal/solver"
+	"github.com/turing-complete/laboratory/src/internal/command"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/solver"
 )
 
 const (

@@ -6,7 +6,7 @@ import (
 
 	"github.com/ready-steady/assert"
 	"github.com/ready-steady/statistics/decomposition"
-	"github.com/simulated-reality/system"
+	"github.com/turing-complete/system"
 )
 
 func TestCorrelateSmall(t *testing.T) {

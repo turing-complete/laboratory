@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/ready-steady/assert"
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
 func TestNewModal(t *testing.T) {

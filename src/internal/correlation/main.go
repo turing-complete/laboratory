@@ -3,7 +3,7 @@ package correlation
 import (
 	"math"
 
-	"github.com/simulated-reality/system"
+	"github.com/turing-complete/system"
 )
 
 func Compute(application *system.Application, index []uint, length float64) []float64 {

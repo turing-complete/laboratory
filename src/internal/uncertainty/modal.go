@@ -7,9 +7,9 @@ import (
 
 	"github.com/ready-steady/probability"
 	"github.com/ready-steady/staircase"
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/support"
-	"github.com/simulated-reality/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/support"
+	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
 var (

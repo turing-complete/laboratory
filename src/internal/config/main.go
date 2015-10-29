@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/ready-steady/adapt"
-	"github.com/simulated-reality/temperature/analytic"
+	"github.com/turing-complete/temperature/analytic"
 )
 
 // Config is a configuration of the problem.

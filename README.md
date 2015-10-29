@@ -6,5 +6,5 @@
 2. Implement your idea.
 3. Open a pull request.
 
-[travis-img]: https://travis-ci.org/simulated-reality/laboratory.svg?branch=master
-[travis-url]: https://travis-ci.org/simulated-reality/laboratory
+[travis-img]: https://travis-ci.org/turing-complete/laboratory.svg?branch=master
+[travis-url]: https://travis-ci.org/turing-complete/laboratory

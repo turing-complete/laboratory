@@ -6,10 +6,10 @@ import (
 
 	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/statistics/correlation"
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/system"
 
-	icorrelation "github.com/simulated-reality/laboratory/src/internal/correlation"
+	icorrelation "github.com/turing-complete/laboratory/src/internal/correlation"
 )
 
 var (

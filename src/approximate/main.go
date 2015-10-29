@@ -4,12 +4,12 @@ import (
 	"flag"
 	"fmt"
 
-	"github.com/simulated-reality/laboratory/src/internal/command"
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/database"
-	"github.com/simulated-reality/laboratory/src/internal/problem"
-	"github.com/simulated-reality/laboratory/src/internal/solver"
-	"github.com/simulated-reality/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/command"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/problem"
+	"github.com/turing-complete/laboratory/src/internal/solver"
+	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
 var (

@@ -6,9 +6,9 @@ import (
 	"testing"
 
 	"github.com/ready-steady/probability"
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/problem"
-	"github.com/simulated-reality/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/problem"
+	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
 func BenchmarkInvokeJobQueue(b *testing.B) {

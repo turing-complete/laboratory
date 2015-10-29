@@ -3,9 +3,9 @@ package problem
 import (
 	"fmt"
 
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/laboratory/src/internal/system"
-	"github.com/simulated-reality/laboratory/src/internal/uncertainty"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 type Problem struct {

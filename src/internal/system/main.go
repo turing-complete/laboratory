@@ -3,11 +3,11 @@ package system
 import (
 	"fmt"
 
-	"github.com/simulated-reality/laboratory/src/internal/config"
-	"github.com/simulated-reality/power"
-	"github.com/simulated-reality/system"
-	"github.com/simulated-reality/temperature/analytic"
-	"github.com/simulated-reality/time"
+	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/power"
+	"github.com/turing-complete/system"
+	"github.com/turing-complete/temperature/analytic"
+	"github.com/turing-complete/time"
 )
 
 type System struct {

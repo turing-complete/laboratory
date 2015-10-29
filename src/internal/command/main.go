@@ -7,7 +7,7 @@ import (
 	"os"
 	"runtime/pprof"
 
-	"github.com/simulated-reality/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/config"
 )
 
 var (
