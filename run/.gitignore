@@ -1,7 +1,7 @@
-/sweep
-/observe
 /approximate
-/predict
 /compare
+/observe
+/predict
+/sweep
 
 /data/*.h5
