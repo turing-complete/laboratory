@@ -7,6 +7,7 @@ import (
 	"github.com/ready-steady/adapt"
 	"github.com/ready-steady/adapt/basis/linhat"
 	"github.com/ready-steady/adapt/grid/newcot"
+	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/problem"
 	"github.com/turing-complete/laboratory/src/internal/target"
 )
@@ -19,13 +20,15 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func New(problem *problem.Problem, target target.Target) (*Solver, error) {
+func New(problem *problem.Problem, target target.Target,
+	config *config.Interpolation) (*Solver, error) {
+
 	ni, _ := target.Dimensions()
 
 	var grid adapt.Grid
 	var basis adapt.Basis
 
-	switch problem.Config.Interpolation.Rule {
+	switch config.Rule {
 	case "closed":
 		grid, basis = newcot.NewClosed(ni), linhat.NewClosed(ni)
 	case "open":
@@ -34,7 +37,7 @@ func New(problem *problem.Problem, target target.Target) (*Solver, error) {
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	interpolator := adapt.New(grid, basis, (*adapt.Config)(&problem.Config.Interpolation.Config))
+	interpolator := adapt.New(grid, basis, (*adapt.Config)(&config.Config))
 
 	return &Solver{*interpolator}, nil
 }

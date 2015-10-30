@@ -75,7 +75,7 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	aSolver, err := solver.New(problem, target)
+	aSolver, err := solver.New(problem, target, &config.Interpolation)
 	if err != nil {
 		return err
 	}

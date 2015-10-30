@@ -9,7 +9,6 @@ import (
 )
 
 type Problem struct {
-	Config      *config.Config
 	System      *system.System
 	Uncertainty uncertainty.Uncertainty
 }
@@ -26,7 +25,6 @@ func New(config *config.Config) (*Problem, error) {
 	}
 
 	problem := &Problem{
-		Config:      config,
 		System:      system,
 		Uncertainty: uncertainty,
 	}
