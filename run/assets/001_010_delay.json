@@ -14,7 +14,7 @@
 		"refinement": [1e-8, 0]
 	},
 
-	"interpolation": {
+	"solver": {
 		"rule": "closed",
 		"rate": 0.05,
 		"balance": false,

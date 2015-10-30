@@ -21,7 +21,7 @@
 		"verbose": true
 	},
 
-	"interpolation": {
+	"solver": {
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 10

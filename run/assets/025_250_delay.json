@@ -10,7 +10,7 @@
 		"tolerance": 1e-3
 	},
 
-	"interpolation": {
+	"solver": {
 		"maxLevel": 10
 	}
 }

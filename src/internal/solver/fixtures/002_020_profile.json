@@ -23,7 +23,7 @@
 		"timeIndex": "[0:0.1:1]"
 	},
 
-	"interpolation": {
+	"solver": {
 		"rule": "open",
 		"minLevel": 1,
 		"maxLevel": 3

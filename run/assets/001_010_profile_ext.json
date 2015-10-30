@@ -6,7 +6,7 @@
 		"verbose": true
 	},
 
-	"interpolation": {
+	"solver": {
 		"maxLevel": 10
 	},
 

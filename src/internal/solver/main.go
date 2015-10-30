@@ -20,9 +20,7 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func New(problem *problem.Problem, target target.Target,
-	config *config.Interpolation) (*Solver, error) {
-
+func New(problem *problem.Problem, target target.Target, config *config.Solver) (*Solver, error) {
 	ni, _ := target.Dimensions()
 
 	var grid adapt.Grid

@@ -48,7 +48,7 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	points, err := generate(aTarget, config.Interpolation.Rule)
+	points, err := generate(aTarget, config.Solver.Rule)
 	if err != nil {
 		return err
 	}

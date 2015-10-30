@@ -12,11 +12,11 @@ import (
 type Config struct {
 	Inherit string
 
-	System        System        // Platform and application
-	Uncertainty   Uncertainty   // Probability model
-	Target        Target        // Quantity of interest
-	Interpolation Interpolation // Interpolation
-	Assessment    Assessment    // Assessment
+	System      System      // Platform and application
+	Uncertainty Uncertainty // Probability model
+	Target      Target      // Quantity of interest
+	Solver      Solver      // Interpolation algorithm
+	Assessment  Assessment  // Assessment
 
 	// A flag to display diagnostic information.
 	Verbose bool
@@ -81,8 +81,8 @@ type Target struct {
 	Verbose bool
 }
 
-// Interpolation is a configuration of the interpolation algorithm.
-type Interpolation struct {
+// Solver is a configuration of the interpolation algorithm.
+type Solver struct {
 	// The quadrature rule to use, which is either “closed” or “open.”
 	Rule string
 
