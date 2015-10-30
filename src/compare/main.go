@@ -30,9 +30,7 @@ func main() {
 	command.Run(function)
 }
 
-func function(globalConfig *config.Config) error {
-	config := &globalConfig.Assessment
-
+func function(config *config.Config) error {
 	reference, err := database.Open(*referenceFile)
 	if err != nil {
 		return err
@@ -99,13 +97,13 @@ func function(globalConfig *config.Config) error {
 
 		o := cumulate(slice(ovalues, no, i*momentCount, 1), psteps)
 		for j := uint(0); j < nk; j++ {
-			εo = append(εo, assess(r, nil, o[j], nil, config)...)
+			εo = append(εo, assess(r, nil, o[j], nil, &config.Assessment)...)
 		}
 
 		p := divide(slice(pvalues, no, i*momentCount, 1), nk)
 		m := divide(slice(pmoments, no, i*momentCount, momentCount), nk)
 		for j := uint(0); j < nk; j++ {
-			εp = append(εp, assess(r, nil, p[j], m[j], config)...)
+			εp = append(εp, assess(r, nil, p[j], m[j], &config.Assessment)...)
 		}
 	}
 

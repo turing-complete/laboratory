@@ -28,26 +28,25 @@ func main() {
 	command.Run(function)
 }
 
-func function(globalConfig *config.Config) error {
-	globalConfig.Uncertainty.VarThreshold = math.Inf(1)
+func function(config *config.Config) error {
+	config.Uncertainty.VarThreshold = math.Inf(1)
 
-	config := &globalConfig.Assessment
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
 			return err
 		} else {
-			config.Seed = number
+			config.Assessment.Seed = number
 		}
 	}
 	if len(*sampleCount) > 0 {
 		if number, err := strconv.ParseUint(*sampleCount, 0, 64); err != nil {
 			return err
 		} else {
-			config.Samples = uint(number)
+			config.Assessment.Samples = uint(number)
 		}
 	}
 
-	if config.Samples == 0 {
+	if config.Assessment.Samples == 0 {
 		return errors.New("the number of samples should be positive")
 	}
 
@@ -57,28 +56,28 @@ func function(globalConfig *config.Config) error {
 	}
 	defer output.Close()
 
-	problem, err := problem.New(globalConfig)
+	problem, err := problem.New(config)
 	if err != nil {
 		return err
 	}
 
-	aTarget, err := target.New(problem)
+	aTarget, err := target.New(problem, &config.Target)
 	if err != nil {
 		return err
 	}
 
 	ni, no := aTarget.Dimensions()
-	ns := config.Samples
+	ns := config.Assessment.Samples
 
-	points := support.Generate(ni, ns, config.Seed)
+	points := support.Generate(ni, ns, config.Assessment.Seed)
 
-	if globalConfig.Verbose {
+	if config.Verbose {
 		fmt.Printf("Evaluating the original model at %d points...\n", ns)
 	}
 
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 
-	if globalConfig.Verbose {
+	if config.Verbose {
 		fmt.Println("Done.")
 	}
 

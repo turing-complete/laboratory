@@ -43,7 +43,7 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	aTarget, err := target.New(problem)
+	aTarget, err := target.New(problem, &config.Target)
 	if err != nil {
 		return err
 	}

@@ -13,7 +13,7 @@ import (
 func TestSolverCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	problem, _ := problem.New(config)
-	target, _ := target.New(problem)
+	target, _ := target.New(problem, &config.Target)
 	solver, _ := New(problem, target)
 	solution := solver.Compute(target)
 	surrogate := &solution.Surrogate

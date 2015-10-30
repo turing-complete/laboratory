@@ -29,28 +29,27 @@ func main() {
 	command.Run(function)
 }
 
-func function(globalConfig *config.Config) error {
+func function(config *config.Config) error {
 	const (
 		maxSteps = 10
 	)
 
-	config := &globalConfig.Assessment
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
 			return err
 		} else {
-			config.Seed = number
+			config.Assessment.Seed = number
 		}
 	}
 	if len(*sampleCount) > 0 {
 		if number, err := strconv.ParseUint(*sampleCount, 0, 64); err != nil {
 			return err
 		} else {
-			config.Samples = uint(number)
+			config.Assessment.Samples = uint(number)
 		}
 	}
 
-	if config.Samples == 0 {
+	if config.Assessment.Samples == 0 {
 		return errors.New("the number of samples should be positive")
 	}
 
@@ -66,12 +65,12 @@ func function(globalConfig *config.Config) error {
 	}
 	defer output.Close()
 
-	problem, err := problem.New(globalConfig)
+	problem, err := problem.New(config)
 	if err != nil {
 		return err
 	}
 
-	target, err := target.New(problem)
+	target, err := target.New(problem, &config.Target)
 	if err != nil {
 		return err
 	}
@@ -87,11 +86,11 @@ func function(globalConfig *config.Config) error {
 	}
 
 	ni, no := target.Dimensions()
-	ns := config.Samples
+	ns := config.Assessment.Samples
 
-	points := support.Generate(ni, ns, config.Seed)
+	points := support.Generate(ni, ns, config.Assessment.Seed)
 
-	if globalConfig.Verbose {
+	if config.Verbose {
 		fmt.Printf("Evaluating the surrogate model at %d points...\n", ns)
 		fmt.Printf("%10s %15s %15s\n", "Iteration", "Accepted Nodes", "Rejected Nodes")
 	}
@@ -115,7 +114,7 @@ func function(globalConfig *config.Config) error {
 		}
 		k++
 
-		if globalConfig.Verbose {
+		if config.Verbose {
 			fmt.Printf("%10d %15d %15d\n", i, na, nr)
 		}
 
@@ -130,7 +129,7 @@ func function(globalConfig *config.Config) error {
 
 	nk, steps = k, steps[:k]
 
-	if globalConfig.Verbose {
+	if config.Verbose {
 		fmt.Println("Done.")
 	}
 
