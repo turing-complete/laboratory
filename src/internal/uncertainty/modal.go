@@ -19,7 +19,7 @@ type Modal struct {
 
 type mode *staircase.Staircase
 
-func NewModal(c *config.Uncertainty, s *system.System) (*Modal, error) {
+func NewModal(s *system.System, c *config.Uncertainty) (*Modal, error) {
 	base, err := newBase(c, s)
 	if err != nil {
 		return nil, err
