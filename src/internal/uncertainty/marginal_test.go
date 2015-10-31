@@ -8,7 +8,22 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
-func TestNewMarginal(t *testing.T) {
+func TestNewMarginal001(t *testing.T) {
+	config, _ := config.New("fixtures/001_010_delay.json")
+	system, _ := system.New(&config.System)
+	uncertainty, _ := NewMarginal(&config.Uncertainty, system)
+
+	delay := make([]float64, 10)
+	for i := 0; i < 10; i++ {
+		assert.Equal(uncertainty.marginals[i].InvCDF(0), 0.0, t)
+		delay[i] = uncertainty.marginals[i].InvCDF(1)
+	}
+	assert.EqualWithin(delay, []float64{
+		0.0058, 0.0032, 0.0050, 0.0058, 0.0074, 0.0060, 0.0032, 0.0048, 0.0030, 0.0060,
+	}, 1e-15, t)
+}
+
+func TestNewMarginal002(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	system, _ := system.New(&config.System)
 	uncertainty, _ := NewMarginal(&config.Uncertainty, system)
