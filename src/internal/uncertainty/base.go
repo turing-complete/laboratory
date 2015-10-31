@@ -96,7 +96,7 @@ func correlate(c *config.Uncertainty, s *system.System, taskIndex []uint) ([]flo
 		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
-	if c.CorrLength == 0.0 {
+	if c.CorrLength == 0 {
 		return matrix.Identity(uint(len(taskIndex))), nil
 	}
 

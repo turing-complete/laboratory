@@ -36,7 +36,7 @@ func New(config *config.System) (*System, error) {
 
 	schedule := time.Compute(system.NewProfile(platform, application).Mobility)
 
-	system := &System{
+	return &System{
 		Platform:    platform,
 		Application: application,
 
@@ -45,9 +45,7 @@ func New(config *config.System) (*System, error) {
 		temperature: temperature,
 
 		schedule: schedule,
-	}
-
-	return system, nil
+	}, nil
 }
 
 func (s *System) ComputeSchedule(duration []float64) *time.Schedule {
