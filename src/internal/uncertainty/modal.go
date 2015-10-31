@@ -13,7 +13,8 @@ import (
 
 type Modal struct {
 	base
-	modes []mode
+	modes     []mode
+	reference []float64
 }
 
 type mode *staircase.Staircase
@@ -56,15 +57,20 @@ func NewModal(c *config.Uncertainty, s *system.System) (*Modal, error) {
 		modes[i] = staircase.New(probabilities, values, c.Transition)
 	}
 
-	return &Modal{base: *base, modes: modes}, nil
+	return &Modal{
+		base:      *base,
+		modes:     modes,
+		reference: s.ReferenceTime(),
+	}, nil
 }
 
 func (m *Modal) Transform(z []float64) []float64 {
 	u := m.base.Transform(z)
 
 	duration := make([]float64, m.nt)
+	copy(duration, m.reference)
 	for i, tid := range m.taskIndex {
-		duration[tid] = (*staircase.Staircase)(m.modes[i]).Evaluate(u[i])
+		duration[tid] *= 1.0 + (*staircase.Staircase)(m.modes[i]).Evaluate(u[i])
 	}
 
 	return duration

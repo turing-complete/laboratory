@@ -10,6 +10,7 @@ import (
 type Marginal struct {
 	base
 	marginals []probability.Inverter
+	reference []float64
 }
 
 func NewMarginal(c *config.Uncertainty, s *system.System) (*Marginal, error) {
@@ -25,19 +26,24 @@ func NewMarginal(c *config.Uncertainty, s *system.System) (*Marginal, error) {
 
 	reference := s.ReferenceTime()
 	marginals := make([]probability.Inverter, base.nu)
-	for i, j := range base.taskIndex {
-		marginals[i] = marginalizer(0, c.MaxDelay*reference[j])
+	for i, tid := range base.taskIndex {
+		marginals[i] = marginalizer(0, c.MaxDelay*reference[tid])
 	}
 
-	return &Marginal{base: *base, marginals: marginals}, nil
+	return &Marginal{
+		base:      *base,
+		marginals: marginals,
+		reference: reference,
+	}, nil
 }
 
 func (m *Marginal) Transform(z []float64) []float64 {
 	u := m.base.Transform(z)
 
 	duration := make([]float64, m.nt)
-	for i, j := range m.taskIndex {
-		duration[j] = m.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+	copy(duration, m.reference)
+	for i, tid := range m.taskIndex {
+		duration[tid] += m.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
 	return duration

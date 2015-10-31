@@ -18,8 +18,7 @@ type System struct {
 	power       *power.Power
 	temperature *analytic.Fluid
 
-	schedule  *time.Schedule
-	reference []float64
+	schedule *time.Schedule
 }
 
 func New(config *config.System) (*System, error) {
@@ -45,18 +44,13 @@ func New(config *config.System) (*System, error) {
 		power:       power,
 		temperature: temperature,
 
-		schedule:  schedule,
-		reference: computeTime(schedule),
+		schedule: schedule,
 	}
 
 	return system, nil
 }
 
-func (s *System) ComputeSchedule(modes []float64) *time.Schedule {
-	duration := make([]float64, s.Application.Len())
-	for i, time := range s.reference {
-		duration[i] = (1 + modes[i]) * time
-	}
+func (s *System) ComputeSchedule(duration []float64) *time.Schedule {
 	return s.time.Update(s.schedule, duration)
 }
 
@@ -86,7 +80,7 @@ func (s *System) PartitionPower(schedule *time.Schedule, points []float64,
 }
 
 func (s *System) ReferenceTime() []float64 {
-	return s.reference
+	return computeTime(s.schedule)
 }
 
 func (s *System) Span() float64 {
