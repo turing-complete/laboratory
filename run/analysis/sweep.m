@@ -42,7 +42,6 @@ function sweep()
 
     for z = 1:no
       Z = reshape(values(z, :), nn, nn);
-      nominal = Z(round(nn/2), round(nn/2));
 
       mn = min(Z(:));
       mx = max(Z(:));
@@ -51,7 +50,7 @@ function sweep()
       surf(X, Y, Z);
       zlim([MN, MX]);
       title(sprintf('Output %d(Input %d, Input %d), Range %f (%.2f%%)', ...
-          z-1, x-1, y-1, mx-mn, 100*(mx-mn)/nominal));
+          z-1, x-1, y-1, mx-mn, 100*(mx/mn-1)));
     end
   end
 end
