@@ -86,4 +86,6 @@ clean: flush
 flush:
 	@rm -f data/*.h5
 
+.DELETE_ON_ERROR:
+
 .PHONY: all clean flush
