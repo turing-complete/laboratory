@@ -1,7 +1,9 @@
 package main
 
 import (
+	"errors"
 	"flag"
+	"fmt"
 	"math"
 
 	"github.com/ready-steady/statistics/distribution"
@@ -88,6 +90,14 @@ func function(config *config.Config) error {
 	no := solution.Outputs
 	nq := no / momentCount
 	nk := uint(len(psteps))
+
+	ne := uint(0)
+	for _, step := range psteps {
+		ne += step
+	}
+	if uint(len(ovalues))/no < ne {
+		return errors.New(fmt.Sprintf("the number of observations should be at least %d", ne))
+	}
 
 	εo := make([]float64, 0, nq*nk*metricCount)
 	εp := make([]float64, 0, nq*nk*metricCount)
