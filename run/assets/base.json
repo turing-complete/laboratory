@@ -7,7 +7,7 @@
 	"uncertainty": {
 		"taskIndex": "[]",
 		"maxDelay": 0.2,
-		"marginal": "Beta(1, 1)",
+		"distribution": "Beta(1, 1)",
 		"corrLength": 0,
 		"varThreshold": 1
 	},

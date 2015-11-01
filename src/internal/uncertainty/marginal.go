@@ -49,7 +49,7 @@ func newMarginal(s *system.System, c *config.Uncertainty) (*marginal, error) {
 	nu := uint(len(taskIndex))
 	nz := uint(len(correlator)) / nu
 
-	marginalizer, err := distribution.ParseInverter(c.Marginal)
+	marginalizer, err := distribution.ParseInverter(c.Distribution)
 	if err != nil {
 		return nil, err
 	}

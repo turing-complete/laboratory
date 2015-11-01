@@ -35,27 +35,16 @@ type Uncertainty struct {
 	// The tasks whose execution times should be considered as uncertain.
 	TaskIndex string // ⊂ {0, ..., #tasks-1}
 
+	// The marginal distributions of tasks’ delays.
+	Distribution string
+	// The multiplier used to calculate the maximal delay of a task.
+	MaxDelay float64 // ≥ 0
+
 	// The strength of correlations between tasks.
 	CorrLength float64 // > 0
 	// The portion of the variance to be preserved when reducing the number of
 	// stochastic dimensions.
 	VarThreshold float64 // ∈ (0, 1]
-
-	// The marginal distributions of tasks’ delays.
-	Marginal string
-	// The multiplier used to calculate the maximal delay of a task.
-	MaxDelay float64 // ≥ 0
-
-	// The seed for initializing the tasks’ execution modes.
-	Seed int64
-	// The number of modes per task.
-	Modes uint // > 0
-	// The minimal relative offset of a mode.
-	MinOffset float64 // > -1
-	// The maximal relative offset of a mode.
-	MaxOffset float64 // > -1
-	// The relative length of transition from one mode to another.
-	Transition float64 // ∈ (0, 0.5]
 }
 
 // Target is a configuration of the quantity of interest.

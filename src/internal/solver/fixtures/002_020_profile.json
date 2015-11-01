@@ -8,7 +8,7 @@
 
 	"uncertainty": {
 		"maxDelay": 0.2,
-		"marginal": "Beta(1, 1)",
+		"distribution": "Beta(1, 1)",
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},
