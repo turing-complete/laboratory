@@ -35,7 +35,11 @@ type base struct {
 	nz uint
 }
 
-func newBase(c *config.Uncertainty, s *system.System) (*base, error) {
+func New(s *system.System, c *config.Uncertainty) (Uncertainty, error) {
+	return newMarginal(s, c)
+}
+
+func newBase(s *system.System, c *config.Uncertainty) (*base, error) {
 	nt := uint(s.Application.Len())
 
 	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
