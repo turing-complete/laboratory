@@ -67,10 +67,10 @@ func display(target Target) string {
 
 func monitor(target Target, progress *adapt.Progress) {
 	if progress.Iteration == 0 {
-		fmt.Printf("%10s %15s %15s %15s\n", "Iteration",
+		fmt.Printf("%5s %10s %15s %15s %15s\n", "Level", "Iteration",
 			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
 	}
-	fmt.Printf("%10d %15d %15d %15d\n", progress.Iteration,
+	fmt.Printf("%5d %10d %15d %15d %15d\n", progress.Level, progress.Iteration,
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 
