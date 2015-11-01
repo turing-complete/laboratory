@@ -13,7 +13,7 @@ type Marginal struct {
 	reference []float64
 }
 
-func NewMarginal(s *system.System, c *config.Uncertainty) (*Marginal, error) {
+func New(s *system.System, c *config.Uncertainty) (*Marginal, error) {
 	base, err := newBase(c, s)
 	if err != nil {
 		return nil, err
