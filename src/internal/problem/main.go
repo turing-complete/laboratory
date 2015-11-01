@@ -19,7 +19,7 @@ func New(config *config.Config) (*Problem, error) {
 		return nil, err
 	}
 
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	uncertainty, err := uncertainty.NewMarginal(system, &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}

@@ -8,10 +8,10 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
-func TestNew001(t *testing.T) {
+func TestNewMarginal001(t *testing.T) {
 	config, _ := config.New("fixtures/001_010_delay.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := New(system, &config.Uncertainty)
+	uncertainty, _ := NewMarginal(system, &config.Uncertainty)
 
 	delay := make([]float64, 10)
 	for i := 0; i < 10; i++ {
@@ -23,10 +23,10 @@ func TestNew001(t *testing.T) {
 	}, 1e-15, t)
 }
 
-func TestNew002(t *testing.T) {
+func TestNewMarginal002(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := New(system, &config.Uncertainty)
+	uncertainty, _ := NewMarginal(system, &config.Uncertainty)
 
 	delay := make([]float64, 20)
 	for i := 0; i < 20; i++ {
