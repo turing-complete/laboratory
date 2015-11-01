@@ -57,7 +57,7 @@ func newMarginal(s *system.System, c *config.Uncertainty) (*marginal, error) {
 	reference := s.ReferenceTime()
 	marginals := make([]probability.Inverter, nu)
 	for i, tid := range taskIndex {
-		marginals[i] = marginalizer(0, c.MaxDelay*reference[tid])
+		marginals[i] = marginalizer(0, c.MaxDeviation*reference[tid])
 	}
 
 	return &marginal{

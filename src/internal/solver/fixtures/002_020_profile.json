@@ -7,7 +7,7 @@
 	},
 
 	"uncertainty": {
-		"maxDelay": 0.2,
+		"maxDeviation": 0.2,
 		"distribution": "Beta(1, 1)",
 		"corrLength": 5,
 		"varThreshold": 0.95
