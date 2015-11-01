@@ -77,7 +77,6 @@ func (m *marginal) Transform(z []float64) []float64 {
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)
-	d := make([]float64, nt)
 
 	// Independent uniform to independent Gaussian
 	for i := range n {
@@ -93,12 +92,13 @@ func (m *marginal) Transform(z []float64) []float64 {
 	}
 
 	// Dependent uniform to dependent desired
-	copy(d, m.reference)
+	duration := make([]float64, nt)
+	copy(duration, m.reference)
 	for i, tid := range m.taskIndex {
-		d[tid] += m.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+		duration[tid] += m.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
-	return d
+	return duration
 }
 
 func (m *marginal) Len() int {
