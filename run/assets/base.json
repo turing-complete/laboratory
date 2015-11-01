@@ -5,17 +5,11 @@
 	},
 
 	"uncertainty": {
-		"corrLength": 5,
-		"varThreshold": 0.95,
-
+		"taskIndex": "[]",
 		"maxDelay": 0.2,
 		"marginal": "Beta(1, 1)",
-
-		"seed": 0,
-		"modes": 2,
-		"minOffset": -0.1,
-		"maxOffset": 0.1,
-		"transition": 0.2
+		"corrLength": 0,
+		"varThreshold": 1
 	},
 
 	"target": {

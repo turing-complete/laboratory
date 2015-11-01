@@ -7,15 +7,9 @@
 	},
 
 	"uncertainty": {
-		"corrLength": 5,
-		"varThreshold": 0.95,
-
 		"maxDelay": 0.2,
 		"marginal": "Beta(1, 1)",
-
-		"modes": 2,
-		"minOffset": -0.1,
-		"maxOffset": 0.1,
-		"transition": 0.2
+		"corrLength": 5,
+		"varThreshold": 0.95
 	}
 }

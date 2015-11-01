@@ -7,10 +7,8 @@
 	},
 
 	"uncertainty": {
-		"modes": 2,
-		"minOffset": -0.1,
-		"maxOffset": 0.1,
-		"transition": 0.2,
+		"maxDelay": 0.2,
+		"marginal": "Beta(1, 1)",
 		"corrLength": 5,
 		"varThreshold": 0.95
 	},
