@@ -62,12 +62,10 @@ func (s *System) ComputeTemperature(P, ΔT []float64) []float64 {
 
 func (s *System) DistributePower(schedule *time.Schedule) []float64 {
 	cores, tasks := s.Platform.Cores, s.Application.Tasks
-
 	power := make([]float64, s.Application.Len())
 	for i, j := range schedule.Mapping {
 		power[i] = cores[j].Power[tasks[i].Type]
 	}
-
 	return power
 }
 
