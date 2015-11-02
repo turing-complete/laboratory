@@ -2,13 +2,12 @@
 	"inherit": "assets/001_010_profile.json",
 
 	"target": {
-		"tolerance": 1e-2,
-		"verbose": true
+		"importance": [1, 0],
+		"rejection": [0, 0],
+		"refinement": [1e-4, 0]
 	},
 
 	"solver": {
-		"maxLevel": 10
-	},
-
-	"verbose": true
+		"rate": 0.05
+	}
 }

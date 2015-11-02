@@ -5,11 +5,9 @@
 	},
 
 	"uncertainty": {
-		"name": "marginal",
-		"maxDeviation": 0.2,
-		"distribution": "Beta(1, 1)",
-		"corrLength": 0,
-		"varThreshold": 1
+		"name": "direct",
+		"taskIndex": "[]",
+		"maxDeviation": 0.2
 	},
 
 	"target": {
@@ -21,12 +19,14 @@
 
 	"solver": {
 		"rule": "open",
+		"rate": 1,
 		"minLevel": 1,
-		"maxLevel": 10
+		"maxLevel": 10,
+		"balance": false
 	},
 
 	"assessment": {
-		"analytic": [true, false],
+		"analytic": [false, false],
 		"seed": 0,
 		"samples": 100000
 	},
