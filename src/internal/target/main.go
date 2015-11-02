@@ -88,12 +88,7 @@ func score(target Target, config *config.Target, location *adapt.Location,
 			continue
 		}
 
-		s := location.Surplus[i] * location.Volume
-		if progress.Integral[i] != 0 {
-			s /= progress.Integral[i]
-		}
-		s = math.Abs(s)
-
+		s := math.Abs(location.Surplus[i])
 		if s >= config.Rejection[j] {
 			reject = false
 		}
