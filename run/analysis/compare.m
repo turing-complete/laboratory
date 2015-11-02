@@ -21,7 +21,7 @@ function compare(extended)
     Plot.figure(1200, 300);
     for j = 1:nm
       subplot(1, nm, j);
-      semilogy(t, [o(j, :); p(j, :)], 'Marker', 'o');
+      semilogy(t, transpose([o(j, :); p(j, :)]), 'Marker', 'o');
       Plot.title(labels{j});
       Plot.label('Evaluations', 'log(Error)');
       Plot.legend('Observe', 'Predict');
