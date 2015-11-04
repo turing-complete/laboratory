@@ -24,12 +24,10 @@ func New(config *config.Config) (*Problem, error) {
 		return nil, err
 	}
 
-	problem := &Problem{
+	return &Problem{
 		System:      system,
 		Uncertainty: uncertainty,
-	}
-
-	return problem, nil
+	}, nil
 }
 
 func (p *Problem) String() string {
