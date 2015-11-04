@@ -12,11 +12,10 @@ import (
 type Config struct {
 	Inherit string
 
-	System      System      // Platform and application
-	Uncertainty Uncertainty // Probability model
-	Target      Target      // Quantity of interest
-	Solver      Solver      // Interpolation algorithm
-	Assessment  Assessment  // Assessment
+	System     System     // Platform and application
+	Target     Target     // Quantity of interest
+	Solver     Solver     // Interpolation algorithm
+	Assessment Assessment // Assessment
 
 	// A flag to display diagnostic information.
 	Verbose bool
@@ -28,6 +27,32 @@ type System struct {
 	Specification string
 
 	analytic.Config
+}
+
+// Target is a configuration of the quantity of interest.
+type Target struct {
+	// The name of the quantity. The options are “end-to-end-delay,”
+	// “total-energy,” and “temperature-profile.”
+	Name string
+
+	/// The probability model.
+	Uncertainty Uncertainty
+
+	// The weights for output dimensions.
+	Importance []float64
+	// The rejection threshold for output dimensions.
+	Rejection []float64
+	// The refinement threshold for output dimensions.
+	Refinement []float64
+
+	// The cores that should be considered (the temperature-profile target).
+	CoreIndex string // ⊂ {0, ..., #cores-1}
+	// The time moments that should be considered. The elements are assumed to
+	// be normalized by the application’s span (the temperature-profile target).
+	TimeIndex string // ⊂ [0, 1]
+
+	// A flag to display diagnostic information.
+	Verbose bool
 }
 
 // Uncertainty is a configuration of the probability model.
@@ -49,29 +74,6 @@ type Uncertainty struct {
 	// The portion of the variance to be preserved when reducing the number of
 	// stochastic dimensions.
 	VarThreshold float64 // ∈ (0, 1]
-}
-
-// Target is a configuration of the quantity of interest.
-type Target struct {
-	// The name of the quantity. The options are “end-to-end-delay,”
-	// “total-energy,” and “temperature-profile.”
-	Name string
-
-	// The weights for output dimensions.
-	Importance []float64
-	// The rejection threshold for output dimensions.
-	Rejection []float64
-	// The refinement threshold for output dimensions.
-	Refinement []float64
-
-	// The cores that should be considered.
-	CoreIndex string // ⊂ {0, ..., #cores-1}
-	// The time moments that should be considered. The elements are assumed to
-	// be normalized by the application’s span.
-	TimeIndex string // ⊂ [0, 1]
-
-	// A flag to display diagnostic information.
-	Verbose bool
 }
 
 // Solver is a configuration of the interpolation algorithm.

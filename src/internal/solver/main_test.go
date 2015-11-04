@@ -6,25 +6,24 @@ import (
 	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/ready-steady/assert"
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/laboratory/src/internal/problem"
+	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
 func TestSolverCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_profile.json")
-	problem, _ := problem.New(config)
-	target, _ := target.New(problem, &config.Target)
-	solver, _ := New(problem, target, &config.Solver)
+	system, _ := system.New(&config.System)
+	target, _ := target.New(system, &config.Target)
+	solver, _ := New(target, &config.Solver)
 	solution := solver.Compute(target)
-	surrogate := &solution.Surrogate
 
 	ni, no := target.Dimensions()
-	nc := surrogate.Nodes
+	nc := solution.Surrogate.Nodes
 
 	assert.Equal(nc, uint(111), t)
 
 	grid := newcot.NewOpen(ni)
-	nodes := grid.Compute(surrogate.Indices)
+	nodes := grid.Compute(solution.Surrogate.Indices)
 
 	values := make([]float64, nc*no)
 	for i := uint(0); i < nc; i++ {

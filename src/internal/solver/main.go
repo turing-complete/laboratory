@@ -8,7 +8,6 @@ import (
 	"github.com/ready-steady/adapt/basis/linhat"
 	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/laboratory/src/internal/problem"
 	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
@@ -20,7 +19,7 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func New(problem *problem.Problem, target target.Target, config *config.Solver) (*Solver, error) {
+func New(target target.Target, config *config.Solver) (*Solver, error) {
 	ni, _ := target.Dimensions()
 
 	var grid adapt.Grid

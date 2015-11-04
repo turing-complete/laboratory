@@ -3,29 +3,37 @@ package target
 import (
 	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/laboratory/src/internal/problem"
+	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 type delay struct {
-	problem *problem.Problem
-	config  *config.Target
+	system *system.System
+	config *config.Target
+
+	uncertainty uncertainty.Uncertainty
 }
 
-func newDelay(p *problem.Problem, c *config.Target) *delay {
-	return &delay{
-		problem: p,
-		config:  c,
+func newDelay(system *system.System, config *config.Target) (*delay, error) {
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	if err != nil {
+		return nil, err
 	}
+
+	return &delay{
+		system: system,
+		config: config,
+
+		uncertainty: uncertainty,
+	}, nil
 }
 
 func (t *delay) Dimensions() (uint, uint) {
-	return uint(t.problem.Uncertainty.Len()), 2
+	return uint(t.uncertainty.Len()), 2
 }
 
 func (t *delay) Compute(node []float64, value []float64) {
-	s, u := t.problem.System, t.problem.Uncertainty
-
-	value[0] = s.ComputeSchedule(u.Transform(node)).Span
+	value[0] = t.system.ComputeSchedule(t.uncertainty.Transform(node)).Span
 	value[1] = value[0] * value[0]
 }
 

@@ -7,8 +7,8 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
-	"github.com/turing-complete/laboratory/src/internal/problem"
 	"github.com/turing-complete/laboratory/src/internal/solver"
+	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
@@ -27,23 +27,23 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	problem, err := problem.New(config)
+	system, err := system.New(&config.System)
 	if err != nil {
 		return err
 	}
 
-	target, err := target.New(problem, &config.Target)
+	target, err := target.New(system, &config.Target)
 	if err != nil {
 		return err
 	}
 
-	solver, err := solver.New(problem, target, &config.Solver)
+	solver, err := solver.New(target, &config.Solver)
 	if err != nil {
 		return err
 	}
 
 	if config.Verbose {
-		fmt.Println(problem)
+		fmt.Println(system)
 		fmt.Println(target)
 		fmt.Println("Constructing a surrogate...")
 	}

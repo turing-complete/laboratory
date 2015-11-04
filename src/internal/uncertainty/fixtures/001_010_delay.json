@@ -6,10 +6,13 @@
 		"ambience": 318.15
 	},
 
-	"uncertainty": {
-		"maxDeviation": 0.2,
-		"distribution": "Beta(1, 1)",
-		"corrLength": 5,
-		"varThreshold": 0.95
+	"target": {
+		"uncertainty": {
+			"name": "marginal",
+			"maxDeviation": 0.2,
+			"distribution": "Beta(1, 1)",
+			"corrLength": 5,
+			"varThreshold": 0.95
+		}
 	}
 }

@@ -8,12 +8,12 @@ import (
 
 	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/laboratory/src/internal/problem"
+	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
 type Target adapt.Target
 
-func New(problem *problem.Problem, config *config.Target) (Target, error) {
+func New(system *system.System, config *config.Target) (Target, error) {
 	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
 	if ni == 0 || ni != nj || nj != nf {
 		return nil, errors.New("the importance, refinement, and rejection " +
@@ -22,11 +22,11 @@ func New(problem *problem.Problem, config *config.Target) (Target, error) {
 
 	switch config.Name {
 	case "end-to-end-delay":
-		return newDelay(problem, config), nil
+		return newDelay(system, config)
 	case "total-energy":
-		return newEnergy(problem, config), nil
+		return newEnergy(system, config)
 	case "temperature-profile":
-		return newProfile(problem, config)
+		return newProfile(system, config)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

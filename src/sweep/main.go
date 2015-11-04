@@ -13,7 +13,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
-	"github.com/turing-complete/laboratory/src/internal/problem"
+	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
@@ -36,14 +36,14 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	config.Uncertainty.VarThreshold = *varThreshold
+	config.Target.Uncertainty.VarThreshold = *varThreshold
 
-	problem, err := problem.New(config)
+	system, err := system.New(&config.System)
 	if err != nil {
 		return err
 	}
 
-	aTarget, err := target.New(problem, &config.Target)
+	aTarget, err := target.New(system, &config.Target)
 	if err != nil {
 		return err
 	}
@@ -57,10 +57,10 @@ func function(config *config.Config) error {
 	np := uint(len(points)) / ni
 
 	if config.Verbose {
-		fmt.Println(problem)
+		fmt.Println(system)
 		fmt.Println(aTarget)
 		fmt.Printf("Evaluating the model with reduction %.2f at %v points...\n",
-			config.Uncertainty.VarThreshold, np)
+			config.Target.Uncertainty.VarThreshold, np)
 	}
 
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))

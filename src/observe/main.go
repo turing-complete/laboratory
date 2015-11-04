@@ -11,8 +11,8 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
-	"github.com/turing-complete/laboratory/src/internal/problem"
 	"github.com/turing-complete/laboratory/src/internal/support"
+	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 )
 
@@ -29,7 +29,7 @@ func main() {
 }
 
 func function(config *config.Config) error {
-	config.Uncertainty.VarThreshold = math.Inf(1)
+	config.Target.Uncertainty.VarThreshold = math.Inf(1)
 
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
@@ -56,12 +56,12 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	problem, err := problem.New(config)
+	system, err := system.New(&config.System)
 	if err != nil {
 		return err
 	}
 
-	aTarget, err := target.New(problem, &config.Target)
+	aTarget, err := target.New(system, &config.Target)
 	if err != nil {
 		return err
 	}
