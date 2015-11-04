@@ -1,16 +1,7 @@
 {
 	"inherit": "assets/016_160.json",
 
-	"uncertainty": {
-		"varThreshold": 0.9
-	},
-
 	"target": {
-		"name": "end-to-end-delay",
-		"tolerance": 1e-3
-	},
-
-	"solver": {
-		"maxLevel": 10
+		"name": "end-to-end-delay"
 	}
 }

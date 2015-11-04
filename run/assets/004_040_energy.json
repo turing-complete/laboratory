@@ -2,11 +2,6 @@
 	"inherit": "assets/004_040.json",
 
 	"target": {
-		"name": "total-energy",
-		"tolerance": 1e-2
-	},
-
-	"solver": {
-		"maxLevel": 10
+		"name": "total-energy"
 	}
 }
