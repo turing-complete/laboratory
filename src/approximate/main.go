@@ -48,6 +48,7 @@ func function(config *config.Config) error {
 
 	solution := solver.Compute(target)
 	log.Println(solution)
+
 	if err := output.Put("solution", *solution); err != nil {
 		return err
 	}
