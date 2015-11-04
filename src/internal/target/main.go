@@ -3,6 +3,7 @@ package target
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math"
 	"sync"
 
@@ -67,10 +68,10 @@ func display(target Target) string {
 
 func monitor(target Target, progress *adapt.Progress) {
 	if progress.Iteration == 0 {
-		fmt.Printf("%5s %10s %15s %15s %15s\n", "Level", "Iteration",
+		log.Printf("%5s %10s %15s %15s %15s\n", "Level", "Iteration",
 			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
 	}
-	fmt.Printf("%5d %10d %15d %15d %15d\n", progress.Level, progress.Iteration,
+	log.Printf("%5d %10d %15d %15d %15d\n", progress.Level, progress.Iteration,
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 

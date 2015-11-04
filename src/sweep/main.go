@@ -5,6 +5,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"math"
 	"runtime"
 	"strings"
@@ -56,18 +57,14 @@ func function(config *config.Config) error {
 	ni, no := aTarget.Dimensions()
 	np := uint(len(points)) / ni
 
-	if config.Verbose {
-		fmt.Println(system)
-		fmt.Println(aTarget)
-		fmt.Printf("Evaluating the model with reduction %.2f at %v points...\n",
-			config.Target.Uncertainty.VarThreshold, np)
-	}
+	log.Println(system)
+	log.Println(aTarget)
+	log.Printf("Evaluating the model with reduction %.2f at %v points...\n",
+		config.Target.Uncertainty.VarThreshold, np)
 
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 
-	if config.Verbose {
-		fmt.Println("Done.")
-	}
+	log.Println("Done.")
 
 	if err := output.Put("values", values, no, np); err != nil {
 		return err

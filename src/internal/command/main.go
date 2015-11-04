@@ -4,6 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"runtime/pprof"
 
@@ -15,6 +16,12 @@ var (
 	profileFile = flag.String("p", "", "an output file for profiling information")
 	verbose     = flag.Bool("v", false, "a flag for displaying diagnostic information")
 )
+
+type null struct{}
+
+func (_ null) Write(buffer []byte) (int, error) {
+	return len(buffer), nil
+}
 
 func Run(function func(*config.Config) error) {
 	flag.Usage = usage
@@ -39,6 +46,9 @@ func Run(function func(*config.Config) error) {
 	if *verbose {
 		config.Verbose = true
 	}
+	if !config.Verbose {
+		log.SetOutput(null{})
+	}
 
 	if err = function(config); err != nil {
 		fail(err)
@@ -46,7 +56,7 @@ func Run(function func(*config.Config) error) {
 }
 
 func fail(err error) {
-	fmt.Printf("Error: %s.\n", err)
+	fmt.Errorf("Error: %s.\n", err)
 	os.Exit(1)
 }
 

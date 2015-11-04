@@ -2,7 +2,7 @@ package main
 
 import (
 	"flag"
-	"fmt"
+	"log"
 
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
@@ -42,16 +42,12 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	if config.Verbose {
-		fmt.Println(system)
-		fmt.Println(target)
-		fmt.Println("Constructing a surrogate...")
-	}
+	log.Println(system)
+	log.Println(target)
+	log.Println("Constructing a surrogate...")
 
 	solution := solver.Compute(target)
-	if config.Verbose {
-		fmt.Println(solution)
-	}
+	log.Println(solution)
 	if err := output.Put("solution", *solution); err != nil {
 		return err
 	}

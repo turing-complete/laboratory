@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
+	"log"
 	"math"
 	"runtime"
 	"strconv"
@@ -71,15 +71,9 @@ func function(config *config.Config) error {
 
 	points := support.Generate(ni, ns, config.Assessment.Seed)
 
-	if config.Verbose {
-		fmt.Printf("Evaluating the original model at %d points...\n", ns)
-	}
-
+	log.Printf("Evaluating the original model at %d points...\n", ns)
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
-
-	if config.Verbose {
-		fmt.Println("Done.")
-	}
+	log.Println("Done.")
 
 	if err := output.Put("points", points, ni, ns); err != nil {
 		return err

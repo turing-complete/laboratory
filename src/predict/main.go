@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	"flag"
-	"fmt"
+	"log"
 	"math"
 	"strconv"
 
@@ -90,10 +90,8 @@ func function(config *config.Config) error {
 
 	points := support.Generate(ni, ns, config.Assessment.Seed)
 
-	if config.Verbose {
-		fmt.Printf("Evaluating the surrogate model at %d points...\n", ns)
-		fmt.Printf("%10s %15s %15s\n", "Iteration", "Accepted Nodes", "Rejected Nodes")
-	}
+	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
+	log.Printf("%10s %15s %15s\n", "Iteration", "Accepted Nodes", "Rejected Nodes")
 
 	nk := uint(len(solution.Accept))
 
@@ -114,9 +112,7 @@ func function(config *config.Config) error {
 		}
 		k++
 
-		if config.Verbose {
-			fmt.Printf("%10d %15d %15d\n", i, na, nr)
-		}
+		log.Printf("%10d %15d %15d\n", i, na, nr)
 
 		s := *solution
 		s.Nodes = na
@@ -129,9 +125,7 @@ func function(config *config.Config) error {
 
 	nk, steps = k, steps[:k]
 
-	if config.Verbose {
-		fmt.Println("Done.")
-	}
+	log.Println("Done.")
 
 	if err := output.Put("solution", *solution); err != nil {
 		return err

@@ -50,9 +50,6 @@ type Target struct {
 	// The time moments that should be considered. The elements are assumed to
 	// be normalized by the application’s span (the temperature-profile target).
 	TimeIndex string // ⊂ [0, 1]
-
-	// A flag to display diagnostic information.
-	Verbose bool
 }
 
 // Uncertainty is a configuration of the probability model.
