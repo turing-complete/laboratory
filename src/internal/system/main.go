@@ -53,7 +53,11 @@ func (s *System) ComputeSchedule(duration []float64) *time.Schedule {
 }
 
 func (s *System) ComputeTime(schedule *time.Schedule) []float64 {
-	return computeTime(schedule)
+	time := make([]float64, len(schedule.Start))
+	for i := range time {
+		time[i] = schedule.Finish[i] - schedule.Start[i]
+	}
+	return time
 }
 
 func (s *System) ComputeTemperature(P, ΔT []float64) []float64 {
@@ -76,7 +80,7 @@ func (s *System) PartitionPower(schedule *time.Schedule, points []float64,
 }
 
 func (s *System) ReferenceTime() []float64 {
-	return computeTime(s.schedule)
+	return s.ComputeTime(s.schedule)
 }
 
 func (s *System) Span() float64 {
@@ -85,12 +89,4 @@ func (s *System) Span() float64 {
 
 func (s *System) String() string {
 	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, s.Platform.Len(), s.Application.Len())
-}
-
-func computeTime(schedule *time.Schedule) []float64 {
-	time := make([]float64, len(schedule.Start))
-	for i := range time {
-		time[i] = schedule.Finish[i] - schedule.Start[i]
-	}
-	return time
 }
