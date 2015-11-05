@@ -1,7 +1,6 @@
 package target
 
 import (
-	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
@@ -9,12 +8,9 @@ import (
 )
 
 type profile struct {
-	system *system.System
-	config *config.Target
-
-	coreIndex   []uint
-	timeIndex   []float64
-	uncertainty uncertainty.Uncertainty
+	base
+	coreIndex []uint
+	timeIndex []float64
 }
 
 func newProfile(system *system.System, config *config.Target) (*profile, error) {
@@ -40,18 +36,17 @@ func newProfile(system *system.System, config *config.Target) (*profile, error) 
 	}
 
 	return &profile{
-		system: system,
-		config: config,
+		base: base{
+			system:      system,
+			config:      config,
+			uncertainty: uncertainty,
 
-		coreIndex:   coreIndex,
-		timeIndex:   timeIndex,
-		uncertainty: uncertainty,
+			ni: uint(uncertainty.Len()),
+			no: uint(len(timeIndex) * len(coreIndex) * 2),
+		},
+		coreIndex: coreIndex,
+		timeIndex: timeIndex,
 	}, nil
-}
-
-func (t *profile) Dimensions() (uint, uint) {
-	nci, nsi := uint(len(t.coreIndex)), uint(len(t.timeIndex))
-	return uint(t.uncertainty.Len()), nsi * nci * 2
 }
 
 func (t *profile) Compute(node, value []float64) {
@@ -81,16 +76,4 @@ func (t *profile) Compute(node, value []float64) {
 			k += 2
 		}
 	}
-}
-
-func (t *profile) Monitor(progress *adapt.Progress) {
-	monitor(t, progress)
-}
-
-func (t *profile) Score(location *adapt.Location, progress *adapt.Progress) float64 {
-	return score(t, t.config, location, progress)
-}
-
-func (t *profile) String() string {
-	return display(t)
 }
