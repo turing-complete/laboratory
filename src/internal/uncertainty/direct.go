@@ -17,20 +17,20 @@ type direct struct {
 	nu uint
 }
 
-func newDirect(s *system.System, c *config.Uncertainty) (*direct, error) {
-	nt := uint(s.Application.Len())
+func newDirect(system *system.System, config *config.Uncertainty) (*direct, error) {
+	nt := uint(system.Application.Len())
 
-	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
+	taskIndex, err := support.ParseNaturalIndex(config.TaskIndex, 0, nt-1)
 	if err != nil {
 		return nil, err
 	}
 
 	nu := uint(len(taskIndex))
 
-	reference := s.ReferenceTime()
+	reference := system.ReferenceTime()
 	deviation := make([]float64, nu)
 	for i, tid := range taskIndex {
-		deviation[i] = c.MaxDeviation * reference[tid]
+		deviation[i] = config.MaxDeviation * reference[tid]
 	}
 
 	return &direct{

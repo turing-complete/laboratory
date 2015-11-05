@@ -33,15 +33,15 @@ type marginal struct {
 	nz uint
 }
 
-func newMarginal(s *system.System, c *config.Uncertainty) (*marginal, error) {
-	nt := uint(s.Application.Len())
+func newMarginal(system *system.System, config *config.Uncertainty) (*marginal, error) {
+	nt := uint(system.Application.Len())
 
-	taskIndex, err := support.ParseNaturalIndex(c.TaskIndex, 0, nt-1)
+	taskIndex, err := support.ParseNaturalIndex(config.TaskIndex, 0, nt-1)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(s, c, taskIndex)
+	correlator, err := correlate(system, config, taskIndex)
 	if err != nil {
 		return nil, err
 	}
@@ -49,15 +49,15 @@ func newMarginal(s *system.System, c *config.Uncertainty) (*marginal, error) {
 	nu := uint(len(taskIndex))
 	nz := uint(len(correlator)) / nu
 
-	marginalizer, err := distribution.ParseInverter(c.Distribution)
+	marginalizer, err := distribution.ParseInverter(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
 
-	reference := s.ReferenceTime()
+	reference := system.ReferenceTime()
 	marginals := make([]probability.Inverter, nu)
 	for i, tid := range taskIndex {
-		marginals[i] = marginalizer(0, c.MaxDeviation*reference[tid])
+		marginals[i] = marginalizer(0, config.MaxDeviation*reference[tid])
 	}
 
 	return &marginal{
@@ -109,20 +109,22 @@ func (m *marginal) String() string {
 	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, m.nu, m.nz)
 }
 
-func correlate(s *system.System, c *config.Uncertainty, taskIndex []uint) ([]float64, error) {
-	if c.CorrLength < 0 {
+func correlate(system *system.System, config *config.Uncertainty,
+	taskIndex []uint) ([]float64, error) {
+
+	if config.CorrLength < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
-	if c.VarThreshold <= 0 {
+	if config.VarThreshold <= 0 {
 		return nil, errors.New("the variance-reduction threshold should be positive")
 	}
 
-	if c.CorrLength == 0 {
+	if config.CorrLength == 0 {
 		return matrix.Identity(uint(len(taskIndex))), nil
 	}
 
-	C := icorrelation.Compute(s.Application, taskIndex, c.CorrLength)
-	correlator, _, err := correlation.Decompose(C, uint(len(taskIndex)), c.VarThreshold)
+	C := icorrelation.Compute(system.Application, taskIndex, config.CorrLength)
+	correlator, _, err := correlation.Decompose(C, uint(len(taskIndex)), config.VarThreshold)
 	if err != nil {
 		return nil, err
 	}
