@@ -36,11 +36,10 @@ func (_ *base) Monitor(progress *adapt.Progress) {
 func (b *base) Score(location *adapt.Location, progress *adapt.Progress) float64 {
 	config := b.config
 
-	no := b.no
 	nj := uint(len(config.Importance))
 
 	score, reject, refine := 0.0, true, false
-	for i := uint(0); i < no; i++ {
+	for i := uint(0); i < b.no; i++ {
 		j := i % nj
 
 		if config.Importance[j] == 0 {
