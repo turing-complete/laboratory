@@ -11,21 +11,19 @@ type energy struct {
 }
 
 func newEnergy(system *system.System, config *config.Target) (*energy, error) {
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	base, err := newBase(system, config)
 	if err != nil {
 		return nil, err
 	}
 
-	return &energy{
-		base: base{
-			system:      system,
-			config:      config,
-			uncertainty: uncertainty,
+	base.uncertainty, err = uncertainty.New(system, system.ReferenceTime(), &config.Uncertainty)
+	if err != nil {
+		return nil, err
+	}
+	base.ni = uint(base.uncertainty.Len())
+	base.no = 2
 
-			ni: uint(uncertainty.Len()),
-			no: 2,
-		},
-	}, nil
+	return &energy{*base}, nil
 }
 
 func (t *energy) Compute(node, value []float64) {

@@ -11,21 +11,19 @@ type delay struct {
 }
 
 func newDelay(system *system.System, config *config.Target) (*delay, error) {
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	base, err := newBase(system, config)
 	if err != nil {
 		return nil, err
 	}
 
-	return &delay{
-		base: base{
-			system:      system,
-			config:      config,
-			uncertainty: uncertainty,
+	base.uncertainty, err = uncertainty.New(system, system.ReferenceTime(), &config.Uncertainty)
+	if err != nil {
+		return nil, err
+	}
+	base.ni = uint(base.uncertainty.Len())
+	base.no = 2
 
-			ni: uint(uncertainty.Len()),
-			no: 2,
-		},
-	}, nil
+	return &delay{*base}, nil
 }
 
 func (t *delay) Compute(node []float64, value []float64) {

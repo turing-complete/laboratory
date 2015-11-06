@@ -12,12 +12,14 @@ type Uncertainty interface {
 	Transform([]float64) []float64
 }
 
-func New(system *system.System, config *config.Uncertainty) (Uncertainty, error) {
+func New(system *system.System, reference []float64,
+	config *config.Uncertainty) (Uncertainty, error) {
+
 	switch config.Name {
 	case "direct":
-		return newDirect(system, config)
+		return newDirect(system, reference, config)
 	case "marginal":
-		return newMarginal(system, config)
+		return newMarginal(system, reference, config)
 	default:
 		return nil, errors.New("the uncertainty model is unknown")
 	}

@@ -2,7 +2,6 @@ package uncertainty
 
 import (
 	"errors"
-	"fmt"
 	"math"
 
 	"github.com/ready-steady/linear/matrix"
@@ -10,7 +9,6 @@ import (
 	"github.com/ready-steady/statistics/correlation"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/distribution"
-	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 
 	icorrelation "github.com/turing-complete/laboratory/src/internal/correlation"
@@ -23,52 +21,40 @@ var (
 )
 
 type marginal struct {
-	taskIndex  []uint
+	base
 	correlator []float64
 	marginals  []probability.Inverter
-	reference  []float64
-
-	nt uint
-	nu uint
-	nz uint
 }
 
-func newMarginal(system *system.System, config *config.Uncertainty) (*marginal, error) {
-	nt := uint(system.Application.Len())
+func newMarginal(system *system.System, reference []float64,
+	config *config.Uncertainty) (*marginal, error) {
 
-	taskIndex, err := support.ParseNaturalIndex(config.TaskIndex, 0, nt-1)
+	base, err := newBase(system, reference, config)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, taskIndex)
+	correlator, err := correlate(system, config, base.taskIndex)
 	if err != nil {
 		return nil, err
 	}
 
-	nu := uint(len(taskIndex))
-	nz := uint(len(correlator)) / nu
+	base.nz = uint(len(correlator)) / base.nu
 
 	marginalizer, err := distribution.ParseInverter(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
 
-	reference := system.ReferenceTime()
-	marginals := make([]probability.Inverter, nu)
-	for i, tid := range taskIndex {
-		marginals[i] = marginalizer(0, config.MaxDeviation*reference[tid])
+	marginals := make([]probability.Inverter, base.nu)
+	for i, deviation := range base.deviation {
+		marginals[i] = marginalizer(0, deviation)
 	}
 
 	return &marginal{
-		taskIndex:  taskIndex,
+		base:       *base,
 		correlator: correlator,
 		marginals:  marginals,
-		reference:  reference,
-
-		nt: nt,
-		nu: nu,
-		nz: nz,
 	}, nil
 }
 
@@ -99,14 +85,6 @@ func (m *marginal) Transform(z []float64) []float64 {
 	}
 
 	return duration
-}
-
-func (m *marginal) Len() int {
-	return int(m.nz)
-}
-
-func (m *marginal) String() string {
-	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, m.nu, m.nz)
 }
 
 func correlate(system *system.System, config *config.Uncertainty,

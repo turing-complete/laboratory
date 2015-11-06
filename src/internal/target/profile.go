@@ -14,6 +14,11 @@ type profile struct {
 }
 
 func newProfile(system *system.System, config *config.Target) (*profile, error) {
+	base, err := newBase(system, config)
+	if err != nil {
+		return nil, err
+	}
+
 	coreIndex, err := support.ParseNaturalIndex(config.CoreIndex, 0, uint(system.Platform.Len())-1)
 	if err != nil {
 		return nil, err
@@ -30,20 +35,15 @@ func newProfile(system *system.System, config *config.Target) (*profile, error) 
 		timeIndex[i] *= system.Span()
 	}
 
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	base.uncertainty, err = uncertainty.New(system, system.ReferenceTime(), &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}
+	base.ni = uint(base.uncertainty.Len())
+	base.no = uint(len(timeIndex) * len(coreIndex) * 2)
 
 	return &profile{
-		base: base{
-			system:      system,
-			config:      config,
-			uncertainty: uncertainty,
-
-			ni: uint(uncertainty.Len()),
-			no: uint(len(timeIndex) * len(coreIndex) * 2),
-		},
+		base:      *base,
 		coreIndex: coreIndex,
 		timeIndex: timeIndex,
 	}, nil

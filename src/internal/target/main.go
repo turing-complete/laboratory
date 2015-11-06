@@ -12,12 +12,6 @@ import (
 type Target adapt.Target
 
 func New(system *system.System, config *config.Target) (Target, error) {
-	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
-	if ni == 0 || ni != nj || nj != nf {
-		return nil, errors.New("the importance, refinement, and rejection " +
-			"should not be empty and should have the same number of elements")
-	}
-
 	switch config.Name {
 	case "end-to-end-delay":
 		return newDelay(system, config)
