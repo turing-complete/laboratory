@@ -20,11 +20,11 @@ func newDirect(system *system.System, reference []float64,
 	return &direct{base}, nil
 }
 
-func (d *direct) Transform(z []float64) []float64 {
-	duration := make([]float64, d.nt)
-	copy(duration, d.reference)
-	for i, tid := range d.taskIndex {
-		duration[tid] += z[i] * d.deviation[i]
+func (self *direct) Transform(z []float64) []float64 {
+	duration := make([]float64, self.nt)
+	copy(duration, self.reference)
+	for i, tid := range self.taskIndex {
+		duration[tid] += z[i] * self.deviation[i]
 	}
 	return duration
 }

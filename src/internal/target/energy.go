@@ -20,15 +20,15 @@ func newEnergy(system *system.System, config *config.Target) (*energy, error) {
 	if err != nil {
 		return nil, err
 	}
-	base.ni = uint(base.uncertainty.Len())
+	base.ni, _ = base.uncertainty.Dimensions()
 	base.no = 2
 
 	return &energy{base}, nil
 }
 
-func (t *energy) Compute(node, value []float64) {
-	schedule := t.system.ComputeSchedule(t.uncertainty.Transform(node))
-	time, power := t.system.ComputeTime(schedule), t.system.DistributePower(schedule)
+func (self *energy) Compute(node, value []float64) {
+	schedule := self.system.ComputeSchedule(self.uncertainty.Transform(node))
+	time, power := self.system.ComputeTime(schedule), self.system.DistributePower(schedule)
 
 	value[0] = 0
 	for i := range time {

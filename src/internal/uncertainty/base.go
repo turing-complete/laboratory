@@ -50,10 +50,10 @@ func newBase(system *system.System, reference []float64,
 	}, nil
 }
 
-func (b *base) Len() int {
-	return int(b.nz)
+func (self *base) Dimensions() (uint, uint) {
+	return self.nz, self.nu
 }
 
-func (b *base) String() string {
-	return fmt.Sprintf(`{"parameters": %d, "variables": %d}`, b.nu, b.nz)
+func (self *base) String() string {
+	return fmt.Sprintf(`{"variables": %d, "parameters": %d}`, self.nz, self.nu)
 }

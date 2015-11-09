@@ -20,13 +20,13 @@ func newDelay(system *system.System, config *config.Target) (*delay, error) {
 	if err != nil {
 		return nil, err
 	}
-	base.ni = uint(base.uncertainty.Len())
+	base.ni, _ = base.uncertainty.Dimensions()
 	base.no = 2
 
 	return &delay{base}, nil
 }
 
-func (t *delay) Compute(node []float64, value []float64) {
-	value[0] = t.system.ComputeSchedule(t.uncertainty.Transform(node)).Span
+func (self *delay) Compute(node []float64, value []float64) {
+	value[0] = self.system.ComputeSchedule(self.uncertainty.Transform(node)).Span
 	value[1] = value[0] * value[0]
 }

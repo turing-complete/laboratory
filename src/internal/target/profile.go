@@ -39,7 +39,7 @@ func newProfile(system *system.System, config *config.Target) (*profile, error) 
 	if err != nil {
 		return nil, err
 	}
-	base.ni = uint(base.uncertainty.Len())
+	base.ni, _ = base.uncertainty.Dimensions()
 	base.no = uint(len(timeIndex) * len(coreIndex) * 2)
 
 	return &profile{
@@ -49,13 +49,13 @@ func newProfile(system *system.System, config *config.Target) (*profile, error) 
 	}, nil
 }
 
-func (t *profile) Compute(node, value []float64) {
+func (self *profile) Compute(node, value []float64) {
 	const (
 		ε = 1e-10
 	)
 
-	schedule := t.system.ComputeSchedule(t.uncertainty.Transform(node))
-	P, ΔT, timeIndex := t.system.PartitionPower(schedule, t.timeIndex, ε)
+	schedule := self.system.ComputeSchedule(self.uncertainty.Transform(node))
+	P, ΔT, timeIndex := self.system.PartitionPower(schedule, self.timeIndex, ε)
 	for i := range timeIndex {
 		if timeIndex[i] == 0 {
 			panic("the timeline of interest should not contain time 0")
@@ -63,10 +63,10 @@ func (t *profile) Compute(node, value []float64) {
 		timeIndex[i]--
 	}
 
-	Q := t.system.ComputeTemperature(P, ΔT)
+	Q := self.system.ComputeTemperature(P, ΔT)
 
-	coreIndex := t.coreIndex
-	nc := uint(t.system.Platform.Len())
+	coreIndex := self.coreIndex
+	nc := uint(self.system.Platform.Len())
 	nci, nsi := uint(len(coreIndex)), uint(len(timeIndex))
 
 	for i, k := uint(0), uint(0); i < nsi; i++ {

@@ -34,8 +34,8 @@ func newBase(system *system.System, config *config.Target) (base, error) {
 	}, nil
 }
 
-func (b *base) Dimensions() (uint, uint) {
-	return b.ni, b.no
+func (self *base) Dimensions() (uint, uint) {
+	return self.ni, self.no
 }
 
 func (_ *base) Monitor(progress *adapt.Progress) {
@@ -47,13 +47,13 @@ func (_ *base) Monitor(progress *adapt.Progress) {
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 
-func (b *base) Score(location *adapt.Location, progress *adapt.Progress) float64 {
-	config := b.config
+func (self *base) Score(location *adapt.Location, progress *adapt.Progress) float64 {
+	config := self.config
 
 	nj := uint(len(config.Importance))
 
 	score, reject, refine := 0.0, true, false
-	for i := uint(0); i < b.no; i++ {
+	for i := uint(0); i < self.no; i++ {
 		j := i % nj
 
 		if config.Importance[j] == 0 {
@@ -81,6 +81,6 @@ func (b *base) Score(location *adapt.Location, progress *adapt.Progress) float64
 	return score
 }
 
-func (b *base) String() string {
-	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, b.ni, b.no)
+func (self *base) String() string {
+	return fmt.Sprintf(`{"inputs": %d, "outputs": %d}`, self.ni, self.no)
 }

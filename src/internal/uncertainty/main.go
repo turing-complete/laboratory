@@ -8,7 +8,7 @@ import (
 )
 
 type Uncertainty interface {
-	Len() int
+	Dimensions() (uint, uint)
 	Transform([]float64) []float64
 }
 

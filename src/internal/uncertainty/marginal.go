@@ -58,8 +58,8 @@ func newMarginal(system *system.System, reference []float64,
 	}, nil
 }
 
-func (m *marginal) Transform(z []float64) []float64 {
-	nt, nu, nz := m.nt, m.nu, m.nz
+func (self *marginal) Transform(z []float64) []float64 {
+	nt, nu, nz := self.nt, self.nu, self.nz
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)
@@ -70,7 +70,7 @@ func (m *marginal) Transform(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	multiply(m.correlator, n, u, nu, nz)
+	multiply(self.correlator, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
@@ -79,9 +79,9 @@ func (m *marginal) Transform(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	duration := make([]float64, nt)
-	copy(duration, m.reference)
-	for i, tid := range m.taskIndex {
-		duration[tid] += m.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+	copy(duration, self.reference)
+	for i, tid := range self.taskIndex {
+		duration[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
 	return duration
