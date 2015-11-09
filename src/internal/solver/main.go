@@ -39,19 +39,19 @@ func New(target target.Target, config *config.Solver) (*Solver, error) {
 	return &Solver{*interpolator}, nil
 }
 
-func (s *Solver) Compute(target target.Target) *Solution {
-	return &Solution{*s.Interpolator.Compute(target)}
+func (self *Solver) Compute(target target.Target) *Solution {
+	return &Solution{*self.Interpolator.Compute(target)}
 }
 
-func (s *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
-	return s.Interpolator.Evaluate(&solution.Surrogate, nodes)
+func (self *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
+	return self.Interpolator.Evaluate(&solution.Surrogate, nodes)
 }
 
-func (s *Solver) Integrate(solution *Solution) []float64 {
-	return s.Interpolator.Integrate(&solution.Surrogate)
+func (self *Solver) Integrate(solution *Solution) []float64 {
+	return self.Interpolator.Integrate(&solution.Surrogate)
 }
 
-func (s *Solution) String() string {
+func (self *Solution) String() string {
 	return fmt.Sprintf(`{"inputs": %d, "outputs": %d, "level": %d, "nodes": %d}`,
-		s.Inputs, s.Outputs, s.Level, s.Nodes)
+		self.Inputs, self.Outputs, self.Level, self.Nodes)
 }

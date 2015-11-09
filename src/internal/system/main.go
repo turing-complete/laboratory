@@ -48,11 +48,11 @@ func New(config *config.System) (*System, error) {
 	}, nil
 }
 
-func (s *System) ComputeSchedule(duration []float64) *time.Schedule {
-	return s.time.Update(s.schedule, duration)
+func (self *System) ComputeSchedule(duration []float64) *time.Schedule {
+	return self.time.Update(self.schedule, duration)
 }
 
-func (s *System) ComputeTime(schedule *time.Schedule) []float64 {
+func (self *System) ComputeTime(schedule *time.Schedule) []float64 {
 	time := make([]float64, len(schedule.Start))
 	for i := range time {
 		time[i] = schedule.Finish[i] - schedule.Start[i]
@@ -60,33 +60,33 @@ func (s *System) ComputeTime(schedule *time.Schedule) []float64 {
 	return time
 }
 
-func (s *System) ComputeTemperature(P, ΔT []float64) []float64 {
-	return s.temperature.Compute(P, ΔT)
+func (self *System) ComputeTemperature(P, ΔT []float64) []float64 {
+	return self.temperature.Compute(P, ΔT)
 }
 
-func (s *System) DistributePower(schedule *time.Schedule) []float64 {
-	cores, tasks := s.Platform.Cores, s.Application.Tasks
-	power := make([]float64, s.Application.Len())
+func (self *System) DistributePower(schedule *time.Schedule) []float64 {
+	cores, tasks := self.Platform.Cores, self.Application.Tasks
+	power := make([]float64, self.Application.Len())
 	for i, j := range schedule.Mapping {
 		power[i] = cores[j].Power[tasks[i].Type]
 	}
 	return power
 }
 
-func (s *System) PartitionPower(schedule *time.Schedule, points []float64,
+func (self *System) PartitionPower(schedule *time.Schedule, points []float64,
 	ε float64) ([]float64, []float64, []uint) {
 
-	return s.power.Partition(schedule, points, ε)
+	return self.power.Partition(schedule, points, ε)
 }
 
-func (s *System) ReferenceTime() []float64 {
-	return s.ComputeTime(s.schedule)
+func (self *System) ReferenceTime() []float64 {
+	return self.ComputeTime(self.schedule)
 }
 
-func (s *System) Span() float64 {
-	return s.schedule.Span
+func (self *System) Span() float64 {
+	return self.schedule.Span
 }
 
-func (s *System) String() string {
-	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, s.Platform.Len(), s.Application.Len())
+func (self *System) String() string {
+	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, self.Platform.Len(), self.Application.Len())
 }
