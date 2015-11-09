@@ -23,7 +23,7 @@ func newDelay(system *system.System, config *config.Target) (*delay, error) {
 	base.ni = uint(base.uncertainty.Len())
 	base.no = 2
 
-	return &delay{*base}, nil
+	return &delay{base}, nil
 }
 
 func (t *delay) Compute(node []float64, value []float64) {

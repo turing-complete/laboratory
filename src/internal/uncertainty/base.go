@@ -20,16 +20,16 @@ type base struct {
 }
 
 func newBase(system *system.System, reference []float64,
-	config *config.Uncertainty) (*base, error) {
+	config *config.Uncertainty) (base, error) {
 
 	nt := uint(system.Application.Len())
 	if nt != uint(len(reference)) {
-		return nil, errors.New("the length of the reference is invalid")
+		return base{}, errors.New("the length of the reference is invalid")
 	}
 
 	taskIndex, err := support.ParseNaturalIndex(config.TaskIndex, 0, nt-1)
 	if err != nil {
-		return nil, err
+		return base{}, err
 	}
 
 	nu := uint(len(taskIndex))
@@ -39,7 +39,7 @@ func newBase(system *system.System, reference []float64,
 		deviation[i] = config.MaxDeviation * reference[tid]
 	}
 
-	return &base{
+	return base{
 		taskIndex: taskIndex,
 		reference: reference,
 		deviation: deviation,

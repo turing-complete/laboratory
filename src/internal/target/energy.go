@@ -23,7 +23,7 @@ func newEnergy(system *system.System, config *config.Target) (*energy, error) {
 	base.ni = uint(base.uncertainty.Len())
 	base.no = 2
 
-	return &energy{*base}, nil
+	return &energy{base}, nil
 }
 
 func (t *energy) Compute(node, value []float64) {

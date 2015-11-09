@@ -52,7 +52,7 @@ func newMarginal(system *system.System, reference []float64,
 	}
 
 	return &marginal{
-		base:       *base,
+		base:       base,
 		correlator: correlator,
 		marginals:  marginals,
 	}, nil

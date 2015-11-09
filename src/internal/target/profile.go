@@ -43,7 +43,7 @@ func newProfile(system *system.System, config *config.Target) (*profile, error) 
 	base.no = uint(len(timeIndex) * len(coreIndex) * 2)
 
 	return &profile{
-		base:      *base,
+		base:      base,
 		coreIndex: coreIndex,
 		timeIndex: timeIndex,
 	}, nil

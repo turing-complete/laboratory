@@ -21,20 +21,16 @@ type base struct {
 	no uint
 }
 
-func newBase(system *system.System, config *config.Target) (*base, error) {
+func newBase(system *system.System, config *config.Target) (base, error) {
 	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
 	if ni == 0 || ni != nj || nj != nf {
-		return nil, errors.New("the importance, refinement, and rejection " +
+		return base{}, errors.New("the importance, refinement, and rejection " +
 			"should not be empty and should have the same number of elements")
 	}
 
-	return &base{
-		system:      system,
-		config:      config,
-		uncertainty: nil,
-
-		ni: 0,
-		no: 0,
+	return base{
+		system: system,
+		config: config,
 	}, nil
 }
 

@@ -17,7 +17,7 @@ func newDirect(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	return &direct{*base}, nil
+	return &direct{base}, nil
 }
 
 func (d *direct) Transform(z []float64) []float64 {
