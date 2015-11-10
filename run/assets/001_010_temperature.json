@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/001_010.json",
+
+	"target": {
+		"name": "maximal-temperature"
+	}
+}
