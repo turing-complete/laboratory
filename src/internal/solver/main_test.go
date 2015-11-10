@@ -20,7 +20,7 @@ func TestSolverCompute(t *testing.T) {
 	ni, no := target.Dimensions()
 	nc := solution.Surrogate.Nodes
 
-	assert.Equal(nc, uint(111), t)
+	assert.Equal(nc, uint(545), t)
 
 	grid := newcot.NewOpen(ni)
 	nodes := grid.Compute(solution.Surrogate.Indices)

@@ -50,8 +50,8 @@ func newBase(system *system.System, reference []float64,
 	}, nil
 }
 
-func (self *base) Dimensions() (uint, uint) {
-	return self.nz, self.nu
+func (self *base) Len() int {
+	return int(self.nz)
 }
 
 func (self *base) String() string {

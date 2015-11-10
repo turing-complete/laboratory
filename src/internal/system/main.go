@@ -52,35 +52,22 @@ func (self *System) ComputeSchedule(duration []float64) *time.Schedule {
 	return self.time.Update(self.schedule, duration)
 }
 
-func (self *System) ComputeTime(schedule *time.Schedule) []float64 {
-	time := make([]float64, len(schedule.Start))
-	for i := range time {
-		time[i] = schedule.Finish[i] - schedule.Start[i]
-	}
-	return time
-}
-
 func (self *System) ComputeTemperature(P, ΔT []float64) []float64 {
 	return self.temperature.Compute(P, ΔT)
 }
 
-func (self *System) DistributePower(schedule *time.Schedule) []float64 {
-	cores, tasks := self.Platform.Cores, self.Application.Tasks
-	power := make([]float64, self.Application.Len())
-	for i, j := range schedule.Mapping {
-		power[i] = cores[j].Power[tasks[i].Type]
-	}
-	return power
-}
-
-func (self *System) PartitionPower(schedule *time.Schedule, points []float64,
+func (self *System) PartitionPower(values []float64, schedule *time.Schedule, points []float64,
 	ε float64) ([]float64, []float64, []uint) {
 
-	return self.power.Partition(schedule, points, ε)
+	return power.Partition(values, schedule, points, ε)
+}
+
+func (self *System) ReferencePower() []float64 {
+	return self.power.Distribute(self.schedule)
 }
 
 func (self *System) ReferenceTime() []float64 {
-	return self.ComputeTime(self.schedule)
+	return self.schedule.Duration()
 }
 
 func (self *System) Span() float64 {

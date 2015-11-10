@@ -9,13 +9,11 @@ import (
 	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 type base struct {
-	system      *system.System
-	config      *config.Target
-	uncertainty uncertainty.Uncertainty
+	system *system.System
+	config *config.Target
 
 	ni uint
 	no uint
@@ -27,11 +25,7 @@ func newBase(system *system.System, config *config.Target) (base, error) {
 		return base{}, errors.New("the importance, refinement, and rejection " +
 			"should not be empty and should have the same number of elements")
 	}
-
-	return base{
-		system: system,
-		config: config,
-	}, nil
+	return base{system: system, config: config}, nil
 }
 
 func (self *base) Dimensions() (uint, uint) {
