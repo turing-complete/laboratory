@@ -32,7 +32,7 @@ type System struct {
 // Target is a configuration of the quantity of interest.
 type Target struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
-	// “total-energy,” and “temperature-profile.”
+	// “total-energy,” and “maximal-temperature.”
 	Name string
 
 	/// The probability model.
@@ -44,12 +44,6 @@ type Target struct {
 	Rejection []float64
 	// The refinement threshold for output dimensions.
 	Refinement []float64
-
-	// The cores that should be considered (the temperature-profile target).
-	CoreIndex string // ⊂ {0, ..., #cores-1}
-	// The time moments that should be considered. The elements are assumed to
-	// be normalized by the application’s span (the temperature-profile target).
-	TimeIndex string // ⊂ [0, 1]
 }
 
 // Uncertainty is a configuration of the probability model.

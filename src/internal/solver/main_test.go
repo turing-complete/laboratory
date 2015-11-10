@@ -11,7 +11,7 @@ import (
 )
 
 func TestSolverCompute(t *testing.T) {
-	config, _ := config.New("fixtures/002_020_profile.json")
+	config, _ := config.New("fixtures/002_020_temperature.json")
 	system, _ := system.New(&config.System)
 	target, _ := target.New(system, &config.Target)
 	solver, _ := New(target, &config.Solver)
@@ -20,7 +20,7 @@ func TestSolverCompute(t *testing.T) {
 	ni, no := target.Dimensions()
 	nc := solution.Surrogate.Nodes
 
-	assert.Equal(nc, uint(545), t)
+	assert.Equal(nc, uint(486), t)
 
 	grid := newcot.NewOpen(ni)
 	nodes := grid.Compute(solution.Surrogate.Indices)

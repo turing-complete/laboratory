@@ -1,8 +1,0 @@
-{
-	"inherit": "assets/001_010.json",
-
-	"target": {
-		"name": "temperature-profile",
-		"timeIndex": "[1]"
-	}
-}

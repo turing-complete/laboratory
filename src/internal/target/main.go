@@ -17,8 +17,8 @@ func New(system *system.System, config *config.Target) (Target, error) {
 		return newDelay(system, config)
 	case "total-energy":
 		return newEnergy(system, config)
-	case "temperature-profile":
-		return newProfile(system, config)
+	case "maximal-temperature":
+		return newTemperature(system, config)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

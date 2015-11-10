@@ -56,10 +56,10 @@ func (self *System) ComputeTemperature(P, ΔT []float64) []float64 {
 	return self.temperature.Compute(P, ΔT)
 }
 
-func (self *System) PartitionPower(values []float64, schedule *time.Schedule, points []float64,
-	ε float64) ([]float64, []float64, []uint) {
+func (self *System) PartitionPower(values []float64, schedule *time.Schedule,
+	ε float64) ([]float64, []float64) {
 
-	return power.Partition(values, schedule, points, ε)
+	return power.Partition(values, schedule, ε)
 }
 
 func (self *System) ReferencePower() []float64 {

@@ -7,7 +7,7 @@
 	},
 
 	"target": {
-		"name": "temperature-profile",
+		"name": "maximal-temperature",
 		"uncertainty": {
 			"name": "marginal",
 			"maxDeviation": 0.2,

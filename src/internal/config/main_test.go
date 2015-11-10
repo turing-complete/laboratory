@@ -7,7 +7,7 @@ import (
 )
 
 func TestNew(t *testing.T) {
-	config, _ := New("fixtures/004_040_profile.json")
+	config, _ := New("fixtures/004_040_temperature.json")
 
 	assert.Equal(config.System.Floorplan, "fixtures/004.flp", t)
 	assert.Equal(config.System.Configuration, "fixtures/hotspot.config", t)
