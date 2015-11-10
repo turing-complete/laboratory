@@ -30,9 +30,13 @@ function sweep()
   if x < 0
     error('Cannot find any sweep dimension.')
   elseif y < 0
+    mn = min(values(:));
+    mx = max(values(:));
+
     figure;
     line(points(x, :), values);
-    title(sprintf('Outputs(Input %d)', x-1));
+    title(sprintf('Outputs(Input %d), Range %f (%.2f%%)', x-1, ...
+      mx-mn, 100*(mx/mn-1)));
   else
     X = reshape(points(x, :), nn, nn);
     Y = reshape(points(y, :), nn, nn);
