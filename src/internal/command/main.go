@@ -56,7 +56,7 @@ func Run(function func(*config.Config) error) {
 }
 
 func fail(err error) {
-	fmt.Errorf("Error: %s.\n", err)
+	fmt.Printf("Error: %s.\n", err)
 	os.Exit(1)
 }
 
