@@ -10,5 +10,5 @@ type Uncertainty interface {
 }
 
 func New(reference []float64, config *config.Uncertainty) (Uncertainty, error) {
-	return NewDirect(reference, config)
+	return newDirect(reference, config)
 }

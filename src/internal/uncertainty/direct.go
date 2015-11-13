@@ -4,19 +4,19 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 )
 
-type Direct struct {
+type direct struct {
 	base
 }
 
-func NewDirect(reference []float64, config *config.Uncertainty) (*Direct, error) {
+func newDirect(reference []float64, config *config.Uncertainty) (*direct, error) {
 	base, err := newBase(reference, config)
 	if err != nil {
 		return nil, err
 	}
-	return &Direct{base}, nil
+	return &direct{base}, nil
 }
 
-func (self *Direct) Transform(z []float64) []float64 {
+func (self *direct) Transform(z []float64) []float64 {
 	outcome := make([]float64, self.nt)
 	copy(outcome, self.lower)
 	for i, tid := range self.tasks {
