@@ -10,7 +10,7 @@
 		"name": "maximal-temperature",
 		"uncertainty": {
 			"name": "marginal",
-			"maxDeviation": 0.2,
+			"deviation": 0.2,
 			"distribution": "Beta(1, 1)",
 			"corrLength": 5,
 			"varThreshold": 0.95

@@ -8,7 +8,7 @@
 		"uncertainty": {
 			"name": "direct",
 			"taskIndex": "[]",
-			"maxDeviation": 0.2
+			"deviation": 0.2
 		},
 		"importance": [1, 0],
 		"rejection": [0, 0],

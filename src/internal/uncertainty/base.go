@@ -36,7 +36,7 @@ func newBase(system *system.System, reference []float64,
 
 	deviation := make([]float64, nu)
 	for i, tid := range taskIndex {
-		deviation[i] = config.MaxDeviation * reference[tid]
+		deviation[i] = config.Deviation * reference[tid]
 	}
 
 	return base{

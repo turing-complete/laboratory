@@ -58,13 +58,12 @@ type Uncertainty struct {
 
 	// The marginal distributions of tasks’ delays.
 	Distribution string
-	// The multiplier used to calculate the maximal deviation of a task.
-	MaxDeviation float64 // ≥ 0
+	// The multiplier used to calculate the deviation of a parameter.
+	Deviation float64 // ≥ 0
 
 	// The strength of correlations between tasks.
 	CorrLength float64 // > 0
-	// The portion of the variance to be preserved when reducing the number of
-	// stochastic dimensions.
+	// The portion of the variance to be preserved.
 	VarThreshold float64 // ∈ (0, 1]
 }
 
