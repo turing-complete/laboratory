@@ -21,7 +21,7 @@ var (
 )
 
 type Marginal struct {
-	Direct
+	base
 	correlator []float64
 	marginals  []probability.Inverter
 
@@ -31,12 +31,12 @@ type Marginal struct {
 func NewMarginal(system *system.System, reference []float64,
 	config *config.Uncertainty) (*Marginal, error) {
 
-	direct, err := NewDirect(reference, config)
+	base, err := newBase(reference, config)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, direct.tasks)
+	correlator, err := correlate(system, config, base.tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -46,17 +46,17 @@ func NewMarginal(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginals := make([]probability.Inverter, direct.nu)
-	for i := uint(0); i < direct.nu; i++ {
-		marginals[i] = marginalizer(0, direct.upper[i]-direct.lower[i])
+	marginals := make([]probability.Inverter, base.nu)
+	for i := uint(0); i < base.nu; i++ {
+		marginals[i] = marginalizer(0, base.upper[i]-base.lower[i])
 	}
 
 	return &Marginal{
-		Direct:     *direct,
+		base:       base,
 		correlator: correlator,
 		marginals:  marginals,
 
-		nz: uint(len(correlator)) / direct.nu,
+		nz: uint(len(correlator)) / base.nu,
 	}, nil
 }
 
