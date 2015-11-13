@@ -10,7 +10,7 @@
 		"uncertainty": {
 			"deviation": 0.2,
 			"distribution": "Beta(1, 1)",
-			"corrLength": 5,
+			"correlation": 5,
 			"reduction": 0.95
 		}
 	}

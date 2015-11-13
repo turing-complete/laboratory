@@ -58,7 +58,7 @@ type Uncertainty struct {
 	Deviation float64 // ≥ 0
 
 	// The strength of correlations between tasks.
-	CorrLength float64 // > 0
+	Correlation float64 // > 0
 	// The portion of the variance to be preserved.
 	Reduction float64 // ∈ (0, 1]
 }

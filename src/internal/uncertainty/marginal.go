@@ -92,18 +92,18 @@ func (self *Marginal) Transform(z []float64) []float64 {
 func correlate(system *system.System, config *config.Uncertainty,
 	tasks []uint) ([]float64, error) {
 
-	if config.CorrLength < 0 {
+	if config.Correlation < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
 	if config.Reduction <= 0 {
 		return nil, errors.New("the variance reduction should be positive")
 	}
 
-	if config.CorrLength == 0 {
+	if config.Correlation == 0 {
 		return matrix.Identity(uint(len(tasks))), nil
 	}
 
-	C := icorrelation.Compute(system.Application, tasks, config.CorrLength)
+	C := icorrelation.Compute(system.Application, tasks, config.Correlation)
 	correlator, _, err := correlation.Decompose(C, uint(len(tasks)), config.Reduction)
 	if err != nil {
 		return nil, err
