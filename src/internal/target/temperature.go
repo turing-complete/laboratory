@@ -18,15 +18,15 @@ func newTemperature(system *system.System, config *config.Target) (*temperature,
 		return nil, err
 	}
 
-	time, err := uncertainty.New(system, system.ReferenceTime(), &config.Uncertainty)
+	time, err := uncertainty.New(system.ReferenceTime(), &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}
-	power, err := uncertainty.New(system, system.ReferencePower(), &config.Uncertainty)
+	power, err := uncertainty.New(system.ReferencePower(), &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}
-	base.ni = uint(time.Len() + power.Len())
+	base.ni = uint(time.Parameters() + power.Parameters())
 	base.no = 2 * 1
 
 	return &temperature{base: base, time: time, power: power}, nil
@@ -37,7 +37,7 @@ func (self *temperature) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	nt, np := self.time.Len(), self.power.Len()
+	nt, np := self.time.Parameters(), self.power.Parameters()
 
 	time := self.time.Transform(node[:nt])
 	power := self.time.Transform(node[nt : nt+np])

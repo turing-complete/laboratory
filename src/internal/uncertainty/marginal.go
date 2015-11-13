@@ -20,45 +20,47 @@ var (
 	pInfinity        = math.Inf(1)
 )
 
-type marginal struct {
-	base
+type Marginal struct {
+	Direct
 	correlator []float64
 	marginals  []probability.Inverter
+
+	nz uint
 }
 
-func newMarginal(system *system.System, reference []float64,
-	config *config.Uncertainty) (*marginal, error) {
+func NewMarginal(system *system.System, reference []float64,
+	config *config.Uncertainty) (*Marginal, error) {
 
-	base, err := newBase(system, reference, config)
+	direct, err := NewDirect(reference, config)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, base.tasks)
+	correlator, err := correlate(system, config, direct.tasks)
 	if err != nil {
 		return nil, err
 	}
-
-	base.nz = uint(len(correlator)) / base.nu
 
 	marginalizer, err := distribution.ParseInverter(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
 
-	marginals := make([]probability.Inverter, base.nu)
-	for i, deviation := range base.deviation {
-		marginals[i] = marginalizer(0, deviation)
+	marginals := make([]probability.Inverter, direct.nu)
+	for i := uint(0); i < direct.nu; i++ {
+		marginals[i] = marginalizer(0, direct.upper[i]-direct.lower[i])
 	}
 
-	return &marginal{
-		base:       base,
+	return &Marginal{
+		Direct:     *direct,
 		correlator: correlator,
 		marginals:  marginals,
+
+		nz: uint(len(correlator)) / direct.nu,
 	}, nil
 }
 
-func (self *marginal) Transform(z []float64) []float64 {
+func (self *Marginal) Transform(z []float64) []float64 {
 	nt, nu, nz := self.nt, self.nu, self.nz
 
 	n := make([]float64, nz)
@@ -78,13 +80,13 @@ func (self *marginal) Transform(z []float64) []float64 {
 	}
 
 	// Dependent uniform to dependent desired
-	duration := make([]float64, nt)
-	copy(duration, self.reference)
+	outcome := make([]float64, nt)
+	copy(outcome, self.lower)
 	for i, tid := range self.tasks {
-		duration[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+		outcome[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
-	return duration
+	return outcome
 }
 
 func correlate(system *system.System, config *config.Uncertainty,

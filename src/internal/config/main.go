@@ -49,10 +49,6 @@ type Target struct {
 
 // Uncertainty is a configuration of the probability model.
 type Uncertainty struct {
-	// The name of the uncertainty model. The options are “direct” and
-	// “marginal.”
-	Name string
-
 	// The tasks whose execution times should be considered as uncertain.
 	Tasks string // ⊂ {0, ..., #tasks-1}
 

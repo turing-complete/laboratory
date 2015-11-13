@@ -18,22 +18,22 @@ func newEnergy(system *system.System, config *config.Target) (*energy, error) {
 		return nil, err
 	}
 
-	time, err := uncertainty.New(system, system.ReferenceTime(), &config.Uncertainty)
+	time, err := uncertainty.New(system.ReferenceTime(), &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}
-	power, err := uncertainty.New(system, system.ReferencePower(), &config.Uncertainty)
+	power, err := uncertainty.New(system.ReferencePower(), &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}
-	base.ni = uint(time.Len() + power.Len())
+	base.ni = uint(time.Parameters() + power.Parameters())
 	base.no = 2 * 1
 
 	return &energy{base: base, time: time, power: power}, nil
 }
 
 func (self *energy) Compute(node, value []float64) {
-	nt, np := self.time.Len(), self.power.Len()
+	nt, np := self.time.Parameters(), self.power.Parameters()
 
 	time := self.time.Transform(node[:nt])
 	power := self.power.Transform(node[nt : nt+np])

@@ -17,11 +17,11 @@ func newDelay(system *system.System, config *config.Target) (*delay, error) {
 		return nil, err
 	}
 
-	time, err := uncertainty.New(system, system.ReferenceTime(), &config.Uncertainty)
+	time, err := uncertainty.New(system.ReferenceTime(), &config.Uncertainty)
 	if err != nil {
 		return nil, err
 	}
-	base.ni = uint(time.Len())
+	base.ni = uint(time.Parameters())
 	base.no = 2 * 1
 
 	return &delay{base: base, time: time}, nil

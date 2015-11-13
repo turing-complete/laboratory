@@ -8,7 +8,6 @@
 
 	"target": {
 		"uncertainty": {
-			"name": "marginal",
 			"deviation": 0.2,
 			"distribution": "Beta(1, 1)",
 			"corrLength": 5,
