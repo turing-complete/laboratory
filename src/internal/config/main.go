@@ -5,7 +5,8 @@ import (
 	"os"
 
 	"github.com/ready-steady/adapt"
-	"github.com/turing-complete/temperature/analytic"
+
+	temperature "github.com/turing-complete/temperature/analytic"
 )
 
 // Config is a configuration of the problem.
@@ -26,7 +27,7 @@ type System struct {
 	// A TGFF file describing the platform and application to analyze.
 	Specification string
 
-	analytic.Config
+	temperature.Config
 }
 
 // Target is a configuration of the quantity of interest.

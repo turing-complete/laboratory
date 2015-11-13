@@ -6,8 +6,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/power"
 	"github.com/turing-complete/system"
-	"github.com/turing-complete/temperature/analytic"
 	"github.com/turing-complete/time"
+
+	temperature "github.com/turing-complete/temperature/analytic"
 )
 
 type System struct {
@@ -16,7 +17,7 @@ type System struct {
 
 	time        *time.List
 	power       *power.Power
-	temperature *analytic.Fluid
+	temperature *temperature.Fluid
 
 	schedule *time.Schedule
 }
@@ -29,7 +30,7 @@ func New(config *config.System) (*System, error) {
 
 	time := time.NewList(platform, application)
 	power := power.New(platform, application)
-	temperature, err := analytic.NewFluid(&config.Config)
+	temperature, err := temperature.NewFluid(&config.Config)
 	if err != nil {
 		return nil, err
 	}
