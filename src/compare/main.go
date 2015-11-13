@@ -26,13 +26,11 @@ var (
 	outputFile    = flag.String("o", "", "an output file (required)")
 )
 
-type Config *config.Assessment
-
 func main() {
 	command.Run(function)
 }
 
-func function(config *config.Config) error {
+func function(_ *config.Config) error {
 	reference, err := database.Open(*referenceFile)
 	if err != nil {
 		return err
@@ -107,13 +105,12 @@ func function(config *config.Config) error {
 
 		o := cumulate(slice(ovalues, no, i*momentCount, 1), psteps)
 		for j := uint(0); j < nk; j++ {
-			εo = append(εo, assess(r, nil, o[j], nil, &config.Assessment)...)
+			εo = append(εo, assess(r, o[j])...)
 		}
 
 		p := divide(slice(pvalues, no, i*momentCount, 1), nk)
-		m := divide(slice(pmoments, no, i*momentCount, momentCount), nk)
 		for j := uint(0); j < nk; j++ {
-			εp = append(εp, assess(r, nil, p[j], m[j], &config.Assessment)...)
+			εp = append(εp, assess(r, p[j])...)
 		}
 	}
 
@@ -130,41 +127,16 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func assess(data1, moments1, data2, moments2 []float64, config Config) []float64 {
-	μ1, v1 := computeMoments(data1, moments1, config)
-	μ2, v2 := computeMoments(data2, moments2, config)
+func assess(data1, data2 []float64) []float64 {
+	μ1, v1 := distribution.Expectation(data1), distribution.Variance(data1)
+	μ2, v2 := distribution.Expectation(data2), distribution.Variance(data2)
 
 	result := make([]float64, metricCount)
 	result[0] = math.Abs((μ1 - μ2) / μ1)
 	result[1] = math.Abs((v1 - v2) / v1)
-	result[2] = computeDistance(data1, data2, config)
+	result[2] = metric.KolmogorovSmirnov(data1, data2)
 
 	return result
-}
-
-func computeMoments(data, moments []float64, config Config) (float64, float64) {
-	var μ float64
-	if len(moments) > 0 && len(config.Analytic) > 0 && config.Analytic[0] {
-		μ = moments[0]
-	} else {
-		μ = distribution.Expectation(data)
-	}
-
-	var v float64
-	if len(moments) > 1 && len(config.Analytic) > 1 && config.Analytic[1] {
-		v = moments[1] - μ*μ
-		if v < 0 {
-			v = distribution.Variance(data)
-		}
-	} else {
-		v = distribution.Variance(data)
-	}
-
-	return μ, v
-}
-
-func computeDistance(data1, data2 []float64, _ Config) float64 {
-	return metric.KolmogorovSmirnov(data1, data2)
 }
 
 func cumulate(data []float64, steps []uint) [][]float64 {

@@ -77,8 +77,6 @@ type Solver struct {
 
 // Assessment is a configuration of the assessment procedure.
 type Assessment struct {
-	// A flag to use the analytically computed moments.
-	Analytic []bool
 	// The seed for generating samples.
 	Seed int64
 	// The number of samples to draw.

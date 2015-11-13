@@ -24,7 +24,6 @@
 	},
 
 	"assessment": {
-		"analytic": [false, false],
 		"seed": 0,
 		"samples": 100000
 	},
