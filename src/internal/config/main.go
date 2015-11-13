@@ -50,7 +50,7 @@ type Target struct {
 // Uncertainty is a configuration of the probability model.
 type Uncertainty struct {
 	// The tasks whose execution times should be considered as uncertain.
-	Tasks string // ⊂ {0, ..., #tasks-1}
+	Tasks string // ⊂ {0, …, #tasks-1}
 
 	// The marginal distributions of tasks’ delays.
 	Distribution string
