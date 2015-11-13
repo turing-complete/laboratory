@@ -12,7 +12,7 @@
 			"deviation": 0.2,
 			"distribution": "Beta(1, 1)",
 			"corrLength": 5,
-			"varThreshold": 0.95
+			"reduction": 0.95
 		}
 	}
 }

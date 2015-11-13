@@ -29,7 +29,7 @@ func main() {
 }
 
 func function(config *config.Config) error {
-	config.Target.Uncertainty.VarThreshold = math.Inf(1)
+	config.Target.Uncertainty.Reduction = math.Inf(1)
 
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {

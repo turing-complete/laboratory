@@ -20,7 +20,7 @@ import (
 
 var (
 	outputFile     = flag.String("o", "", "an output file (required)")
-	varThreshold   = flag.Float64("t", math.Inf(1), "the variance-reduction threshold")
+	reduction      = flag.Float64("r", math.Inf(1), "the variance reduction")
 	parameterIndex = flag.String("s", "[]", "the parameters to sweep")
 	defaultNode    = flag.Float64("d", 0.5, "the default value of parameters")
 	nodeCount      = flag.Uint("n", 10, "the number of nodes per parameter")
@@ -37,7 +37,7 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	config.Target.Uncertainty.VarThreshold = *varThreshold
+	config.Target.Uncertainty.Reduction = *reduction
 
 	system, err := system.New(&config.System)
 	if err != nil {
@@ -60,7 +60,7 @@ func function(config *config.Config) error {
 	log.Println(system)
 	log.Println(aTarget)
 	log.Printf("Evaluating the model with reduction %.2f at %v points...\n",
-		config.Target.Uncertainty.VarThreshold, np)
+		config.Target.Uncertainty.Reduction, np)
 
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 

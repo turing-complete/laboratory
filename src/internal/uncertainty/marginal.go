@@ -93,8 +93,8 @@ func correlate(system *system.System, config *config.Uncertainty,
 	if config.CorrLength < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
-	if config.VarThreshold <= 0 {
-		return nil, errors.New("the variance-reduction threshold should be positive")
+	if config.Reduction <= 0 {
+		return nil, errors.New("the variance reduction should be positive")
 	}
 
 	if config.CorrLength == 0 {
@@ -102,7 +102,7 @@ func correlate(system *system.System, config *config.Uncertainty,
 	}
 
 	C := icorrelation.Compute(system.Application, tasks, config.CorrLength)
-	correlator, _, err := correlation.Decompose(C, uint(len(tasks)), config.VarThreshold)
+	correlator, _, err := correlation.Decompose(C, uint(len(tasks)), config.Reduction)
 	if err != nil {
 		return nil, err
 	}
