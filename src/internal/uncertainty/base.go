@@ -10,7 +10,7 @@ import (
 )
 
 type base struct {
-	taskIndex []uint
+	tasks     []uint
 	reference []float64
 	deviation []float64
 
@@ -27,20 +27,20 @@ func newBase(system *system.System, reference []float64,
 		return base{}, errors.New("the length of the reference is invalid")
 	}
 
-	taskIndex, err := support.ParseNaturalIndex(config.TaskIndex, 0, nt-1)
+	tasks, err := support.ParseNaturalIndex(config.Tasks, 0, nt-1)
 	if err != nil {
 		return base{}, err
 	}
 
-	nu := uint(len(taskIndex))
+	nu := uint(len(tasks))
 
 	deviation := make([]float64, nu)
-	for i, tid := range taskIndex {
+	for i, tid := range tasks {
 		deviation[i] = config.Deviation * reference[tid]
 	}
 
 	return base{
-		taskIndex: taskIndex,
+		tasks:     tasks,
 		reference: reference,
 		deviation: deviation,
 

@@ -7,7 +7,7 @@
 	"target": {
 		"uncertainty": {
 			"name": "direct",
-			"taskIndex": "[]",
+			"tasks": "[]",
 			"deviation": 0.2
 		},
 		"importance": [1, 0],

@@ -34,7 +34,7 @@ func newMarginal(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, base.taskIndex)
+	correlator, err := correlate(system, config, base.tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -80,7 +80,7 @@ func (self *marginal) Transform(z []float64) []float64 {
 	// Dependent uniform to dependent desired
 	duration := make([]float64, nt)
 	copy(duration, self.reference)
-	for i, tid := range self.taskIndex {
+	for i, tid := range self.tasks {
 		duration[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
@@ -88,7 +88,7 @@ func (self *marginal) Transform(z []float64) []float64 {
 }
 
 func correlate(system *system.System, config *config.Uncertainty,
-	taskIndex []uint) ([]float64, error) {
+	tasks []uint) ([]float64, error) {
 
 	if config.CorrLength < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
@@ -98,11 +98,11 @@ func correlate(system *system.System, config *config.Uncertainty,
 	}
 
 	if config.CorrLength == 0 {
-		return matrix.Identity(uint(len(taskIndex))), nil
+		return matrix.Identity(uint(len(tasks))), nil
 	}
 
-	C := icorrelation.Compute(system.Application, taskIndex, config.CorrLength)
-	correlator, _, err := correlation.Decompose(C, uint(len(taskIndex)), config.VarThreshold)
+	C := icorrelation.Compute(system.Application, tasks, config.CorrLength)
+	correlator, _, err := correlation.Decompose(C, uint(len(tasks)), config.VarThreshold)
 	if err != nil {
 		return nil, err
 	}

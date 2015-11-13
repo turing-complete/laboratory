@@ -23,7 +23,7 @@ func newDirect(system *system.System, reference []float64,
 func (self *direct) Transform(z []float64) []float64 {
 	duration := make([]float64, self.nt)
 	copy(duration, self.reference)
-	for i, tid := range self.taskIndex {
+	for i, tid := range self.tasks {
 		duration[tid] += z[i] * self.deviation[i]
 	}
 	return duration
