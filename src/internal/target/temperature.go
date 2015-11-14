@@ -8,28 +8,26 @@ import (
 
 type temperature struct {
 	base
-	time  uncertainty.Uncertainty
-	power uncertainty.Uncertainty
+	time  *uncertainty.Parameter
+	power *uncertainty.Parameter
 }
 
-func newTemperature(system *system.System, config *config.Target) (*temperature, error) {
+func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
+	config *config.Target) (*temperature, error) {
+
 	base, err := newBase(system, config)
 	if err != nil {
 		return nil, err
 	}
 
-	time, err := uncertainty.New(system.ReferenceTime(), &config.Uncertainty)
-	if err != nil {
-		return nil, err
-	}
-	power, err := uncertainty.New(system.ReferencePower(), &config.Uncertainty)
-	if err != nil {
-		return nil, err
-	}
-	base.ni = uint(time.Parameters() + power.Parameters())
+	base.ni = uint(uncertainty.Time.Len() + uncertainty.Power.Len())
 	base.no = 2 * 1
 
-	return &temperature{base: base, time: time, power: power}, nil
+	return &temperature{
+		base:  base,
+		time:  uncertainty.Time,
+		power: uncertainty.Power,
+	}, nil
 }
 
 func (self *temperature) Compute(node, value []float64) {
@@ -37,7 +35,7 @@ func (self *temperature) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	nt, np := self.time.Parameters(), self.power.Parameters()
+	nt, np := uint(self.time.Len()), uint(self.power.Len())
 
 	time := self.time.Transform(node[:nt])
 	power := self.time.Transform(node[nt : nt+np])

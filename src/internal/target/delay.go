@@ -8,23 +8,24 @@ import (
 
 type delay struct {
 	base
-	time uncertainty.Uncertainty
+	time *uncertainty.Parameter
 }
 
-func newDelay(system *system.System, config *config.Target) (*delay, error) {
+func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
+	config *config.Target) (*delay, error) {
+
 	base, err := newBase(system, config)
 	if err != nil {
 		return nil, err
 	}
 
-	time, err := uncertainty.New(system.ReferenceTime(), &config.Uncertainty)
-	if err != nil {
-		return nil, err
-	}
-	base.ni = uint(time.Parameters())
+	base.ni = uint(uncertainty.Time.Len())
 	base.no = 2 * 1
 
-	return &delay{base: base, time: time}, nil
+	return &delay{
+		base: base,
+		time: uncertainty.Time,
+	}, nil
 }
 
 func (self *delay) Compute(node []float64, value []float64) {

@@ -6,12 +6,10 @@
 		"ambience": 318.15
 	},
 
-	"target": {
-		"uncertainty": {
-			"deviation": 0.2,
-			"distribution": "Beta(1, 1)",
-			"correlation": 5,
-			"reduction": 0.95
-		}
+	"uncertainty": {
+		"deviation": 0.2,
+		"distribution": "Beta(1, 1)",
+		"correlation": 5,
+		"reduction": 0.95
 	}
 }

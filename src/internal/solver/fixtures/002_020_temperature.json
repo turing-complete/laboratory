@@ -6,11 +6,12 @@
 		"ambience": 318.15
 	},
 
+	"uncertainty": {
+		"deviation": 0.2
+	},
+
 	"target": {
 		"name": "maximal-temperature",
-		"uncertainty": {
-			"deviation": 0.2
-		},
 		"importance": [1, 0],
 		"rejection": [0, 0],
 		"refinement": [1e-3, 0]

@@ -7,7 +7,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/support"
 )
 
-type base struct {
+type Parameter struct {
 	tasks []uint
 	lower []float64
 	upper []float64
@@ -16,12 +16,12 @@ type base struct {
 	nu uint
 }
 
-func newBase(reference []float64, config *config.Uncertainty) (base, error) {
+func newParameter(reference []float64, config *config.Uncertainty) (*Parameter, error) {
 	nt := uint(len(reference))
 
 	tasks, err := support.ParseNaturalIndex(config.Tasks, 0, nt-1)
 	if err != nil {
-		return base{}, err
+		return nil, err
 	}
 
 	nu := uint(len(tasks))
@@ -36,7 +36,7 @@ func newBase(reference []float64, config *config.Uncertainty) (base, error) {
 		upper[tid] *= (1.0 + config.Deviation)
 	}
 
-	return base{
+	return &Parameter{
 		tasks: tasks,
 		lower: lower,
 		upper: upper,
@@ -46,10 +46,19 @@ func newBase(reference []float64, config *config.Uncertainty) (base, error) {
 	}, nil
 }
 
-func (self *base) Parameters() uint {
-	return self.nu
+func (self *Parameter) Len() int {
+	return int(self.nu)
 }
 
-func (self *base) String() string {
-	return fmt.Sprintf(`{"parameters": %d}`, self.nu)
+func (self *Parameter) String() string {
+	return fmt.Sprintf(`{"dimensionality": %d}`, self.nu)
+}
+
+func (self *Parameter) Transform(z []float64) []float64 {
+	outcome := make([]float64, self.nt)
+	copy(outcome, self.lower)
+	for i, tid := range self.tasks {
+		outcome[tid] += z[i] * (self.upper[tid] - self.lower[tid])
+	}
+	return outcome
 }

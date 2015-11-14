@@ -2,13 +2,25 @@ package uncertainty
 
 import (
 	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
-type Uncertainty interface {
-	Parameters() uint
-	Transform([]float64) []float64
+type Uncertainty struct {
+	Time  *Parameter
+	Power *Parameter
 }
 
-func New(reference []float64, config *config.Uncertainty) (Uncertainty, error) {
-	return newDirect(reference, config)
+func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+	time, err := newParameter(system.ReferenceTime(), config)
+	if err != nil {
+		return nil, err
+	}
+	power, err := newParameter(system.ReferencePower(), config)
+	if err != nil {
+		return nil, err
+	}
+	return &Uncertainty{
+		Time:  time,
+		Power: power,
+	}, nil
 }

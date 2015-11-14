@@ -14,6 +14,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 var (
@@ -70,7 +71,12 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	target, err := target.New(system, &config.Target)
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+
+	target, err := target.New(system, uncertainty, &config.Target)
 	if err != nil {
 		return err
 	}

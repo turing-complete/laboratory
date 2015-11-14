@@ -20,23 +20,23 @@ var (
 	pInfinity        = math.Inf(1)
 )
 
-type Marginal struct {
-	base
+type marginal struct {
+	parameter  *Parameter
 	correlator []float64
 	marginals  []probability.Inverter
 
 	nz uint
 }
 
-func NewMarginal(system *system.System, reference []float64,
-	config *config.Uncertainty) (*Marginal, error) {
+func newMarginal(system *system.System, reference []float64,
+	config *config.Uncertainty) (*marginal, error) {
 
-	base, err := newBase(reference, config)
+	parameter, err := newParameter(reference, config)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, base.tasks)
+	correlator, err := correlate(system, config, parameter.tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -46,22 +46,22 @@ func NewMarginal(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginals := make([]probability.Inverter, base.nu)
-	for i := uint(0); i < base.nu; i++ {
-		marginals[i] = marginalizer(0, base.upper[i]-base.lower[i])
+	marginals := make([]probability.Inverter, parameter.nu)
+	for i := uint(0); i < parameter.nu; i++ {
+		marginals[i] = marginalizer(0, parameter.upper[i]-parameter.lower[i])
 	}
 
-	return &Marginal{
-		base:       base,
+	return &marginal{
+		parameter:  parameter,
 		correlator: correlator,
 		marginals:  marginals,
 
-		nz: uint(len(correlator)) / base.nu,
+		nz: uint(len(correlator)) / parameter.nu,
 	}, nil
 }
 
-func (self *Marginal) Transform(z []float64) []float64 {
-	nt, nu, nz := self.nt, self.nu, self.nz
+func (self *marginal) Transform(z []float64) []float64 {
+	nt, nu, nz := self.parameter.nt, self.parameter.nu, self.nz
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)
@@ -81,8 +81,8 @@ func (self *Marginal) Transform(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	outcome := make([]float64, nt)
-	copy(outcome, self.lower)
-	for i, tid := range self.tasks {
+	copy(outcome, self.parameter.lower)
+	for i, tid := range self.parameter.tasks {
 		outcome[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 

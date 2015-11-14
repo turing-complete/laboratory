@@ -16,6 +16,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/database"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 var (
@@ -37,14 +38,19 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	config.Target.Uncertainty.Reduction = *reduction
+	config.Uncertainty.Reduction = *reduction
 
 	system, err := system.New(&config.System)
 	if err != nil {
 		return err
 	}
 
-	aTarget, err := target.New(system, &config.Target)
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+
+	aTarget, err := target.New(system, uncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
@@ -60,7 +66,7 @@ func function(config *config.Config) error {
 	log.Println(system)
 	log.Println(aTarget)
 	log.Printf("Evaluating the model with reduction %.2f at %v points...\n",
-		config.Target.Uncertainty.Reduction, np)
+		config.Uncertainty.Reduction, np)
 
 	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
 

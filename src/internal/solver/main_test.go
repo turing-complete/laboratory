@@ -8,12 +8,14 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 func TestSolverCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_temperature.json")
 	system, _ := system.New(&config.System)
-	target, _ := target.New(system, &config.Target)
+	uncertainty, _ := uncertainty.New(system, &config.Uncertainty)
+	target, _ := target.New(system, uncertainty, &config.Target)
 	solver, _ := New(target, &config.Solver)
 	solution := solver.Compute(target)
 

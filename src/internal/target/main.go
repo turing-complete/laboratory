@@ -7,18 +7,23 @@ import (
 	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
-type Target adapt.Target
+type Target interface {
+	adapt.Target
+}
 
-func New(system *system.System, config *config.Target) (Target, error) {
+func New(system *system.System, uncertainty *uncertainty.Uncertainty,
+	config *config.Target) (Target, error) {
+
 	switch config.Name {
 	case "end-to-end-delay":
-		return newDelay(system, config)
+		return newDelay(system, uncertainty, config)
 	case "total-energy":
-		return newEnergy(system, config)
+		return newEnergy(system, uncertainty, config)
 	case "maximal-temperature":
-		return newTemperature(system, config)
+		return newTemperature(system, uncertainty, config)
 	default:
 		return nil, errors.New("the target is unknown")
 	}

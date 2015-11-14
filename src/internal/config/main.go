@@ -13,10 +13,11 @@ import (
 type Config struct {
 	Inherit string
 
-	System     System     // Platform and application
-	Target     Target     // Quantity of interest
-	Solver     Solver     // Interpolation algorithm
-	Assessment Assessment // Assessment
+	System      System      // Platform and application
+	Target      Target      // Quantity of interest
+	Uncertainty Uncertainty // Probability model
+	Solver      Solver      // Interpolation algorithm
+	Assessment  Assessment  // Assessment
 
 	// A flag to display diagnostic information.
 	Verbose bool
@@ -35,10 +36,6 @@ type Target struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “maximal-temperature.”
 	Name string
-
-	/// The probability model.
-	Uncertainty Uncertainty
-
 	// The weights for output dimensions.
 	Importance []float64
 	// The rejection threshold for output dimensions.
@@ -51,12 +48,10 @@ type Target struct {
 type Uncertainty struct {
 	// The tasks whose execution times should be considered as uncertain.
 	Tasks string // ⊂ {0, …, #tasks-1}
-
 	// The marginal distributions of tasks’ delays.
 	Distribution string
 	// The multiplier used to calculate the deviation of a parameter.
 	Deviation float64 // ≥ 0
-
 	// The strength of correlations between tasks.
 	Correlation float64 // > 0
 	// The portion of the variance to be preserved.
