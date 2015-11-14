@@ -2,6 +2,7 @@ package uncertainty
 
 import (
 	"errors"
+	"fmt"
 	"math"
 
 	"github.com/ready-steady/linear/matrix"
@@ -21,7 +22,7 @@ var (
 )
 
 type marginal struct {
-	direct     *direct
+	base
 	correlator []float64
 	marginals  []probability.Inverter
 
@@ -31,12 +32,12 @@ type marginal struct {
 func newMarginal(system *system.System, reference []float64,
 	config *config.Uncertainty) (*marginal, error) {
 
-	direct, err := newDirect(reference, config)
+	base, err := newBase(reference, config)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, direct.tasks)
+	correlator, err := correlate(system, config, base.tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -46,22 +47,30 @@ func newMarginal(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginals := make([]probability.Inverter, direct.nu)
-	for i := uint(0); i < direct.nu; i++ {
-		marginals[i] = marginalizer(0, direct.upper[i]-direct.lower[i])
+	marginals := make([]probability.Inverter, base.nu)
+	for i := uint(0); i < base.nu; i++ {
+		marginals[i] = marginalizer(0, base.upper[i]-base.lower[i])
 	}
 
 	return &marginal{
-		direct:     direct,
+		base:       base,
 		correlator: correlator,
 		marginals:  marginals,
 
-		nz: uint(len(correlator)) / direct.nu,
+		nz: uint(len(correlator)) / base.nu,
 	}, nil
 }
 
+func (self *marginal) Dimensions() uint {
+	return self.nz
+}
+
+func (self *marginal) String() string {
+	return fmt.Sprintf(`{"dimensions": %d}`, self.nz)
+}
+
 func (self *marginal) Transform(z []float64) []float64 {
-	nt, nu, nz := self.direct.nt, self.direct.nu, self.nz
+	nt, nu, nz := self.nt, self.nu, self.nz
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)
@@ -81,8 +90,8 @@ func (self *marginal) Transform(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	outcome := make([]float64, nt)
-	copy(outcome, self.direct.lower)
-	for i, tid := range self.direct.tasks {
+	copy(outcome, self.lower)
+	for i, tid := range self.tasks {
 		outcome[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 

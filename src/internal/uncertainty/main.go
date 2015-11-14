@@ -29,3 +29,18 @@ func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error
 		Power: power,
 	}, nil
 }
+
+func NewMarginal(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+	time, err := newMarginal(system, system.ReferenceTime(), config)
+	if err != nil {
+		return nil, err
+	}
+	power, err := newMarginal(system, system.ReferencePower(), config)
+	if err != nil {
+		return nil, err
+	}
+	return &Uncertainty{
+		Time:  time,
+		Power: power,
+	}, nil
+}
