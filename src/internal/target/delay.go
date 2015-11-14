@@ -19,7 +19,7 @@ func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
 		return nil, err
 	}
 
-	base.ni = uint(uncertainty.Time.Len())
+	base.ni = uncertainty.Time.Dimensions()
 	base.no = 2 * 1
 
 	return &delay{

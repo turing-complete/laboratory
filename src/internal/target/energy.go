@@ -20,7 +20,7 @@ func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,
 		return nil, err
 	}
 
-	base.ni = uint(uncertainty.Time.Len() + uncertainty.Power.Len())
+	base.ni = uncertainty.Time.Dimensions() + uncertainty.Power.Dimensions()
 	base.no = 2 * 1
 
 	return &energy{
@@ -31,7 +31,7 @@ func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,
 }
 
 func (self *energy) Compute(node, value []float64) {
-	nt, np := uint(self.time.Len()), uint(self.power.Len())
+	nt, np := self.time.Dimensions(), self.power.Dimensions()
 
 	time := self.time.Transform(node[:nt])
 	power := self.power.Transform(node[nt : nt+np])

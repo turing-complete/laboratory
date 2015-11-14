@@ -46,8 +46,8 @@ func newParameter(reference []float64, config *config.Uncertainty) (*Parameter, 
 	}, nil
 }
 
-func (self *Parameter) Len() int {
-	return int(self.nu)
+func (self *Parameter) Dimensions() uint {
+	return self.nu
 }
 
 func (self *Parameter) String() string {
