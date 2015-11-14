@@ -12,9 +12,8 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
 	"github.com/turing-complete/laboratory/src/internal/support"
-	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
-	"github.com/turing-complete/laboratory/src/internal/uncertainty"
+
+	itarget "github.com/turing-complete/laboratory/src/internal/target"
 )
 
 var (
@@ -57,28 +56,18 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	system, err := system.New(&config.System)
+	_, _, target, err := command.Setup(config)
 	if err != nil {
 		return err
 	}
 
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
-	if err != nil {
-		return err
-	}
-
-	aTarget, err := target.New(system, uncertainty, &config.Target)
-	if err != nil {
-		return err
-	}
-
-	ni, no := aTarget.Dimensions()
+	ni, no := target.Dimensions()
 	ns := config.Assessment.Samples
 
 	points := support.Generate(ni, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the original model at %d points...\n", ns)
-	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
+	values := itarget.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
 	log.Println("Done.")
 
 	if err := output.Put("points", points, ni, ns); err != nil {

@@ -9,6 +9,9 @@ import (
 	"runtime/pprof"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 var (
@@ -53,6 +56,27 @@ func Run(function func(*config.Config) error) {
 	if err = function(config); err != nil {
 		fail(err)
 	}
+}
+
+func Setup(config *config.Config) (*system.System, *uncertainty.Uncertainty,
+	target.Target, error) {
+
+	system, err := system.New(&config.System)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	target, err := target.New(system, uncertainty, &config.Target)
+	if err != nil {
+		return nil, nil, nil, err
+	}
+
+	return system, uncertainty, target, nil
 }
 
 func fail(err error) {

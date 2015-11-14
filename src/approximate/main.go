@@ -8,9 +8,6 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
 	"github.com/turing-complete/laboratory/src/internal/solver"
-	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
-	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 var (
@@ -28,17 +25,7 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	system, err := system.New(&config.System)
-	if err != nil {
-		return err
-	}
-
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
-	if err != nil {
-		return err
-	}
-
-	target, err := target.New(system, uncertainty, &config.Target)
+	system, _, target, err := command.Setup(config)
 	if err != nil {
 		return err
 	}

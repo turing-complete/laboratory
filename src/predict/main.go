@@ -10,11 +10,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
-	"github.com/turing-complete/laboratory/src/internal/solver"
 	"github.com/turing-complete/laboratory/src/internal/support"
-	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
-	"github.com/turing-complete/laboratory/src/internal/uncertainty"
+
+	isolver "github.com/turing-complete/laboratory/src/internal/solver"
 )
 
 var (
@@ -66,27 +64,17 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	system, err := system.New(&config.System)
+	_, _, target, err := command.Setup(config)
 	if err != nil {
 		return err
 	}
 
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	solver, err := isolver.New(target, &config.Solver)
 	if err != nil {
 		return err
 	}
 
-	target, err := target.New(system, uncertainty, &config.Target)
-	if err != nil {
-		return err
-	}
-
-	aSolver, err := solver.New(target, &config.Solver)
-	if err != nil {
-		return err
-	}
-
-	solution := new(solver.Solution)
+	solution := new(isolver.Solution)
 	if err = approximate.Get("solution", solution); err != nil {
 		return err
 	}
@@ -125,8 +113,8 @@ func function(config *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		values = append(values, aSolver.Evaluate(&s, points)...)
-		moments = append(moments, aSolver.Integrate(&s)...)
+		values = append(values, solver.Evaluate(&s, points)...)
+		moments = append(moments, solver.Integrate(&s)...)
 	}
 
 	nk, steps = k, steps[:k]
