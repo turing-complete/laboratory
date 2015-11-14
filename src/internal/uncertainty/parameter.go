@@ -51,7 +51,7 @@ func (self *Parameter) Dimensions() uint {
 }
 
 func (self *Parameter) String() string {
-	return fmt.Sprintf(`{"dimensionality": %d}`, self.nu)
+	return fmt.Sprintf(`{"dimensions": %d}`, self.nu)
 }
 
 func (self *Parameter) Transform(z []float64) []float64 {
