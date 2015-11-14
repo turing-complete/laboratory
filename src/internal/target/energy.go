@@ -8,8 +8,8 @@ import (
 
 type energy struct {
 	base
-	time  *uncertainty.Parameter
-	power *uncertainty.Parameter
+	time  uncertainty.Parameter
+	power uncertainty.Parameter
 }
 
 func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,

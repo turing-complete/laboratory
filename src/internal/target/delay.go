@@ -8,7 +8,7 @@ import (
 
 type delay struct {
 	base
-	time *uncertainty.Parameter
+	time uncertainty.Parameter
 }
 
 func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,

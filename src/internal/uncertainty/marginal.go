@@ -21,7 +21,7 @@ var (
 )
 
 type marginal struct {
-	parameter  *Parameter
+	direct     *direct
 	correlator []float64
 	marginals  []probability.Inverter
 
@@ -31,12 +31,12 @@ type marginal struct {
 func newMarginal(system *system.System, reference []float64,
 	config *config.Uncertainty) (*marginal, error) {
 
-	parameter, err := newParameter(reference, config)
+	direct, err := newDirect(reference, config)
 	if err != nil {
 		return nil, err
 	}
 
-	correlator, err := correlate(system, config, parameter.tasks)
+	correlator, err := correlate(system, config, direct.tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -46,22 +46,22 @@ func newMarginal(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginals := make([]probability.Inverter, parameter.nu)
-	for i := uint(0); i < parameter.nu; i++ {
-		marginals[i] = marginalizer(0, parameter.upper[i]-parameter.lower[i])
+	marginals := make([]probability.Inverter, direct.nu)
+	for i := uint(0); i < direct.nu; i++ {
+		marginals[i] = marginalizer(0, direct.upper[i]-direct.lower[i])
 	}
 
 	return &marginal{
-		parameter:  parameter,
+		direct:     direct,
 		correlator: correlator,
 		marginals:  marginals,
 
-		nz: uint(len(correlator)) / parameter.nu,
+		nz: uint(len(correlator)) / direct.nu,
 	}, nil
 }
 
 func (self *marginal) Transform(z []float64) []float64 {
-	nt, nu, nz := self.parameter.nt, self.parameter.nu, self.nz
+	nt, nu, nz := self.direct.nt, self.direct.nu, self.nz
 
 	n := make([]float64, nz)
 	u := make([]float64, nu)
@@ -81,8 +81,8 @@ func (self *marginal) Transform(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	outcome := make([]float64, nt)
-	copy(outcome, self.parameter.lower)
-	for i, tid := range self.parameter.tasks {
+	copy(outcome, self.direct.lower)
+	for i, tid := range self.direct.tasks {
 		outcome[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 

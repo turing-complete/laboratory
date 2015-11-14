@@ -8,8 +8,8 @@ import (
 
 type temperature struct {
 	base
-	time  *uncertainty.Parameter
-	power *uncertainty.Parameter
+	time  uncertainty.Parameter
+	power uncertainty.Parameter
 }
 
 func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,

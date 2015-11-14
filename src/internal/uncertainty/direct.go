@@ -7,7 +7,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/support"
 )
 
-type Parameter struct {
+type direct struct {
 	tasks []uint
 	lower []float64
 	upper []float64
@@ -16,7 +16,7 @@ type Parameter struct {
 	nu uint
 }
 
-func newParameter(reference []float64, config *config.Uncertainty) (*Parameter, error) {
+func newDirect(reference []float64, config *config.Uncertainty) (*direct, error) {
 	nt := uint(len(reference))
 
 	tasks, err := support.ParseNaturalIndex(config.Tasks, 0, nt-1)
@@ -36,7 +36,7 @@ func newParameter(reference []float64, config *config.Uncertainty) (*Parameter, 
 		upper[tid] *= (1.0 + config.Deviation)
 	}
 
-	return &Parameter{
+	return &direct{
 		tasks: tasks,
 		lower: lower,
 		upper: upper,
@@ -46,15 +46,15 @@ func newParameter(reference []float64, config *config.Uncertainty) (*Parameter, 
 	}, nil
 }
 
-func (self *Parameter) Dimensions() uint {
+func (self *direct) Dimensions() uint {
 	return self.nu
 }
 
-func (self *Parameter) String() string {
+func (self *direct) String() string {
 	return fmt.Sprintf(`{"dimensions": %d}`, self.nu)
 }
 
-func (self *Parameter) Transform(z []float64) []float64 {
+func (self *direct) Transform(z []float64) []float64 {
 	outcome := make([]float64, self.nt)
 	copy(outcome, self.lower)
 	for i, tid := range self.tasks {
