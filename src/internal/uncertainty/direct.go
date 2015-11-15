@@ -18,19 +18,27 @@ func newDirect(reference []float64, config *config.Uncertainty) (*direct, error)
 	return &direct{base}, nil
 }
 
-func (self *direct) Dimensions() uint {
-	return self.nu
+func (self *direct) Dimensions() (uint, uint) {
+	return self.nu, self.nt
+}
+
+func (self *direct) Forward(z []float64) []float64 {
+	ω := make([]float64, self.nt)
+	copy(ω, self.lower)
+	for i, tid := range self.tasks {
+		ω[tid] += z[i] * (self.upper[tid] - self.lower[tid])
+	}
+	return ω
+}
+
+func (self *direct) Inverse(ω []float64) []float64 {
+	z := make([]float64, self.nu)
+	for i, tid := range self.tasks {
+		z[i] = (ω[i] - self.lower[tid]) / (self.upper[tid] - self.lower[tid])
+	}
+	return z
 }
 
 func (self *direct) String() string {
 	return fmt.Sprintf(`{"dimensions": %d}`, self.nu)
-}
-
-func (self *direct) Transform(z []float64) []float64 {
-	outcome := make([]float64, self.nt)
-	copy(outcome, self.lower)
-	for i, tid := range self.tasks {
-		outcome[tid] += z[i] * (self.upper[tid] - self.lower[tid])
-	}
-	return outcome
 }

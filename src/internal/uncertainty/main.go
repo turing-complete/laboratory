@@ -6,8 +6,9 @@ import (
 )
 
 type Parameter interface {
-	Dimensions() uint
-	Transform([]float64) []float64
+	Dimensions() (uint, uint)
+	Forward([]float64) []float64
+	Inverse([]float64) []float64
 }
 
 type Uncertainty struct {
@@ -43,4 +44,20 @@ func NewMarginal(system *system.System, config *config.Uncertainty) (*Uncertaint
 		Time:  time,
 		Power: power,
 	}, nil
+}
+
+func (self *Uncertainty) Dimensions() (uint, uint) {
+	ni1, no1 := self.Time.Dimensions()
+	ni2, no2 := self.Power.Dimensions()
+	return ni1 + ni2, no1 + no2
+}
+
+func (self *Uncertainty) Forward(z []float64) []float64 {
+	ni, _ := self.Time.Dimensions()
+	return append(self.Time.Forward(z[:ni]), self.Power.Forward(z[ni:])...)
+}
+
+func (self *Uncertainty) Inverse(ω []float64) []float64 {
+	no, _ := self.Time.Dimensions()
+	return append(self.Time.Inverse(ω[:no]), self.Power.Inverse(ω[no:])...)
 }

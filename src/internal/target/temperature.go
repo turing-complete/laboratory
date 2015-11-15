@@ -20,7 +20,7 @@ func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 		return nil, err
 	}
 
-	base.ni = uncertainty.Time.Dimensions() + uncertainty.Power.Dimensions()
+	base.ni, _ = uncertainty.Dimensions()
 	base.no = 2 * 1
 
 	return &temperature{
@@ -35,10 +35,11 @@ func (self *temperature) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	nt, np := self.time.Dimensions(), self.power.Dimensions()
+	nt, _ := self.time.Dimensions()
+	np, _ := self.power.Dimensions()
 
-	time := self.time.Transform(node[:nt])
-	power := self.time.Transform(node[nt : nt+np])
+	time := self.time.Forward(node[:nt])
+	power := self.time.Forward(node[nt : nt+np])
 	schedule := self.system.ComputeSchedule(time)
 
 	P, ΔT := self.system.PartitionPower(power, schedule, ε)

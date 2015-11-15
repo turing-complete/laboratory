@@ -61,15 +61,11 @@ func newMarginal(system *system.System, reference []float64,
 	}, nil
 }
 
-func (self *marginal) Dimensions() uint {
-	return self.nz
+func (self *marginal) Dimensions() (uint, uint) {
+	return self.nz, self.nt
 }
 
-func (self *marginal) String() string {
-	return fmt.Sprintf(`{"dimensions": %d}`, self.nz)
-}
-
-func (self *marginal) Transform(z []float64) []float64 {
+func (self *marginal) Forward(z []float64) []float64 {
 	nt, nu, nz := self.nt, self.nu, self.nz
 
 	n := make([]float64, nz)
@@ -89,13 +85,21 @@ func (self *marginal) Transform(z []float64) []float64 {
 	}
 
 	// Dependent uniform to dependent desired
-	outcome := make([]float64, nt)
-	copy(outcome, self.lower)
+	ω := make([]float64, nt)
+	copy(ω, self.lower)
 	for i, tid := range self.tasks {
-		outcome[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+		ω[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
-	return outcome
+	return ω
+}
+
+func (_ *marginal) Inverse(_ []float64) []float64 {
+	return nil
+}
+
+func (self *marginal) String() string {
+	return fmt.Sprintf(`{"dimensions": %d}`, self.nz)
 }
 
 func correlate(system *system.System, config *config.Uncertainty,

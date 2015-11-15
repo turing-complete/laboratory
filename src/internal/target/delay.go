@@ -19,7 +19,7 @@ func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
 		return nil, err
 	}
 
-	base.ni = uncertainty.Time.Dimensions()
+	base.ni, _ = uncertainty.Time.Dimensions()
 	base.no = 2 * 1
 
 	return &delay{
@@ -29,6 +29,6 @@ func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
 }
 
 func (self *delay) Compute(node []float64, value []float64) {
-	value[0] = self.system.ComputeSchedule(self.time.Transform(node)).Span
+	value[0] = self.system.ComputeSchedule(self.time.Forward(node)).Span
 	value[1] = value[0] * value[0]
 }
