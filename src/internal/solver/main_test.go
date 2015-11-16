@@ -15,14 +15,16 @@ func TestSolverCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020_temperature.json")
 	system, _ := system.New(&config.System)
 	uncertainty, _ := uncertainty.New(system, &config.Uncertainty)
+
 	target, _ := target.New(system, uncertainty, &config.Target)
-	solver, _ := New(target, &config.Solver)
+	ni, no := target.Dimensions()
+
+	solver, _ := New(ni, no, &config.Solver)
 	solution := solver.Compute(target)
 
-	ni, no := target.Dimensions()
 	nc := solution.Surrogate.Nodes
 
-	assert.Equal(nc, uint(241), t)
+	assert.Equal(nc, uint(857), t)
 
 	grid := newcot.NewOpen(ni)
 	nodes := grid.Compute(solution.Surrogate.Indices)

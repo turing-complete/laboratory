@@ -12,6 +12,8 @@ import (
 
 type Target interface {
 	adapt.Target
+	Forward([]float64) []float64
+	Inverse([]float64) []float64
 }
 
 func New(system *system.System, uncertainty *uncertainty.Uncertainty,

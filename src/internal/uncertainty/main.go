@@ -58,6 +58,6 @@ func (self *Uncertainty) Forward(z []float64) []float64 {
 }
 
 func (self *Uncertainty) Inverse(ω []float64) []float64 {
-	no, _ := self.Time.Dimensions()
+	_, no := self.Time.Dimensions()
 	return append(self.Time.Inverse(ω[:no]), self.Power.Inverse(ω[no:])...)
 }

@@ -19,9 +19,7 @@ type Solution struct {
 	adapt.Surrogate
 }
 
-func New(target target.Target, config *config.Solver) (*Solver, error) {
-	ni, _ := target.Dimensions()
-
+func New(ni, _ uint, config *config.Solver) (*Solver, error) {
 	var grid adapt.Grid
 	var basis adapt.Basis
 

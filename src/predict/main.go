@@ -11,6 +11,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
 	"github.com/turing-complete/laboratory/src/internal/support"
+	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 
 	isolver "github.com/turing-complete/laboratory/src/internal/solver"
 )
@@ -64,12 +67,34 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	_, _, target, err := command.Setup(config)
+	system, err := system.New(&config.System)
 	if err != nil {
 		return err
 	}
 
-	solver, err := isolver.New(target, &config.Solver)
+	uncertainty1, err := uncertainty.New(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+
+	uncertainty2, err := uncertainty.NewMarginal(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+
+	target1, err := target.New(system, uncertainty1, &config.Target)
+	if err != nil {
+		return err
+	}
+
+	target2, err := target.New(system, uncertainty2, &config.Target)
+	if err != nil {
+		return err
+	}
+
+	ni, no := target1.Dimensions()
+
+	solver, err := isolver.New(ni, no, &config.Solver)
 	if err != nil {
 		return err
 	}
@@ -79,10 +104,9 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	ni, no := target.Dimensions()
-	ns := config.Assessment.Samples
+	points := generate(target1, target2, &config.Assessment)
 
-	points := support.Generate(ni, ns, config.Assessment.Seed)
+	ns := uint(len(points)) / ni
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%10s %15s %15s\n", "Iteration", "Accepted Nodes", "Rejected Nodes")
@@ -138,4 +162,20 @@ func function(config *config.Config) error {
 	}
 
 	return nil
+}
+
+func generate(into, from target.Target, config *config.Assessment) []float64 {
+	ns := config.Samples
+
+	nif, _ := from.Dimensions()
+	nii, _ := into.Dimensions()
+
+	zf := support.Generate(nif, ns, config.Seed)
+	zi := make([]float64, nii*ns)
+
+	for i := uint(0); i < ns; i++ {
+		copy(zi[i*nii:(i+1)*nii], into.Inverse(from.Forward(zf[i*nif:(i+1)*nif])))
+	}
+
+	return zi
 }

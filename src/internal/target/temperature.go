@@ -8,26 +8,22 @@ import (
 
 type temperature struct {
 	base
-	time  uncertainty.Parameter
-	power uncertainty.Parameter
+	uncertainty.Uncertainty
 }
 
 func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*temperature, error) {
 
-	base, err := newBase(system, config)
+	ni, _ := uncertainty.Dimensions()
+	base, err := newBase(system, config, ni, 2)
 	if err != nil {
 		return nil, err
 	}
+	return &temperature{base: base, Uncertainty: *uncertainty}, nil
+}
 
-	base.ni, _ = uncertainty.Dimensions()
-	base.no = 2 * 1
-
-	return &temperature{
-		base:  base,
-		time:  uncertainty.Time,
-		power: uncertainty.Power,
-	}, nil
+func (self *temperature) Dimensions() (uint, uint) {
+	return self.base.Dimensions()
 }
 
 func (self *temperature) Compute(node, value []float64) {
@@ -35,11 +31,11 @@ func (self *temperature) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	nt, _ := self.time.Dimensions()
-	np, _ := self.power.Dimensions()
+	nit, _ := self.Time.Dimensions()
+	nip, _ := self.Power.Dimensions()
 
-	time := self.time.Forward(node[:nt])
-	power := self.time.Forward(node[nt : nt+np])
+	time := self.Time.Forward(node[:nit])
+	power := self.Power.Forward(node[nit : nit+nip])
 	schedule := self.system.ComputeSchedule(time)
 
 	P, ΔT := self.system.PartitionPower(power, schedule, ε)

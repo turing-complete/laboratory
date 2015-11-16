@@ -8,27 +8,25 @@ import (
 
 type delay struct {
 	base
-	time uncertainty.Parameter
+	uncertainty.Parameter
 }
 
 func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*delay, error) {
 
-	base, err := newBase(system, config)
+	ni, _ := uncertainty.Time.Dimensions()
+	base, err := newBase(system, config, ni, 2)
 	if err != nil {
 		return nil, err
 	}
+	return &delay{base: base, Parameter: uncertainty.Time}, nil
+}
 
-	base.ni, _ = uncertainty.Time.Dimensions()
-	base.no = 2 * 1
-
-	return &delay{
-		base: base,
-		time: uncertainty.Time,
-	}, nil
+func (self *delay) Dimensions() (uint, uint) {
+	return self.base.Dimensions()
 }
 
 func (self *delay) Compute(node []float64, value []float64) {
-	value[0] = self.system.ComputeSchedule(self.time.Forward(node)).Span
+	value[0] = self.system.ComputeSchedule(self.Forward(node)).Span
 	value[1] = value[0] * value[0]
 }

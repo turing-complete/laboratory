@@ -19,13 +19,13 @@ type base struct {
 	no uint
 }
 
-func newBase(system *system.System, config *config.Target) (base, error) {
-	ni, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
-	if ni == 0 || ni != nj || nj != nf {
+func newBase(system *system.System, config *config.Target, ni, no uint) (base, error) {
+	nm, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
+	if nm == 0 || nm != nj || nj != nf {
 		return base{}, errors.New("the importance, refinement, and rejection " +
 			"should not be empty and should have the same number of elements")
 	}
-	return base{system: system, config: config}, nil
+	return base{system: system, config: config, ni: ni, no: no}, nil
 }
 
 func (self *base) Dimensions() (uint, uint) {

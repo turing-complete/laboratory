@@ -12,6 +12,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
 	"github.com/turing-complete/laboratory/src/internal/support"
+	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 
 	itarget "github.com/turing-complete/laboratory/src/internal/target"
 )
@@ -56,7 +59,17 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	_, _, target, err := command.Setup(config)
+	system, err := system.New(&config.System)
+	if err != nil {
+		return err
+	}
+
+	uncertainty, err := uncertainty.NewMarginal(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+
+	target, err := target.New(system, uncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
