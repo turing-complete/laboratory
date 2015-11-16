@@ -10,6 +10,6 @@
 		"deviation": 0.2,
 		"distribution": "Beta(1, 1)",
 		"correlation": 5,
-		"reduction": 0.95
+		"variance": 0.95
 	}
 }

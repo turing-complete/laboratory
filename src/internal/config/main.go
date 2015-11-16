@@ -55,7 +55,7 @@ type Uncertainty struct {
 	// The strength of correlations between tasks.
 	Correlation float64 // > 0
 	// The portion of the variance to be preserved.
-	Reduction float64 // ∈ (0, 1]
+	Variance float64 // ∈ (0, 1]
 }
 
 // Solver is a configuration of the interpolation algorithm.

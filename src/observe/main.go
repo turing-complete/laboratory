@@ -32,7 +32,7 @@ func main() {
 }
 
 func function(config *config.Config) error {
-	config.Uncertainty.Reduction = math.Inf(1)
+	config.Uncertainty.Variance = math.Inf(1)
 
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
