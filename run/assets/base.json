@@ -7,7 +7,7 @@
 	"uncertainty": {
 		"tasks": "[]",
 		"deviation": 0.2,
-		"distribution": "Beta(1, 1)",
+		"distribution": "Beta(2, 5)",
 		"correlation": 5,
 		"variance": 1
 	},
@@ -19,7 +19,7 @@
 	},
 
 	"solver": {
-		"rule": "closed",
+		"rule": "open",
 		"rate": 1,
 		"minLevel": 1,
 		"maxLevel": 10,
