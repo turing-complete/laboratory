@@ -20,6 +20,8 @@
 	"solver": {
 		"rule": "open",
 		"minLevel": 1,
-		"maxLevel": 3
+		"maxLevel": 3,
+		"maxEvaluations": 100000,
+		"maxIterations": 20
 	}
 }
