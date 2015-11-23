@@ -2,6 +2,7 @@
 	"inherit": "assets/025_250.json",
 
 	"target": {
-		"name": "end-to-end-delay"
+		"name": "end-to-end-delay",
+		"refinement": [1e-4, 0]
 	}
 }

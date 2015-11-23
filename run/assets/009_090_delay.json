@@ -3,10 +3,6 @@
 
 	"target": {
 		"name": "end-to-end-delay",
-		"tolerance": 1e-3
-	},
-
-	"solver": {
-		"maxLevel": 10
+		"refinement": [1e-4, 0]
 	}
 }
