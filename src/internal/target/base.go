@@ -32,14 +32,13 @@ func (self *base) Dimensions() (uint, uint) {
 	return self.ni, self.no
 }
 
-func (_ *base) Monitor(progress *adapt.Progress) bool {
+func (_ *base) Monitor(progress *adapt.Progress) {
 	if progress.Iteration == 0 {
 		log.Printf("%5s %10s %15s %15s %15s\n", "Level", "Iteration",
 			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
 	}
 	log.Printf("%5d %10d %15d %15d %15d\n", progress.Level, progress.Iteration,
 		progress.Accepted, progress.Rejected, progress.Current)
-	return true
 }
 
 func (self *base) Score(location *adapt.Location, progress *adapt.Progress) float64 {

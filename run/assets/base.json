@@ -20,9 +20,11 @@
 
 	"solver": {
 		"rule": "open",
-		"rate": 1,
+		"rate": 0.05,
 		"minLevel": 1,
 		"maxLevel": 10,
+		"maxEvaluations": 100000,
+		"maxIterations": 20,
 		"balance": false
 	},
 
