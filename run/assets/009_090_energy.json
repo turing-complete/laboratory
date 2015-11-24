@@ -3,10 +3,6 @@
 
 	"target": {
 		"name": "total-energy",
-		"tolerance": 1e-2
-	},
-
-	"solver": {
-		"maxLevel": 10
+		"refinement": [1e-4, 0]
 	}
 }

@@ -2,6 +2,7 @@
 	"inherit": "assets/016_160.json",
 
 	"target": {
-		"name": "total-energy"
+		"name": "total-energy",
+		"refinement": [1e-4, 0]
 	}
 }
