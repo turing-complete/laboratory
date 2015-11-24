@@ -3,7 +3,7 @@
 ROOT_PATH = 'assets'
 TGFF_PATH = 'tgff'
 TGFF_BASE = 'base.tgffopt'
-TARGETS = ['delay', 'energy']
+TARGETS = ['delay', 'energy', 'temperature']
 
 class Application
   def initialize(cores, tasks)

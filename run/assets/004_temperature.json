@@ -1,0 +1,12 @@
+{
+	"inherit": "assets/base.json",
+
+	"system": {
+		"floorplan": "assets/004.flp"
+	},
+
+	"target": {
+		"name": "maximal-temperature",
+		"refinement": [1e-2, 0]
+	}
+}

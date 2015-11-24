@@ -16,20 +16,20 @@ endef
 
 $(foreach command,$(commands),$(eval $(call define_command,$(command))))
 
-cases := 001_010_delay 001_010_energy
-cases += 001_020_delay 001_020_energy
-cases += 001_030_delay 001_030_energy
-cases += 001_040_delay 001_040_energy
+cases := 001_010_delay 001_010_energy 001_010_temperature
+cases += 001_020_delay 001_020_energy 001_020_temperature
+cases += 001_030_delay 001_030_energy 001_030_temperature
+cases += 001_040_delay 001_040_energy 001_040_temperature
 
-cases += 004_010_delay 004_010_energy
-cases += 004_020_delay 004_020_energy
-cases += 004_030_delay 004_030_energy
-cases += 004_040_delay 004_040_energy
+cases += 004_010_delay 004_010_energy 004_010_temperature
+cases += 004_020_delay 004_020_energy 004_020_temperature
+cases += 004_030_delay 004_030_energy 004_030_temperature
+cases += 004_040_delay 004_040_energy 004_040_temperature
 
-cases += 008_010_delay 008_010_energy
-cases += 008_020_delay 008_020_energy
-cases += 008_030_delay 008_030_energy
-cases += 008_040_delay 008_040_energy
+cases += 008_010_delay 008_010_energy 008_010_temperature
+cases += 008_020_delay 008_020_energy 008_020_temperature
+cases += 008_030_delay 008_030_energy 008_030_temperature
+cases += 008_040_delay 008_040_energy 008_040_temperature
 
 define hash
 $(1) := $$(shell hash md5sum 2>/dev/null && (cat $(2) | md5sum | cut -d' ' -f1) || (cat $(2) | md5))
