@@ -1,8 +1,0 @@
-{
-	"inherit": "assets/009_090.json",
-
-	"target": {
-		"name": "end-to-end-delay",
-		"refinement": [1e-4, 0]
-	}
-}

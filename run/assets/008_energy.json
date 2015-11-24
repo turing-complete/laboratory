@@ -1,0 +1,13 @@
+{
+	"inherit": "assets/base.json",
+
+	"system": {
+		"floorplan": "assets/008.flp"
+	},
+
+
+	"target": {
+		"name": "total-energy",
+		"refinement": [1e-4, 0]
+	}
+}

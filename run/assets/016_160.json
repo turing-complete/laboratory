@@ -1,8 +1,0 @@
-{
-	"inherit": "assets/base.json",
-
-	"system": {
-		"floorplan": "assets/016.flp",
-		"specification": "assets/016_160.tgff"
-	}
-}

@@ -1,0 +1,27 @@
+seed [SEED]
+
+# Application label
+tg_label APPLICATION
+# Number of applications
+tg_cnt 1
+# Number of tasks per application
+task_cnt [TASKS] 0.001
+# Number of distinct tasks
+task_type_cnt [TASKS]
+# Deviation of parameters
+period_mul 1
+# Numbers of in and out edges
+task_degree 2 4
+
+# Processor label
+table_label PROCESSOR
+# Number of processors
+table_cnt [CORES]
+# Task attributes
+type_attrib \
+  dynamic_power 10 5 0 0.001, \
+  execution_time 0.03 0.02 0 0.001
+
+eps_write
+tg_write
+pe_write

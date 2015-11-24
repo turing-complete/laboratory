@@ -1,8 +1,0 @@
-{
-	"inherit": "assets/004_040.json",
-
-	"target": {
-		"name": "total-energy",
-		"refinement": [1e-4, 0]
-	}
-}
