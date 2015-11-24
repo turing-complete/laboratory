@@ -24,7 +24,7 @@
 		"minLevel": 1,
 		"maxLevel": 10,
 		"maxEvaluations": 100000,
-		"maxIterations": 20,
+		"maxIterations": 30,
 		"balance": false
 	},
 
