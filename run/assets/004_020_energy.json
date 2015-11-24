@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/004_energy.json",
+
+	"system": {
+		"specification": "assets/004_020.tgff"
+	}
+}

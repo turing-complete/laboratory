@@ -1,0 +1,131 @@
+@HYPERPERIOD 1000
+
+@APPLICATION 0 {
+	PERIOD 1000
+
+	TASK t0_0	TYPE 16 
+	TASK t0_1	TYPE 1 
+	TASK t0_2	TYPE 28 
+	TASK t0_3	TYPE 20 
+	TASK t0_4	TYPE 6 
+	TASK t0_5	TYPE 29 
+	TASK t0_6	TYPE 1 
+	TASK t0_7	TYPE 29 
+	TASK t0_8	TYPE 25 
+	TASK t0_9	TYPE 27 
+	TASK t0_10	TYPE 9 
+	TASK t0_11	TYPE 12 
+	TASK t0_12	TYPE 5 
+	TASK t0_13	TYPE 13 
+	TASK t0_14	TYPE 27 
+	TASK t0_15	TYPE 15 
+	TASK t0_16	TYPE 28 
+	TASK t0_17	TYPE 26 
+	TASK t0_18	TYPE 15 
+	TASK t0_19	TYPE 27 
+	TASK t0_20	TYPE 15 
+	TASK t0_21	TYPE 1 
+	TASK t0_22	TYPE 8 
+	TASK t0_23	TYPE 7 
+	TASK t0_24	TYPE 14 
+	TASK t0_25	TYPE 23 
+	TASK t0_26	TYPE 5 
+	TASK t0_27	TYPE 8 
+	TASK t0_28	TYPE 20 
+	TASK t0_29	TYPE 4 
+
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 10
+	ARC a0_1 	FROM t0_1  TO  t0_2 TYPE 25
+	ARC a0_2 	FROM t0_1  TO  t0_3 TYPE 47
+	ARC a0_3 	FROM t0_2  TO  t0_4 TYPE 4
+	ARC a0_4 	FROM t0_4  TO  t0_5 TYPE 27
+	ARC a0_5 	FROM t0_4  TO  t0_6 TYPE 25
+	ARC a0_6 	FROM t0_4  TO  t0_7 TYPE 33
+	ARC a0_7 	FROM t0_4  TO  t0_8 TYPE 8
+	ARC a0_8 	FROM t0_3  TO  t0_9 TYPE 40
+	ARC a0_9 	FROM t0_7  TO  t0_9 TYPE 23
+	ARC a0_10 	FROM t0_5  TO  t0_10 TYPE 44
+	ARC a0_11 	FROM t0_3  TO  t0_10 TYPE 36
+	ARC a0_12 	FROM t0_5  TO  t0_11 TYPE 13
+	ARC a0_13 	FROM t0_2  TO  t0_11 TYPE 34
+	ARC a0_14 	FROM t0_11  TO  t0_12 TYPE 17
+	ARC a0_15 	FROM t0_2  TO  t0_12 TYPE 17
+	ARC a0_16 	FROM t0_9  TO  t0_13 TYPE 1
+	ARC a0_17 	FROM t0_9  TO  t0_14 TYPE 43
+	ARC a0_18 	FROM t0_9  TO  t0_15 TYPE 31
+	ARC a0_19 	FROM t0_12  TO  t0_16 TYPE 21
+	ARC a0_20 	FROM t0_10  TO  t0_17 TYPE 29
+	ARC a0_21 	FROM t0_10  TO  t0_18 TYPE 41
+	ARC a0_22 	FROM t0_14  TO  t0_19 TYPE 0
+	ARC a0_23 	FROM t0_15  TO  t0_20 TYPE 38
+	ARC a0_24 	FROM t0_18  TO  t0_21 TYPE 1
+	ARC a0_25 	FROM t0_17  TO  t0_22 TYPE 20
+	ARC a0_26 	FROM t0_1  TO  t0_23 TYPE 8
+	ARC a0_27 	FROM t0_18  TO  t0_23 TYPE 11
+	ARC a0_28 	FROM t0_20  TO  t0_24 TYPE 33
+	ARC a0_29 	FROM t0_12  TO  t0_24 TYPE 39
+	ARC a0_30 	FROM t0_13  TO  t0_25 TYPE 41
+	ARC a0_31 	FROM t0_3  TO  t0_26 TYPE 2
+	ARC a0_32 	FROM t0_20  TO  t0_26 TYPE 32
+	ARC a0_33 	FROM t0_5  TO  t0_27 TYPE 12
+	ARC a0_34 	FROM t0_22  TO  t0_28 TYPE 39
+	ARC a0_35 	FROM t0_28  TO  t0_29 TYPE 35
+	ARC a0_36 	FROM t0_15  TO  t0_29 TYPE 9
+
+	HARD_DEADLINE d0_0 ON t0_6 AT 500
+	HARD_DEADLINE d0_1 ON t0_8 AT 500
+	HARD_DEADLINE d0_2 ON t0_16 AT 800
+	HARD_DEADLINE d0_3 ON t0_19 AT 800
+	HARD_DEADLINE d0_4 ON t0_21 AT 800
+	HARD_DEADLINE d0_5 ON t0_23 AT 800
+	HARD_DEADLINE d0_6 ON t0_24 AT 900
+	HARD_DEADLINE d0_7 ON t0_25 AT 800
+	HARD_DEADLINE d0_8 ON t0_26 AT 900
+	HARD_DEADLINE d0_9 ON t0_27 AT 600
+	HARD_DEADLINE d0_10 ON t0_29 AT 1000
+}
+
+
+
+
+@PROCESSOR 0 {
+# price
+  9.21982
+
+#------------------------------------------------------------------------------
+# type version dynamic_power   execution_time
+  0    0       5.904           0.014
+  1    0       6.37            0.015
+  2    0       10.062          0.03
+  3    0       7.262           0.019
+  4    0       11.375          0.036
+  5    0       6.51            0.016
+  6    0       7.461           0.02
+  7    0       6.502           0.016
+  8    0       8.768           0.025
+  9    0       11.095          0.034
+  10   0       6.881           0.018
+  11   0       9.88            0.03
+  12   0       11.843          0.037
+  13   0       8.393           0.024
+  14   0       12.785          0.041
+  15   0       12.641          0.041
+  16   0       6.216           0.015
+  17   0       5.769           0.013
+  18   0       11.706          0.037
+  19   0       9.708           0.029
+  20   0       10.188          0.031
+  21   0       12.115          0.038
+  22   0       7.468           0.02
+  23   0       11.017          0.034
+  24   0       12.174          0.039
+  25   0       11.057          0.034
+  26   0       6.645           0.017
+  27   0       5.615           0.012
+  28   0       10.945          0.034
+  29   0       10.983          0.034
+}
+
+
+
+

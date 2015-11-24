@@ -16,11 +16,20 @@ endef
 
 $(foreach command,$(commands),$(eval $(call define_command,$(command))))
 
-cases := 001_010_delay 001_010_energy 001_010_temperature
+cases := 001_010_delay 001_010_energy
+cases += 001_020_delay 001_020_energy
+cases += 001_030_delay 001_030_energy
+cases += 001_040_delay 001_040_energy
+
+cases += 004_010_delay 004_010_energy
+cases += 004_020_delay 004_020_energy
+cases += 004_030_delay 004_030_energy
 cases += 004_040_delay 004_040_energy
-cases += 009_090_delay 009_090_energy
-cases += 016_160_delay 016_160_energy
-cases += 025_250_delay 025_250_energy
+
+cases += 008_010_delay 008_010_energy
+cases += 008_020_delay 008_020_energy
+cases += 008_030_delay 008_030_energy
+cases += 008_040_delay 008_040_energy
 
 define hash
 $(1) := $$(shell hash md5sum 2>/dev/null && (cat $(2) | md5sum | cut -d' ' -f1) || (cat $(2) | md5))
