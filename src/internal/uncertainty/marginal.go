@@ -48,8 +48,8 @@ func newMarginal(system *system.System, reference []float64,
 	}
 
 	marginals := make([]probability.Inverter, base.nu)
-	for i := uint(0); i < base.nu; i++ {
-		marginals[i] = marginalizer(0, base.upper[i]-base.lower[i])
+	for i, tid := range base.tasks {
+		marginals[i] = marginalizer(0, base.upper[tid]-base.lower[tid])
 	}
 
 	return &marginal{
