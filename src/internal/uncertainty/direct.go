@@ -34,7 +34,7 @@ func (self *direct) Forward(z []float64) []float64 {
 func (self *direct) Inverse(ω []float64) []float64 {
 	z := make([]float64, self.nu)
 	for i, tid := range self.tasks {
-		z[i] = (ω[i] - self.lower[tid]) / (self.upper[tid] - self.lower[tid])
+		z[i] = (ω[tid] - self.lower[tid]) / (self.upper[tid] - self.lower[tid])
 	}
 	return z
 }
