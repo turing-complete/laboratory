@@ -37,6 +37,10 @@ func newMarginal(system *system.System, reference []float64,
 		return nil, err
 	}
 
+	if base.nu == 0 {
+		return &marginal{base: base}, nil
+	}
+
 	correlator, err := correlate(system, config, base.tasks)
 	if err != nil {
 		return nil, err
@@ -68,6 +72,12 @@ func (self *marginal) Dimensions() (uint, uint) {
 func (self *marginal) Forward(z []float64) []float64 {
 	nt, nu, nz := self.nt, self.nu, self.nz
 
+	ω := make([]float64, nt)
+	copy(ω, self.lower)
+	if nu == 0 {
+		return ω
+	}
+
 	n := make([]float64, nz)
 	u := make([]float64, nu)
 
@@ -85,8 +95,6 @@ func (self *marginal) Forward(z []float64) []float64 {
 	}
 
 	// Dependent uniform to dependent desired
-	ω := make([]float64, nt)
-	copy(ω, self.lower)
 	for i, tid := range self.tasks {
 		ω[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
