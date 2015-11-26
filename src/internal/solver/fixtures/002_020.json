@@ -8,9 +8,11 @@
 
 	"uncertainty": {
 		"time": {
+			"tasks": "[0:end]",
 			"deviation": 0.2
 		},
 		"power": {
+			"tasks": "[0:end]",
 			"deviation": 0.2
 		}
 	},

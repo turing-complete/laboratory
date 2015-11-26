@@ -40,7 +40,7 @@ func ParseNaturalIndex(line string, min, max uint) ([]uint, error) {
 }
 
 var (
-	emptyPattern = regexp.MustCompile(`^(^\[\s*]$)?$`)
+	emptyPattern = regexp.MustCompile(`^\[\s*]$`)
 
 	arrayPattern = regexp.MustCompile(`^\[([^:]*)]$`)
 	commaPattern = regexp.MustCompile(`\s*,\s*`)
@@ -56,16 +56,23 @@ func ParseRealIndex(line string, min, max float64) ([]float64, error) {
 
 	index := make([]float64, 0)
 
-	line = strings.Trim(line, " \t")
-	if emptyPattern.MatchString(line) {
-		start, step, end := min, 1.0, max
-		for start < end || math.Abs(start-end) < ε {
-			index = append(index, start)
-			start += step
+	parse := func(chunk string) (float64, error) {
+		if chunk == "end" {
+			return max, nil
+		} else {
+			number, err := strconv.ParseFloat(chunk, 64)
+			if err != nil {
+				return 0.0, err
+			}
+			return number, nil
 		}
+	}
+
+	line = strings.ToLower(strings.Trim(line, " \t"))
+	if emptyPattern.MatchString(line) {
 	} else if match := arrayPattern.FindStringSubmatch(line); match != nil {
 		for _, chunk := range commaPattern.Split(match[1], -1) {
-			number, err := strconv.ParseFloat(chunk, 64)
+			number, err := parse(chunk)
 			if err != nil {
 				return nil, err
 			}
@@ -79,25 +86,25 @@ func ParseRealIndex(line string, min, max float64) ([]float64, error) {
 
 		switch len(chunks) {
 		case 2:
-			start, err = strconv.ParseFloat(chunks[0], 64)
+			start, err = parse(chunks[0])
 			if err != nil {
 				return nil, err
 			}
 			step = 1
-			end, err = strconv.ParseFloat(chunks[1], 64)
+			end, err = parse(chunks[1])
 			if err != nil {
 				return nil, err
 			}
 		case 3:
-			start, err = strconv.ParseFloat(chunks[0], 64)
+			start, err = parse(chunks[0])
 			if err != nil {
 				return nil, err
 			}
-			step, err = strconv.ParseFloat(chunks[1], 64)
+			step, err = parse(chunks[1])
 			if err != nil {
 				return nil, err
 			}
-			end, err = strconv.ParseFloat(chunks[2], 64)
+			end, err = parse(chunks[2])
 			if err != nil {
 				return nil, err
 			}
