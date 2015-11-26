@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"math"
 	"runtime"
 	"strings"
 
@@ -15,16 +14,18 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
 	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
+
+	isolver "github.com/turing-complete/laboratory/src/internal/solver"
+	itarget "github.com/turing-complete/laboratory/src/internal/target"
 )
 
 var (
-	outputFile     = flag.String("o", "", "an output file (required)")
-	variance       = flag.Float64("t", math.Inf(1), "the variance threshold")
-	parameterIndex = flag.String("s", "[]", "the parameters to sweep")
-	defaultNode    = flag.Float64("d", 0.5, "the default value of parameters")
-	nodeCount      = flag.Uint("n", 10, "the number of nodes per parameter")
+	approximateFile = flag.String("approximate", "", "an output of `approximate`")
+	outputFile      = flag.String("o", "", "an output file (required)")
+	parameterIndex  = flag.String("s", "[]", "the parameters to sweep")
+	defaultNode     = flag.Float64("d", 0.5, "the default value of parameters")
+	nodeCount       = flag.Uint("n", 10, "the number of nodes per parameter")
 )
 
 func main() {
@@ -38,8 +39,6 @@ func function(config *config.Config) error {
 	}
 	defer output.Close()
 
-	config.Uncertainty.Variance = *variance
-
 	system, err := system.New(&config.System)
 	if err != nil {
 		return err
@@ -50,25 +49,46 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	aTarget, err := target.New(system, uncertainty, &config.Target)
+	target, err := itarget.New(system, uncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
 
-	points, err := generate(aTarget, config.Solver.Rule)
+	points, err := generate(target, config.Solver.Rule)
 	if err != nil {
 		return err
 	}
 
-	ni, no := aTarget.Dimensions()
+	ni, no := target.Dimensions()
 	np := uint(len(points)) / ni
 
 	log.Println(system)
-	log.Println(aTarget)
-	log.Printf("Evaluating the model with variance %.2f at %v points...\n",
-		config.Uncertainty.Variance, np)
+	log.Println(target)
 
-	values := target.Invoke(aTarget, points, uint(runtime.GOMAXPROCS(0)))
+	var values []float64
+	if len(*approximateFile) > 0 {
+		approximate, err := database.Open(*approximateFile)
+		if err != nil {
+			return err
+		}
+		defer approximate.Close()
+
+		solver, err := isolver.New(ni, no, &config.Solver)
+		if err != nil {
+			return err
+		}
+
+		solution := new(isolver.Solution)
+		if err = approximate.Get("solution", solution); err != nil {
+			return err
+		}
+
+		log.Printf("Evaluating the approximation at %d points...\n", np)
+		values = solver.Evaluate(solution, points)
+	} else {
+		log.Printf("Evaluating the original model at %d points...\n", np)
+		values = itarget.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
+	}
 
 	log.Println("Done.")
 
@@ -82,7 +102,7 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(target target.Target, rule string) ([]float64, error) {
+func generate(target itarget.Target, rule string) ([]float64, error) {
 	ni, _ := target.Dimensions()
 	nn := *nodeCount
 
@@ -118,7 +138,7 @@ func generate(target target.Target, rule string) ([]float64, error) {
 	return linear.Tensor(parameters...), nil
 }
 
-func detect(target target.Target) ([]uint, error) {
+func detect(target itarget.Target) ([]uint, error) {
 	ni, _ := target.Dimensions()
 
 	index := []uint{}
