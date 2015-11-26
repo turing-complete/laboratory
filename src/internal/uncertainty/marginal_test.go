@@ -10,9 +10,9 @@ import (
 )
 
 func TestNewMarginal001(t *testing.T) {
-	config, _ := config.New("fixtures/001_010_delay.json")
+	config, _ := config.New("fixtures/001_010.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := newMarginal(system, system.ReferenceTime(), &config.Uncertainty)
+	uncertainty, _ := newMarginal(system, system.ReferenceTime(), &config.Uncertainty.Time)
 
 	delay := make([]float64, 10)
 	for i := 0; i < 10; i++ {
@@ -25,9 +25,9 @@ func TestNewMarginal001(t *testing.T) {
 }
 
 func TestNewMarginal002(t *testing.T) {
-	config, _ := config.New("fixtures/002_020_profile.json")
+	config, _ := config.New("fixtures/002_020.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := newMarginal(system, system.ReferenceTime(), &config.Uncertainty)
+	uncertainty, _ := newMarginal(system, system.ReferenceTime(), &config.Uncertainty.Time)
 
 	delay := make([]float64, 20)
 	for i := 0; i < 20; i++ {

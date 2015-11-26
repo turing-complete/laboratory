@@ -10,7 +10,7 @@ type direct struct {
 	base
 }
 
-func newDirect(reference []float64, config *config.Uncertainty) (*direct, error) {
+func newDirect(reference []float64, config *config.Parameter) (*direct, error) {
 	base, err := newBase(reference, config)
 	if err != nil {
 		return nil, err

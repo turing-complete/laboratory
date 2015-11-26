@@ -5,11 +5,20 @@
 	},
 
 	"uncertainty": {
-		"tasks": "[]",
-		"deviation": 0.2,
-		"distribution": "Beta(2, 5)",
-		"correlation": 5,
-		"variance": 1
+		"time": {
+			"tasks": "[]",
+			"deviation": 0.2,
+			"distribution": "Beta(2, 5)",
+			"correlation": 5,
+			"variance": 1
+		},
+		"power": {
+			"tasks": "[]",
+			"deviation": 0.2,
+			"distribution": "Beta(2, 5)",
+			"correlation": 5,
+			"variance": 1
+		}
 	},
 
 	"target": {

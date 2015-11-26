@@ -1,5 +1,5 @@
 {
-	"inherit": "fixtures/002_020_temperature.json",
+	"inherit": "fixtures/002_020.json",
 
 	"system": {
 		"floorplan": "fixtures/004.flp",

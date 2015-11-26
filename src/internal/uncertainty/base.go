@@ -14,7 +14,7 @@ type base struct {
 	nu uint
 }
 
-func newBase(reference []float64, config *config.Uncertainty) (base, error) {
+func newBase(reference []float64, config *config.Parameter) (base, error) {
 	nt := uint(len(reference))
 
 	tasks, err := support.ParseNaturalIndex(config.Tasks, 0, nt-1)

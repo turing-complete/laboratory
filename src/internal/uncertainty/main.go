@@ -17,11 +17,11 @@ type Uncertainty struct {
 }
 
 func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newDirect(system.ReferenceTime(), config)
+	time, err := newDirect(system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
 	}
-	power, err := newDirect(system.ReferencePower(), config)
+	power, err := newDirect(system.ReferencePower(), &config.Power)
 	if err != nil {
 		return nil, err
 	}
@@ -32,11 +32,11 @@ func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error
 }
 
 func NewMarginal(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newMarginal(system, system.ReferenceTime(), config)
+	time, err := newMarginal(system, system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
 	}
-	power, err := newMarginal(system, system.ReferencePower(), config)
+	power, err := newMarginal(system, system.ReferencePower(), &config.Power)
 	if err != nil {
 		return nil, err
 	}

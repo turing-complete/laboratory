@@ -46,11 +46,19 @@ type Target struct {
 
 // Uncertainty is a configuration of the probability model.
 type Uncertainty struct {
+	// The execution time.
+	Time Parameter
+	// The power consumption.
+	Power Parameter
+}
+
+// Parameter is a configuration of an uncertain parameter.
+type Parameter struct {
 	// The tasks whose execution times should be considered as uncertain.
 	Tasks string // ⊂ {0, …, #tasks-1}
 	// The marginal distributions of tasks’ delays.
 	Distribution string
-	// The multiplier used to calculate the deviation of a parameter.
+	// The multiplier used to calculate the range of deviation.
 	Deviation float64 // ≥ 0
 	// The strength of correlations between tasks.
 	Correlation float64 // > 0

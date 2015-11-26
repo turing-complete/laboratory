@@ -30,7 +30,7 @@ type marginal struct {
 }
 
 func newMarginal(system *system.System, reference []float64,
-	config *config.Uncertainty) (*marginal, error) {
+	config *config.Parameter) (*marginal, error) {
 
 	base, err := newBase(reference, config)
 	if err != nil {
@@ -102,9 +102,7 @@ func (self *marginal) String() string {
 	return fmt.Sprintf(`{"dimensions": %d}`, self.nz)
 }
 
-func correlate(system *system.System, config *config.Uncertainty,
-	tasks []uint) ([]float64, error) {
-
+func correlate(system *system.System, config *config.Parameter, tasks []uint) ([]float64, error) {
 	if config.Correlation < 0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
