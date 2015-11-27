@@ -41,7 +41,7 @@ func (_ *base) Monitor(progress *adapt.Progress) {
 		progress.Accepted, progress.Rejected, progress.Current)
 }
 
-func (self *base) Score(location *adapt.Location, progress *adapt.Progress) float64 {
+func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
 	config := self.config
 
 	nj := uint(len(config.Importance))
