@@ -7,6 +7,6 @@
 
 	"target": {
 		"name": "maximal-temperature",
-		"refinement": [1e-2, 0]
+		"refinement": 1e-2
 	}
 }
