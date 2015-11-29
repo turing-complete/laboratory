@@ -33,28 +33,38 @@ function approximate(grid)
   case 2
     Plot.figure(600, 600);
     Plot.line(nodes(:, 1), nodes(:, 2), 'discrete', true, 'style', ...
-      {'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'None', 'MarkerSize', 1});
+      {'MarkerFaceColor', 'k', 'MarkerEdgeColor', 'None', 'MarkerSize', 3});
     Plot.title('Nodes');
+    Plot.limit([0, 1], [0, 1]);
   end
 end
 
 function nodes = open(indices)
   nodes = zeros(size(indices));
+  levels = levelize(indices);
+  orders = orderize(indices);
   for i = 1:numel(indices)
-    nodes(i) = double(bitshift(indices(i), -32)+1) / ...
-      double(bitshift(uint64(2), bitshift(bitshift(indices(i), 32), -32)));
+    nodes(i) = double(orders(i)+1) / double(bitshift(uint64(2), levels(i)));
   end
 end
 
 function nodes = closed(indices)
   nodes = zeros(size(indices));
+  levels = levelize(indices);
+  orders = orderize(indices);
   for i = 1:numel(indices)
-    level = bitshift(bitshift(indices(i), 32), -32);
-    if level == 0
+    if levels(i) == 0
       nodes(i) = 0.5;
     else
-      nodes(i) = double(bitshift(indices(i), -32)) / ...
-        double(bitshift(uint64(2), level-1));
+      nodes(i) = double(orders(i)) / double(bitshift(uint64(2), levels(i)-1));
     end
   end
+end
+
+function levels = levelize(indices)
+  levels = bitshift(bitshift(indices, 58), -58);
+end
+
+function orders = orderize(indices)
+  orders = bitshift(indices, -6);
 end
