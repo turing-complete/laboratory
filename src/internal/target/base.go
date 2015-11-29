@@ -37,7 +37,7 @@ func (_ *base) Monitor(progress *adapt.Progress) {
 func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
 	score := 0.0
 	for i := uint(0); i < self.no; i++ {
-		score += math.Abs(location.Surplus[i])
+		score += math.Abs(location.Surplus[i] * location.Volume)
 	}
 	if score < self.config.Refinement {
 		score = 0.0
