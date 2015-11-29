@@ -19,7 +19,7 @@ table_label PROCESSOR
 table_cnt [CORES]
 # Task attributes
 type_attrib \
-  dynamic_power 10 5 0 0.001, \
+  dynamic_power 15 10 0 0.001, \
   execution_time 0.03 0.02 0 0.001
 
 eps_write
