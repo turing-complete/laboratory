@@ -7,6 +7,6 @@
 
 	"target": {
 		"name": "end-to-end-delay",
-		"refinement": [1e-4, 0]
+		"refinement": 1e-4
 	}
 }

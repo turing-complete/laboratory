@@ -36,10 +36,8 @@ type Target struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “maximal-temperature.”
 	Name string
-	// The weights for output dimensions.
-	Importance []float64
-	// The refinement threshold for output dimensions.
-	Refinement []float64
+	// The refinement threshold.
+	Refinement float64
 }
 
 // Uncertainty is a configuration of the probability model.

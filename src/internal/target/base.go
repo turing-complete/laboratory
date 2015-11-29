@@ -1,7 +1,6 @@
 package target
 
 import (
-	"errors"
 	"fmt"
 	"log"
 	"math"
@@ -20,11 +19,6 @@ type base struct {
 }
 
 func newBase(system *system.System, config *config.Target, ni, no uint) (base, error) {
-	nm, nr := len(config.Importance), len(config.Refinement)
-	if nm == 0 || nm != nr {
-		return base{}, errors.New("the importance and refinement should not be empty " +
-			"and should have the same number of elements")
-	}
 	return base{system: system, config: config, ni: ni, no: no}, nil
 }
 
@@ -41,30 +35,13 @@ func (_ *base) Monitor(progress *adapt.Progress) {
 }
 
 func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
-	config := self.config
-
-	nj := uint(len(config.Importance))
-
-	score, refine := 0.0, false
+	score := 0.0
 	for i := uint(0); i < self.no; i++ {
-		j := i % nj
-
-		if config.Importance[j] == 0.0 {
-			continue
-		}
-
-		s := math.Abs(location.Surplus[i])
-		if s > config.Refinement[j] {
-			refine = true
-		}
-
-		score += config.Importance[j] * s
+		score += math.Abs(location.Surplus[i])
 	}
-
-	if !refine {
+	if score < self.config.Refinement {
 		score = 0.0
 	}
-
 	return score
 }
 

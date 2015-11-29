@@ -15,7 +15,7 @@ func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*temperature, error) {
 
 	ni, _ := uncertainty.Dimensions()
-	base, err := newBase(system, config, ni, 2)
+	base, err := newBase(system, config, ni, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -49,5 +49,4 @@ func (self *temperature) Compute(node, value []float64) {
 	}
 
 	value[0] = max
-	value[1] = max * max
 }

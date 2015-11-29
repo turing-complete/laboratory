@@ -19,8 +19,7 @@
 
 	"target": {
 		"name": "maximal-temperature",
-		"importance": [1, 0],
-		"refinement": [1e-2, 0]
+		"refinement": 1e-2
 	},
 
 	"solver": {

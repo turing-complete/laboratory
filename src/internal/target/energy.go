@@ -15,7 +15,7 @@ func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*energy, error) {
 
 	ni, _ := uncertainty.Dimensions()
-	base, err := newBase(system, config, ni, 2)
+	base, err := newBase(system, config, ni, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -37,5 +37,4 @@ func (self *energy) Compute(node, value []float64) {
 	for i := range time {
 		value[0] += time[i] * power[i]
 	}
-	value[1] = value[0] * value[0]
 }

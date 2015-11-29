@@ -15,7 +15,7 @@ func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*delay, error) {
 
 	ni, _ := uncertainty.Time.Dimensions()
-	base, err := newBase(system, config, ni, 2)
+	base, err := newBase(system, config, ni, 1)
 	if err != nil {
 		return nil, err
 	}
@@ -28,5 +28,4 @@ func (self *delay) Dimensions() (uint, uint) {
 
 func (self *delay) Compute(node []float64, value []float64) {
 	value[0] = self.system.ComputeSchedule(self.Forward(node)).Span
-	value[1] = value[0] * value[0]
 }

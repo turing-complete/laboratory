@@ -7,6 +7,6 @@
 
 	"target": {
 		"name": "total-energy",
-		"refinement": [1e-4, 0]
+		"refinement": 1e-4
 	}
 }
