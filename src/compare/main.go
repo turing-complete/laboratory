@@ -15,7 +15,7 @@ import (
 )
 
 const (
-	momentCount = 2
+	momentCount = 1
 	metricCount = 3
 )
 
@@ -72,11 +72,6 @@ func function(_ *config.Config) error {
 
 	pvalues := []float64{}
 	if err := predict.Get("values", &pvalues); err != nil {
-		return err
-	}
-
-	pmoments := []float64{}
-	if err := predict.Get("moments", &pmoments); err != nil {
 		return err
 	}
 

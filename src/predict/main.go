@@ -115,7 +115,6 @@ func function(config *config.Config) error {
 
 	steps := make([]uint, nk)
 	values := make([]float64, 0, ns*no)
-	moments := make([]float64, 0, no)
 
 	k, Δ := uint(0), float64(nk-1)/(math.Min(maxSteps, float64(nk))-1)
 
@@ -136,7 +135,6 @@ func function(config *config.Config) error {
 		s.Surpluses = s.Surpluses[:np*no]
 
 		values = append(values, solver.Evaluate(&s, points)...)
-		moments = append(moments, solver.Integrate(&s)...)
 	}
 
 	nk, steps = k, steps[:k]
@@ -153,9 +151,6 @@ func function(config *config.Config) error {
 		return err
 	}
 	if err := output.Put("values", values, no, ns, nk); err != nil {
-		return err
-	}
-	if err := output.Put("moments", moments, no, nk); err != nil {
 		return err
 	}
 
