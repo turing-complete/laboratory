@@ -22,17 +22,16 @@
 	},
 
 	"target": {
-		"importance": [1, 0],
-		"refinement": [1e-4, 0]
+		"refinement": 1e-4
 	},
 
 	"solver": {
 		"rule": "open",
-		"rate": 0.05,
+		"rate": 1,
 		"minLevel": 1,
-		"maxLevel": 10,
+		"maxLevel": 50,
 		"maxEvaluations": 100000,
-		"maxIterations": 30,
+		"maxIterations": 1000,
 		"balance": false
 	},
 
