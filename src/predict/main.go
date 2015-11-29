@@ -111,28 +111,28 @@ func function(config *config.Config) error {
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%10s %15s\n", "Iteration", "Nodes")
 
-	nk := uint(len(solution.Passive))
+	nk := uint(len(solution.Active))
 
 	steps := make([]uint, nk)
 	values := make([]float64, 0, ns*no)
 
 	k, Δ := uint(0), float64(nk-1)/(math.Min(maxSteps, float64(nk))-1)
 
-	for i, np := uint(0), uint(0); i < nk; i++ {
-		np += solution.Passive[i]
-		steps[k] += solution.Passive[i]
+	for i, na := uint(0), uint(0); i < nk; i++ {
+		na += solution.Active[i]
+		steps[k] += solution.Active[i]
 
 		if i != uint(float64(k)*Δ+0.5) {
 			continue
 		}
 		k++
 
-		log.Printf("%10d %15d\n", i, np)
+		log.Printf("%10d %15d\n", i, na)
 
 		s := *solution
-		s.Nodes = np
-		s.Indices = s.Indices[:np*ni]
-		s.Surpluses = s.Surpluses[:np*no]
+		s.Nodes = na
+		s.Indices = s.Indices[:na*ni]
+		s.Surpluses = s.Surpluses[:na*no]
 
 		values = append(values, solver.Evaluate(&s, points)...)
 	}
