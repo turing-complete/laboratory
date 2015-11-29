@@ -109,9 +109,9 @@ func function(config *config.Config) error {
 	ns := uint(len(points)) / ni
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
-	log.Printf("%10s %15s %15s\n", "Iteration", "Accepted Nodes", "Rejected Nodes")
+	log.Printf("%10s %15s\n", "Iteration", "Nodes")
 
-	nk := uint(len(solution.Accept))
+	nk := uint(len(solution.Passive))
 
 	steps := make([]uint, nk)
 	values := make([]float64, 0, ns*no)
@@ -119,23 +119,21 @@ func function(config *config.Config) error {
 
 	k, Δ := uint(0), float64(nk-1)/(math.Min(maxSteps, float64(nk))-1)
 
-	for i, na, nr := uint(0), uint(0), uint(0); i < nk; i++ {
-		na += solution.Accept[i]
-		nr += solution.Reject[i]
-
-		steps[k] += solution.Accept[i] + solution.Reject[i]
+	for i, np := uint(0), uint(0); i < nk; i++ {
+		np += solution.Passive[i]
+		steps[k] += solution.Passive[i]
 
 		if i != uint(float64(k)*Δ+0.5) {
 			continue
 		}
 		k++
 
-		log.Printf("%10d %15d %15d\n", i, na, nr)
+		log.Printf("%10d %15d\n", i, np)
 
 		s := *solution
-		s.Nodes = na
-		s.Indices = s.Indices[:na*ni]
-		s.Surpluses = s.Surpluses[:na*no]
+		s.Nodes = np
+		s.Indices = s.Indices[:np*ni]
+		s.Surpluses = s.Surpluses[:np*no]
 
 		values = append(values, solver.Evaluate(&s, points)...)
 		moments = append(moments, solver.Integrate(&s)...)
