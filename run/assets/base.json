@@ -23,7 +23,6 @@
 
 	"target": {
 		"importance": [1, 0],
-		"rejection": [0, 0],
 		"refinement": [1e-4, 0]
 	},
 

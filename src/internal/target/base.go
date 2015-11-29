@@ -20,10 +20,10 @@ type base struct {
 }
 
 func newBase(system *system.System, config *config.Target, ni, no uint) (base, error) {
-	nm, nj, nf := len(config.Importance), len(config.Rejection), len(config.Refinement)
-	if nm == 0 || nm != nj || nj != nf {
-		return base{}, errors.New("the importance, refinement, and rejection " +
-			"should not be empty and should have the same number of elements")
+	nm, nr := len(config.Importance), len(config.Refinement)
+	if nm == 0 || nm != nr {
+		return base{}, errors.New("the importance and refinement should not be empty " +
+			"and should have the same number of elements")
 	}
 	return base{system: system, config: config, ni: ni, no: no}, nil
 }
@@ -34,11 +34,10 @@ func (self *base) Dimensions() (uint, uint) {
 
 func (_ *base) Monitor(progress *adapt.Progress) {
 	if progress.Iteration == 0 {
-		log.Printf("%5s %10s %15s %15s %15s\n", "Level", "Iteration",
-			"Accepted Nodes", "Rejected Nodes", "Current Nodes")
+		log.Printf("%5s %10s %15s %15s\n", "Level", "Iteration", "Active Nodes", "Passive Nodes")
 	}
-	log.Printf("%5d %10d %15d %15d %15d\n", progress.Level, progress.Iteration,
-		progress.Accepted, progress.Rejected, progress.Current)
+	log.Printf("%5d %10d %15d %15d\n", progress.Level, progress.Iteration,
+		progress.Active, progress.Passive)
 }
 
 func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
@@ -46,18 +45,15 @@ func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
 
 	nj := uint(len(config.Importance))
 
-	score, reject, refine := 0.0, true, false
+	score, refine := 0.0, false
 	for i := uint(0); i < self.no; i++ {
 		j := i % nj
 
-		if config.Importance[j] == 0 {
+		if config.Importance[j] == 0.0 {
 			continue
 		}
 
 		s := math.Abs(location.Surplus[i])
-		if s >= config.Rejection[j] {
-			reject = false
-		}
 		if s > config.Refinement[j] {
 			refine = true
 		}
@@ -65,11 +61,8 @@ func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
 		score += config.Importance[j] * s
 	}
 
-	if reject {
-		return -1
-	}
 	if !refine {
-		return 0
+		score = 0.0
 	}
 
 	return score

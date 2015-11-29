@@ -38,8 +38,6 @@ type Target struct {
 	Name string
 	// The weights for output dimensions.
 	Importance []float64
-	// The rejection threshold for output dimensions.
-	Rejection []float64
 	// The refinement threshold for output dimensions.
 	Refinement []float64
 }
