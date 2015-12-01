@@ -27,11 +27,9 @@
 
 	"solver": {
 		"rule": "open",
-		"rate": 1,
 		"minLevel": 1,
 		"maxLevel": 50,
-		"maxEvaluations": 100000,
-		"maxIterations": 1000
+		"maxEvaluations": 100000
 	},
 
 	"assessment": {
