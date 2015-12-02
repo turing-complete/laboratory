@@ -28,9 +28,11 @@ func (self *base) Dimensions() (uint, uint) {
 
 func (_ *base) Monitor(progress *adapt.Progress) {
 	if progress.Level == 0 {
-		log.Printf("%5s %15s %15s\n", "Level", "Active Nodes", "Passive Nodes")
+		log.Printf("%5s %15s %15s %15s\n",
+			"Level", "Active Nodes", "Passive Nodes", "Refined Nodes")
 	}
-	log.Printf("%5d %15d %15d\n", progress.Level, progress.Active, progress.Passive)
+	log.Printf("%5d %15d %15d %15d\n",
+		progress.Level, progress.Active, progress.Passive, progress.Refined)
 }
 
 func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
