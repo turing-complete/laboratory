@@ -4,37 +4,33 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/ready-steady/adapt"
-	"github.com/ready-steady/adapt/basis/linhat"
-	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/target"
+
+	interpolation "github.com/ready-steady/adapt/algorithm/local"
+	basis "github.com/ready-steady/adapt/basis/linear"
+	grid "github.com/ready-steady/adapt/grid/equidistant"
 )
 
 type Solver struct {
-	adapt.Interpolator
+	interpolation.Interpolator
 }
 
 type Solution struct {
-	adapt.Surrogate
+	interpolation.Surrogate
 }
 
 func New(ni, _ uint, config *config.Solver) (*Solver, error) {
-	var grid adapt.Grid
-	var basis adapt.Basis
-
 	switch config.Rule {
 	case "closed":
-		grid, basis = newcot.NewClosed(ni), linhat.NewClosed(ni)
+		return &Solver{*interpolation.New(grid.NewClosed(ni), basis.NewClosed(ni),
+			(*interpolation.Config)(&config.Config))}, nil
 	case "open":
-		grid, basis = newcot.NewOpen(ni), linhat.NewOpen(ni)
+		return &Solver{*interpolation.New(grid.NewOpen(ni), basis.NewOpen(ni),
+			(*interpolation.Config)(&config.Config))}, nil
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
 	}
-
-	interpolator := adapt.New(grid, basis, (*adapt.Config)(&config.Config))
-
-	return &Solver{*interpolator}, nil
 }
 
 func (self *Solver) Compute(target target.Target) *Solution {

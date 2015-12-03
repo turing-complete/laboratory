@@ -5,9 +5,10 @@ import (
 	"log"
 	"math"
 
-	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
+
+	interpolation "github.com/ready-steady/adapt/algorithm/local"
 )
 
 type base struct {
@@ -26,7 +27,7 @@ func (self *base) Dimensions() (uint, uint) {
 	return self.ni, self.no
 }
 
-func (_ *base) Monitor(progress *adapt.Progress) {
+func (_ *base) Monitor(progress *interpolation.Progress) {
 	if progress.Level == 0 {
 		log.Printf("%5s %15s %15s %15s\n",
 			"Level", "Active Nodes", "Passive Nodes", "Refined Nodes")
@@ -35,7 +36,7 @@ func (_ *base) Monitor(progress *adapt.Progress) {
 		progress.Level, progress.Active, progress.Passive, progress.Refined)
 }
 
-func (self *base) Score(location *adapt.Location, _ *adapt.Progress) float64 {
+func (self *base) Score(location *interpolation.Location, _ *interpolation.Progress) float64 {
 	score := 0.0
 	for i := uint(0); i < self.no; i++ {
 		score += math.Abs(location.Surplus[i] * location.Volume)

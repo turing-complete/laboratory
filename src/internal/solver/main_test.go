@@ -3,12 +3,13 @@ package solver
 import (
 	"testing"
 
-	"github.com/ready-steady/adapt/grid/newcot"
 	"github.com/ready-steady/assert"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
+
+	grid "github.com/ready-steady/adapt/grid/equidistant"
 )
 
 func TestSolverCompute(t *testing.T) {
@@ -26,7 +27,7 @@ func TestSolverCompute(t *testing.T) {
 
 	assert.Equal(nc, uint(857), t)
 
-	grid := newcot.NewOpen(ni)
+	grid := grid.NewOpen(ni)
 	nodes := grid.Compute(solution.Surrogate.Indices)
 
 	values := make([]float64, nc*no)

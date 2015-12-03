@@ -4,14 +4,15 @@ import (
 	"errors"
 	"sync"
 
-	"github.com/ready-steady/adapt"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
+
+	interpolation "github.com/ready-steady/adapt/algorithm/local"
 )
 
 type Target interface {
-	adapt.Target
+	interpolation.Target
 	Forward([]float64) []float64
 	Inverse([]float64) []float64
 }

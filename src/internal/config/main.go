@@ -4,8 +4,7 @@ import (
 	"encoding/json"
 	"os"
 
-	"github.com/ready-steady/adapt"
-
+	interpolation "github.com/ready-steady/adapt/algorithm/local"
 	temperature "github.com/turing-complete/temperature/analytic"
 )
 
@@ -67,7 +66,7 @@ type Solver struct {
 	// The quadrature rule to use, which is either “closed” or “open.”
 	Rule string
 
-	adapt.Config
+	interpolation.Config
 }
 
 // Assessment is a configuration of the assessment procedure.
