@@ -36,7 +36,7 @@ func (_ *base) Monitor(progress *interpolation.Progress) {
 		progress.Level, progress.Active, progress.Passive, progress.Refined)
 }
 
-func (self *base) Score(location *interpolation.Location, _ *interpolation.Progress) float64 {
+func (self *base) Score(location *interpolation.Location) float64 {
 	score := 0.0
 	for i := uint(0); i < self.no; i++ {
 		score += math.Abs(location.Surplus[i] * location.Volume)

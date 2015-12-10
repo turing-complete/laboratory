@@ -3,6 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
+	"runtime"
 
 	interpolation "github.com/ready-steady/adapt/algorithm/local"
 	temperature "github.com/turing-complete/temperature/analytic"
@@ -99,6 +100,10 @@ func New(path string) (*Config, error) {
 		if err := populate(config, path); err != nil {
 			return nil, err
 		}
+	}
+
+	if config.Solver.Workers == 0 {
+		config.Solver.Workers = uint(runtime.GOMAXPROCS(0))
 	}
 
 	return config, nil

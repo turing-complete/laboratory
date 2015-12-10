@@ -135,7 +135,7 @@ func generate(target itarget.Target, rule string) ([]float64, error) {
 		parameters[i] = sweep
 	}
 
-	return linear.Tensor(parameters...), nil
+	return linear.TensorFloat64(parameters...), nil
 }
 
 func detect(target itarget.Target) ([]uint, error) {
