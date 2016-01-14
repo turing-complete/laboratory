@@ -42,17 +42,14 @@ $(call hash,$(1)_hash_base,assets/base.json $$($(1)_config_base))
 $(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
 $(call hash,$(1)_hash,$$($(1)_config) $$($(1)_config_base))
 
-$(1)_sweep := data/$(1)_$$($(1)_hash_base)_sweep.h5
 $(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
 $(1)_observe := data/$(1)_$$($(1)_hash_base)_observe.h5
+$(1)_observe_sweep := data/$(1)_$$($(1)_hash_base)_observe_sweep.h5
 
 $(1)_approximate := data/$(1)_$$($(1)_hash)_approximate.h5
+$(1)_approximate_sweep := data/$(1)_$$($(1)_hash)_approximate_sweep.h5
 $(1)_predict := data/$(1)_$$($(1)_hash)_predict.h5
-
 $(1)_compare := data/$(1)_$$($(1)_hash)_compare.h5
-
-$$($(1)_sweep): sweep
-	@./sweep -c $$($(1)_config) -n 100 -s "[0, 1]" -o $$@
 
 $$($(1)_reference): observe
 	@./observe -c $$($(1)_config) -s 0x42424242 -o $$@
@@ -60,8 +57,14 @@ $$($(1)_reference): observe
 $$($(1)_observe): observe
 	@./observe -c $$($(1)_config) -o $$@
 
+$$($(1)_observe_sweep): sweep
+	@./sweep -c $$($(1)_config) -n 100 -s "[0, 1]" -o $$@
+
 $$($(1)_approximate): approximate
 	@./approximate -c $$($(1)_config) -o $$@
+
+$$($(1)_approximate_sweep): $$($(1)_approximate) sweep
+	@./sweep -c $$($(1)_config) -approximate $$< -n 100 -s "[0, 1]" -o $$@
 
 $$($(1)_predict): $$($(1)_approximate) predict
 	@./predict -c $$($(1)_config) -approximate $$< -o $$@
@@ -69,13 +72,15 @@ $$($(1)_predict): $$($(1)_approximate) predict
 $$($(1)_compare): $$($(1)_reference) $$($(1)_observe) $$($(1)_predict) compare
 	@./compare -c $$($(1)_config) -reference $$($(1)_reference) -observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
 
-$(1)_sweep: $$($(1)_sweep)
-
 $(1)_reference: $$($(1)_reference)
 
 $(1)_observe: $$($(1)_observe)
 
+$(1)_observe_sweep: $$($(1)_observe_sweep)
+
 $(1)_approximate: $$($(1)_approximate)
+
+$(1)_approximate_sweep: $$($(1)_approximate_sweep)
 
 $(1)_predict: $$($(1)_predict)
 
