@@ -12,17 +12,16 @@ function compare(extended)
 
   count = cumsum(steps);
 
-  labels = {'Expectation', 'Variance', 'Distribution'};
   for i = 1:nq
     t = count(2:end);
     o = oerror(:, 2:end, i);
     p = perror(:, 2:end, i);
 
-    Plot.figure(1200, 300);
+    Plot.figure(600 * nm, 400);
     for j = 1:nm
       subplot(1, nm, j);
       semilogy(t, transpose([o(j, :); p(j, :)]), 'Marker', 'o');
-      Plot.title(labels{j});
+      Plot.title(sprintf('Quantity %d, Metric %d', i, j));
       Plot.label('Evaluations', 'log(Error)');
       Plot.legend('Observe', 'Predict');
       Plot.limit(t);

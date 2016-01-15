@@ -4,9 +4,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"math"
 
-	"github.com/ready-steady/statistics/distribution"
 	"github.com/ready-steady/statistics/metric"
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
@@ -16,7 +14,7 @@ import (
 
 const (
 	momentCount = 1
-	metricCount = 3
+	metricCount = 1
 )
 
 var (
@@ -123,15 +121,7 @@ func function(_ *config.Config) error {
 }
 
 func assess(data1, data2 []float64) []float64 {
-	μ1, v1 := distribution.Expectation(data1), distribution.Variance(data1)
-	μ2, v2 := distribution.Expectation(data2), distribution.Variance(data2)
-
-	result := make([]float64, metricCount)
-	result[0] = math.Abs((μ1 - μ2) / μ1)
-	result[1] = math.Abs((v1 - v2) / v1)
-	result[2] = metric.KolmogorovSmirnov(data1, data2)
-
-	return result
+	return []float64{metric.KolmogorovSmirnov(data1, data2)}
 }
 
 func cumulate(data []float64, steps []uint) [][]float64 {
