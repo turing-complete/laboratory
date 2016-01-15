@@ -62,17 +62,14 @@ func measure(application *system.Application) []float64 {
 func explore(application *system.Application) []uint {
 	nt := uint(len(application.Tasks))
 	depth := make([]uint, nt)
-
 	for _, l := range application.Leafs() {
 		ascend(application, depth, l)
 	}
-
 	return depth
 }
 
 func ascend(application *system.Application, depth []uint, f uint) {
 	max := uint(0)
-
 	for _, p := range application.Tasks[f].Parents {
 		if depth[p] == 0 {
 			ascend(application, depth, p)
@@ -81,6 +78,5 @@ func ascend(application *system.Application, depth []uint, f uint) {
 			max = depth[p] + 1
 		}
 	}
-
 	depth[f] = max
 }
