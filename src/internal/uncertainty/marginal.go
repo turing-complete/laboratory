@@ -69,7 +69,11 @@ func (self *marginal) Dimensions() (uint, uint) {
 	return self.nz, self.nt
 }
 
-func (self *marginal) Forward(z []float64) []float64 {
+func (_ *marginal) Forward(_ []float64) []float64 {
+	return nil
+}
+
+func (self *marginal) Inverse(z []float64) []float64 {
 	nt, nu, nz := self.nt, self.nu, self.nz
 
 	ω := make([]float64, nt)
@@ -100,10 +104,6 @@ func (self *marginal) Forward(z []float64) []float64 {
 	}
 
 	return ω
-}
-
-func (_ *marginal) Inverse(_ []float64) []float64 {
-	return nil
 }
 
 func (self *marginal) String() string {

@@ -34,8 +34,8 @@ func (self *temperature) Compute(node, value []float64) {
 	nit, _ := self.Time.Dimensions()
 	nip, _ := self.Power.Dimensions()
 
-	time := self.Time.Forward(node[:nit])
-	power := self.Power.Forward(node[nit : nit+nip])
+	time := self.Time.Inverse(node[:nit])
+	power := self.Power.Inverse(node[nit : nit+nip])
 	schedule := self.system.ComputeSchedule(time)
 
 	P, ΔT := self.system.PartitionPower(power, schedule, ε)

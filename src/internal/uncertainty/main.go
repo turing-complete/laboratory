@@ -52,12 +52,12 @@ func (self *Uncertainty) Dimensions() (uint, uint) {
 	return ni1 + ni2, no1 + no2
 }
 
-func (self *Uncertainty) Forward(z []float64) []float64 {
-	ni, _ := self.Time.Dimensions()
-	return append(self.Time.Forward(z[:ni]), self.Power.Forward(z[ni:])...)
+func (self *Uncertainty) Forward(ω []float64) []float64 {
+	_, no := self.Time.Dimensions()
+	return append(self.Time.Forward(ω[:no]), self.Power.Forward(ω[no:])...)
 }
 
-func (self *Uncertainty) Inverse(ω []float64) []float64 {
-	_, no := self.Time.Dimensions()
-	return append(self.Time.Inverse(ω[:no]), self.Power.Inverse(ω[no:])...)
+func (self *Uncertainty) Inverse(z []float64) []float64 {
+	ni, _ := self.Time.Dimensions()
+	return append(self.Time.Inverse(z[:ni]), self.Power.Inverse(z[ni:])...)
 }
