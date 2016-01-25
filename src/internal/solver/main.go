@@ -34,7 +34,7 @@ func New(ni, _ uint, config *config.Solver) (*Solver, error) {
 }
 
 func (self *Solver) Compute(target target.Target) *Solution {
-	return &Solution{*self.Interpolator.Compute(target)}
+	return &Solution{*self.Interpolator.Compute(target, target)}
 }
 
 func (self *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
