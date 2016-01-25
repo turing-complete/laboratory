@@ -104,9 +104,9 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	points := generate(target1, target2, &config.Assessment)
+	ns := config.Assessment.Samples
 
-	ns := uint(len(points)) / ni
+	points := generate(target1, target2, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%10s %15s\n", "Iteration", "Nodes")
@@ -157,13 +157,11 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(into, from target.Target, config *config.Assessment) []float64 {
-	ns := config.Samples
-
+func generate(into, from target.Target, ns uint, seed int64) []float64 {
 	nif, _ := from.Dimensions()
 	nii, _ := into.Dimensions()
 
-	zf := support.Generate(nif, ns, config.Seed)
+	zf := support.Generate(nif, ns, seed)
 	zi := make([]float64, nii*ns)
 
 	for i := uint(0); i < ns; i++ {
