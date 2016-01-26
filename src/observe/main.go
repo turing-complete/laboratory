@@ -65,7 +65,7 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	uncertainty, err := uncertainty.NewMarginal(system, &config.Uncertainty)
+	uncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}

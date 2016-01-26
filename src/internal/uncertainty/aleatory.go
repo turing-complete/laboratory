@@ -21,7 +21,7 @@ var (
 	pInfinity        = math.Inf(1)
 )
 
-type marginal struct {
+type aleatory struct {
 	base
 	correlator []float64
 	marginals  []probability.Inverter
@@ -29,8 +29,8 @@ type marginal struct {
 	nz uint
 }
 
-func newMarginal(system *system.System, reference []float64,
-	config *config.Parameter) (*marginal, error) {
+func newAleatory(system *system.System, reference []float64,
+	config *config.Parameter) (*aleatory, error) {
 
 	base, err := newBase(reference, config)
 	if err != nil {
@@ -38,7 +38,7 @@ func newMarginal(system *system.System, reference []float64,
 	}
 
 	if base.nu == 0 {
-		return &marginal{base: base}, nil
+		return &aleatory{base: base}, nil
 	}
 
 	correlator, err := correlate(system, config, base.tasks)
@@ -56,7 +56,7 @@ func newMarginal(system *system.System, reference []float64,
 		marginals[i] = marginalizer(0, base.upper[tid]-base.lower[tid])
 	}
 
-	return &marginal{
+	return &aleatory{
 		base:       base,
 		correlator: correlator,
 		marginals:  marginals,
@@ -65,15 +65,15 @@ func newMarginal(system *system.System, reference []float64,
 	}, nil
 }
 
-func (self *marginal) Dimensions() (uint, uint) {
+func (self *aleatory) Dimensions() (uint, uint) {
 	return self.nz, self.nt
 }
 
-func (_ *marginal) Forward(_ []float64) []float64 {
+func (_ *aleatory) Forward(_ []float64) []float64 {
 	return nil
 }
 
-func (self *marginal) Inverse(z []float64) []float64 {
+func (self *aleatory) Inverse(z []float64) []float64 {
 	nt, nu, nz := self.nt, self.nu, self.nz
 
 	ω := make([]float64, nt)
@@ -106,7 +106,7 @@ func (self *marginal) Inverse(z []float64) []float64 {
 	return ω
 }
 
-func (self *marginal) String() string {
+func (self *aleatory) String() string {
 	return fmt.Sprintf(`{"dimensions": %d}`, self.nz)
 }
 

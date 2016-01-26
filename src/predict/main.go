@@ -72,27 +72,27 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	uncertainty1, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
 
-	uncertainty2, err := uncertainty.NewMarginal(system, &config.Uncertainty)
+	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
 
-	target1, err := target.New(system, uncertainty1, &config.Target)
+	atarget, err := target.New(system, auncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
 
-	target2, err := target.New(system, uncertainty2, &config.Target)
+	etarget, err := target.New(system, euncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
 
-	ni, no := target1.Dimensions()
+	ni, no := etarget.Dimensions()
 
 	solver, err := isolver.New(ni, no, &config.Solver)
 	if err != nil {
@@ -106,7 +106,7 @@ func function(config *config.Config) error {
 
 	ns := config.Assessment.Samples
 
-	points := generate(target1, target2, ns, config.Assessment.Seed)
+	points := generate(etarget, atarget, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%10s %15s\n", "Iteration", "Nodes")

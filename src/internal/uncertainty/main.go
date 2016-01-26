@@ -16,12 +16,12 @@ type Uncertainty struct {
 	Power Parameter
 }
 
-func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newEpistemic(system.ReferenceTime(), &config.Time)
+func NewAleatory(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+	time, err := newAleatory(system, system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
 	}
-	power, err := newEpistemic(system.ReferencePower(), &config.Power)
+	power, err := newAleatory(system, system.ReferencePower(), &config.Power)
 	if err != nil {
 		return nil, err
 	}
@@ -31,12 +31,12 @@ func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertain
 	}, nil
 }
 
-func NewMarginal(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newMarginal(system, system.ReferenceTime(), &config.Time)
+func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+	time, err := newEpistemic(system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
 	}
-	power, err := newMarginal(system, system.ReferencePower(), &config.Power)
+	power, err := newEpistemic(system.ReferencePower(), &config.Power)
 	if err != nil {
 		return nil, err
 	}
