@@ -16,10 +16,6 @@ type Uncertainty struct {
 	Power Parameter
 }
 
-func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	return NewEpistemic(system, config)
-}
-
 func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
 	time, err := newEpistemic(system.ReferenceTime(), &config.Time)
 	if err != nil {
