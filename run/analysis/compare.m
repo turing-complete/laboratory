@@ -38,11 +38,15 @@ function compare(extended)
 
   filename = locate('observe');
   ovalues = h5read(filename, '/values');
+  opoints = h5read(filename, '/points');
   ovalues = ovalues(1:2:end, :);
 
   filename = locate('predict');
   pvalues = h5read(filename, '/values');
+  ppoints = h5read(filename, '/points');
   pvalues = pvalues(1:2:end, :);
+
+  fprintf('Points norm: %e\n', norm(opoints - ppoints));
 
   ns = size(pvalues, 2) / nk;
 

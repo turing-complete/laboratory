@@ -106,7 +106,7 @@ func function(config *config.Config) error {
 
 	ns := config.Assessment.Samples
 
-	points := generate(etarget, atarget, ns, config.Assessment.Seed)
+	epoints, apoints := generate(etarget, atarget, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%10s %15s\n", "Iteration", "Nodes")
@@ -134,7 +134,7 @@ func function(config *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		values = append(values, solver.Evaluate(&s, points)...)
+		values = append(values, solver.Evaluate(&s, epoints)...)
 	}
 
 	nk, steps = k, steps[:k]
@@ -144,7 +144,7 @@ func function(config *config.Config) error {
 	if err := output.Put("solution", *solution); err != nil {
 		return err
 	}
-	if err := output.Put("points", points, ni, ns); err != nil {
+	if err := output.Put("points", apoints, ni, ns); err != nil {
 		return err
 	}
 	if err := output.Put("steps", steps); err != nil {
@@ -157,7 +157,7 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(into, from target.Target, ns uint, seed int64) []float64 {
+func generate(into, from target.Target, ns uint, seed int64) ([]float64, []float64) {
 	nif, _ := from.Dimensions()
 	nii, _ := into.Dimensions()
 
@@ -168,5 +168,5 @@ func generate(into, from target.Target, ns uint, seed int64) []float64 {
 		copy(zi[i*nii:(i+1)*nii], into.Forward(from.Inverse(zf[i*nif:(i+1)*nif])))
 	}
 
-	return zi
+	return zi, zf
 }
