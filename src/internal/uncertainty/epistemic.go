@@ -6,23 +6,23 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/config"
 )
 
-type direct struct {
+type epistemic struct {
 	base
 }
 
-func newDirect(reference []float64, config *config.Parameter) (*direct, error) {
+func newEpistemic(reference []float64, config *config.Parameter) (*epistemic, error) {
 	base, err := newBase(reference, config)
 	if err != nil {
 		return nil, err
 	}
-	return &direct{base}, nil
+	return &epistemic{base}, nil
 }
 
-func (self *direct) Dimensions() (uint, uint) {
+func (self *epistemic) Dimensions() (uint, uint) {
 	return self.nu, self.nt
 }
 
-func (self *direct) Forward(ω []float64) []float64 {
+func (self *epistemic) Forward(ω []float64) []float64 {
 	z := make([]float64, self.nu)
 	for i, tid := range self.tasks {
 		z[i] = (ω[tid] - self.lower[tid]) / (self.upper[tid] - self.lower[tid])
@@ -30,7 +30,7 @@ func (self *direct) Forward(ω []float64) []float64 {
 	return z
 }
 
-func (self *direct) Inverse(z []float64) []float64 {
+func (self *epistemic) Inverse(z []float64) []float64 {
 	ω := make([]float64, self.nt)
 	copy(ω, self.lower)
 	for i, tid := range self.tasks {
@@ -39,6 +39,6 @@ func (self *direct) Inverse(z []float64) []float64 {
 	return ω
 }
 
-func (self *direct) String() string {
+func (self *epistemic) String() string {
 	return fmt.Sprintf(`{"dimensions": %d}`, self.nu)
 }
