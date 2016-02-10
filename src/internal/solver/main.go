@@ -8,7 +8,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/target"
 
 	interpolation "github.com/ready-steady/adapt/algorithm/local"
-	basis "github.com/ready-steady/adapt/basis/linear"
+	basis "github.com/ready-steady/adapt/basis/polynomial"
 	grid "github.com/ready-steady/adapt/grid/equidistant"
 )
 
@@ -23,10 +23,10 @@ type Solution struct {
 func New(ni, _ uint, config *config.Solver) (*Solver, error) {
 	switch config.Rule {
 	case "closed":
-		return &Solver{*interpolation.New(grid.NewClosed(ni), basis.NewClosed(ni),
+		return &Solver{*interpolation.New(grid.NewClosed(ni), basis.NewClosed(ni, 1),
 			(*interpolation.Config)(&config.Config))}, nil
 	case "open":
-		return &Solver{*interpolation.New(grid.NewOpen(ni), basis.NewOpen(ni),
+		return &Solver{*interpolation.New(grid.NewOpen(ni), basis.NewOpen(ni, 1),
 			(*interpolation.Config)(&config.Config))}, nil
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
