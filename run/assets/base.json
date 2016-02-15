@@ -26,9 +26,10 @@
 	},
 
 	"solver": {
-		"rule": "open",
+		"rule": "closed",
+		"power": 1,
 		"minLevel": 1,
-		"maxLevel": 50,
+		"maxLevel": 20,
 		"maxEvaluations": 100000
 	},
 

@@ -64,8 +64,11 @@ type Parameter struct {
 
 // Solver is a configuration of the interpolation algorithm.
 type Solver struct {
-	// The quadrature rule to use, which is either “closed” or “open.”
+	// The quadrature rule used to distribute interpolation points, which is
+	// either “closed” or “open.”
 	Rule string
+	// The total order respected when constructing interpolating polynomials.
+	Power uint
 
 	interpolation.Config
 }

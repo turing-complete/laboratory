@@ -24,6 +24,7 @@
 
 	"solver": {
 		"rule": "open",
+		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 3,
 		"maxEvaluations": 100000,

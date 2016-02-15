@@ -21,12 +21,16 @@ type Solution struct {
 }
 
 func New(ni, _ uint, config *config.Solver) (*Solver, error) {
+	power := config.Power
+	if power == 0 {
+		return nil, errors.New("the interpolation power should be positive")
+	}
 	switch config.Rule {
 	case "closed":
-		return &Solver{*interpolation.New(grid.NewClosed(ni), basis.NewClosed(ni, 1),
+		return &Solver{*interpolation.New(grid.NewClosed(ni), basis.NewClosed(ni, power),
 			(*interpolation.Config)(&config.Config))}, nil
 	case "open":
-		return &Solver{*interpolation.New(grid.NewOpen(ni), basis.NewOpen(ni, 1),
+		return &Solver{*interpolation.New(grid.NewOpen(ni), basis.NewOpen(ni, power),
 			(*interpolation.Config)(&config.Config))}, nil
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
