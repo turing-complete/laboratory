@@ -16,8 +16,19 @@ type Solver struct {
 	interpolation.Interpolator
 }
 
+type Statistics struct {
+	Level  uint
+	Active []uint
+}
+
 type Solution struct {
 	interpolation.Surrogate
+	Statistics
+}
+
+type tracker struct {
+	target.Target
+	Statistics
 }
 
 func New(ni, _ uint, config *config.Solver) (*Solver, error) {
@@ -38,7 +49,15 @@ func New(ni, _ uint, config *config.Solver) (*Solver, error) {
 }
 
 func (self *Solver) Compute(target target.Target) *Solution {
-	return &Solution{*self.Interpolator.Compute(target)}
+	tracker := &tracker{
+		Target: target,
+	}
+	surrogate := self.Interpolator.Compute(tracker)
+	tracker.Level = uint(len(tracker.Active))
+	return &Solution{
+		Surrogate:  *surrogate,
+		Statistics: tracker.Statistics,
+	}
 }
 
 func (self *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
@@ -52,4 +71,9 @@ func (self *Solver) Integrate(solution *Solution) []float64 {
 func (self *Solution) String() string {
 	return fmt.Sprintf(`{"inputs": %d, "outputs": %d, "level": %d, "nodes": %d}`,
 		self.Inputs, self.Outputs, self.Level, self.Nodes)
+}
+
+func (self *tracker) Monitor(progress *interpolation.Progress) {
+	self.Active = append(self.Active, progress.Active)
+	self.Target.Monitor(progress)
 }

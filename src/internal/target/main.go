@@ -13,6 +13,7 @@ import (
 
 type Target interface {
 	interpolation.Target
+
 	Forward([]float64) []float64
 	Inverse([]float64) []float64
 }
