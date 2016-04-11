@@ -3,9 +3,7 @@ package config
 import (
 	"encoding/json"
 	"os"
-	"runtime"
 
-	interpolation "github.com/ready-steady/adapt/algorithm/local"
 	temperature "github.com/turing-complete/temperature/analytic"
 )
 
@@ -69,8 +67,12 @@ type Solver struct {
 	Rule string
 	// The total order respected when constructing interpolating polynomials.
 	Power uint
-
-	interpolation.Config
+	// The minimum level of interpolation.
+	MinLevel uint
+	// The maximum level of interpolation.
+	MaxLevel uint
+	// The tolerance of the local error.
+	LocalError float64
 }
 
 // Assessment is a configuration of the assessment procedure.
@@ -88,13 +90,11 @@ func New(path string) (*Config, error) {
 		if err := populate(&config, path); err != nil {
 			return nil, err
 		}
-
 		if len(config.Inherit) > 0 {
 			path = config.Inherit
 			paths = append([]string{path}, paths...)
 			continue
 		}
-
 		break
 	}
 
@@ -103,10 +103,6 @@ func New(path string) (*Config, error) {
 		if err := populate(config, path); err != nil {
 			return nil, err
 		}
-	}
-
-	if config.Solver.Workers == 0 {
-		config.Solver.Workers = uint(runtime.GOMAXPROCS(0))
 	}
 
 	return config, nil
@@ -118,8 +114,5 @@ func populate(config *Config, path string) error {
 		return err
 	}
 	defer file.Close()
-
-	decoder := json.NewDecoder(file)
-
-	return decoder.Decode(config)
+	return json.NewDecoder(file).Decode(config)
 }

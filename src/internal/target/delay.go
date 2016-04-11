@@ -23,7 +23,7 @@ func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
 }
 
 func (self *delay) Dimensions() (uint, uint) {
-	return self.base.Dimensions()
+	return self.ni, self.no
 }
 
 func (self *delay) Compute(node []float64, value []float64) {

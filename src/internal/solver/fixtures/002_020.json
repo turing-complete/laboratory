@@ -18,8 +18,7 @@
 	},
 
 	"target": {
-		"name": "maximal-temperature",
-		"refinement": 1e-2
+		"name": "maximal-temperature"
 	},
 
 	"solver": {
@@ -27,7 +26,6 @@
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 3,
-		"maxEvaluations": 100000,
-		"maxIterations": 20
+		"localError": 1e-2
 	}
 }

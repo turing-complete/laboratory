@@ -23,7 +23,7 @@ func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 }
 
 func (self *temperature) Dimensions() (uint, uint) {
-	return self.base.Dimensions()
+	return self.ni, self.no
 }
 
 func (self *temperature) Compute(node, value []float64) {

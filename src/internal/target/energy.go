@@ -23,7 +23,7 @@ func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,
 }
 
 func (self *energy) Dimensions() (uint, uint) {
-	return self.base.Dimensions()
+	return self.ni, self.no
 }
 
 func (self *energy) Compute(node, value []float64) {
