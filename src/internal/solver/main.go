@@ -30,24 +30,20 @@ func New(ni, no uint, config *config.Solver) (*Solver, error) {
 	if power == 0 {
 		return nil, errors.New("the interpolation power should be positive")
 	}
-
-	var agrid algorithm.Grid
-	var abasis algorithm.Basis
 	switch config.Rule {
 	case "closed":
-		agrid = grid.NewClosed(ni)
-		abasis = basis.NewClosed(ni, power)
+		grid := grid.NewClosed(ni)
+		basis := basis.NewClosed(ni, power)
+		strategy := newStrategy(ni, no, config, grid)
+		return &Solver{*algorithm.New(ni, no, grid, basis, strategy)}, nil
 	case "open":
-		agrid = grid.NewOpen(ni)
-		abasis = basis.NewOpen(ni, power)
+		grid := grid.NewOpen(ni)
+		basis := basis.NewOpen(ni, power)
+		strategy := newStrategy(ni, no, config, grid)
+		return &Solver{*algorithm.New(ni, no, grid, basis, strategy)}, nil
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
 	}
-
-	strategy := algorithm.NewStrategy(ni, no, config.MinLevel,
-		config.MaxLevel, config.LocalError, agrid)
-
-	return &Solver{*algorithm.New(ni, no, agrid, abasis, strategy)}, nil
 }
 
 func (self *Solver) Compute(target target.Target) *Solution {
