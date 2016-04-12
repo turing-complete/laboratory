@@ -76,5 +76,5 @@ func (self *System) Span() float64 {
 }
 
 func (self *System) String() string {
-	return fmt.Sprintf(`{"cores": %d, "tasks": %d}`, self.Platform.Len(), self.Application.Len())
+	return fmt.Sprintf(`{cores:%d tasks:%d}`, self.Platform.Len(), self.Application.Len())
 }

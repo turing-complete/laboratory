@@ -10,12 +10,11 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/solver"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
-
-	isolver "github.com/turing-complete/laboratory/src/internal/solver"
 )
 
 var (
@@ -94,12 +93,12 @@ func function(config *config.Config) error {
 
 	ni, no := etarget.Dimensions()
 
-	solver, err := isolver.New(ni, no, &config.Solver)
+	asolver, err := solver.New(ni, no, &config.Solver)
 	if err != nil {
 		return err
 	}
 
-	solution := new(isolver.Solution)
+	solution := new(solver.Solution)
 	if err = approximate.Get("solution", solution); err != nil {
 		return err
 	}
@@ -134,7 +133,7 @@ func function(config *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		values = append(values, solver.Evaluate(&s, epoints)...)
+		values = append(values, asolver.Evaluate(&s, epoints)...)
 	}
 
 	nk, steps = k, steps[:k]

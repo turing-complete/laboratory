@@ -50,12 +50,12 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	log.Println(system)
-	log.Println(target)
+	log.Println("System", system)
+	log.Println("Target", target)
 	log.Println("Constructing a surrogate...")
 
 	solution := solver.Compute(target)
-	log.Println(solution)
+	log.Println("Solution", solution)
 
 	if err := output.Put("solution", *solution); err != nil {
 		return err

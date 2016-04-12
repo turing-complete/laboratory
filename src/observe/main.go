@@ -14,8 +14,6 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
-
-	itarget "github.com/turing-complete/laboratory/src/internal/target"
 )
 
 var (
@@ -69,18 +67,18 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	target, err := target.New(system, uncertainty, &config.Target)
+	atarget, err := target.New(system, uncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
 
-	ni, no := target.Dimensions()
+	ni, no := atarget.Dimensions()
 	ns := config.Assessment.Samples
 
 	points := support.Generate(ni, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the original model at %d points...\n", ns)
-	values := itarget.Invoke(target, points)
+	values := target.Invoke(atarget, points)
 	log.Println("Done.")
 
 	if err := output.Put("points", points, ni, ns); err != nil {
