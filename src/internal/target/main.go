@@ -2,16 +2,12 @@ package target
 
 import (
 	"errors"
-	"runtime"
-	"sync"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
-)
 
-var (
-	Workers = uint(runtime.GOMAXPROCS(0))
+	interpolation "github.com/ready-steady/adapt/algorithm/external"
 )
 
 type Target interface {
@@ -38,29 +34,5 @@ func New(system *system.System, uncertainty *uncertainty.Uncertainty,
 
 func Invoke(target Target, points []float64) []float64 {
 	ni, no := target.Dimensions()
-	np := uint(len(points)) / ni
-
-	values := make([]float64, np*no)
-
-	jobs := make(chan uint, np)
-	group := sync.WaitGroup{}
-	group.Add(int(np))
-
-	for i := uint(0); i < Workers; i++ {
-		go func() {
-			for j := range jobs {
-				target.Compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
-				group.Done()
-			}
-		}()
-	}
-
-	for i := uint(0); i < np; i++ {
-		jobs <- i
-	}
-
-	group.Wait()
-	close(jobs)
-
-	return values
+	return interpolation.Invoke(target.Compute, points, ni, no)
 }

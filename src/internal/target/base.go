@@ -1,6 +1,7 @@
 package target
 
 import (
+	"fmt"
 	"log"
 	"math"
 
@@ -25,6 +26,10 @@ func newBase(system *system.System, config *config.Target, ni, no uint) (base, e
 	return base{system: system, config: config, ni: ni, no: no}, nil
 }
 
+func (self *base) Dimensions() (uint, uint) {
+	return self.ni, self.no
+}
+
 func (self *base) Check(state *interpolation.State, _ *interpolation.Surrogate) {
 	if self.ns == 0 {
 		log.Printf("%5s %15s %15s\n", "", "Done", "More")
@@ -44,4 +49,8 @@ func (self *base) Score(element *interpolation.Element) (score float64) {
 	}
 	score *= element.Volume
 	return
+}
+
+func (self *base) String() string {
+	return fmt.Sprintf(`{inputs:%d, outputs:%d}`, self.ni, self.no)
 }

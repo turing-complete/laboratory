@@ -14,7 +14,7 @@ type temperature struct {
 func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*temperature, error) {
 
-	ni, _ := uncertainty.Dimensions()
+	ni, _ := uncertainty.Mapping()
 	base, err := newBase(system, config, ni, 1)
 	if err != nil {
 		return nil, err
@@ -22,17 +22,13 @@ func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 	return &temperature{base: base, Uncertainty: *uncertainty}, nil
 }
 
-func (self *temperature) Dimensions() (uint, uint) {
-	return self.ni, self.no
-}
-
 func (self *temperature) Compute(node, value []float64) {
 	const (
 		ε = 1e-10
 	)
 
-	nit, _ := self.Time.Dimensions()
-	nip, _ := self.Power.Dimensions()
+	nit, _ := self.Time.Mapping()
+	nip, _ := self.Power.Mapping()
 
 	time := self.Time.Inverse(node[:nit])
 	power := self.Power.Inverse(node[nit : nit+nip])

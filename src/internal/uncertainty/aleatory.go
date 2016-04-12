@@ -2,7 +2,6 @@ package uncertainty
 
 import (
 	"errors"
-	"fmt"
 	"math"
 
 	"github.com/ready-steady/linear/matrix"
@@ -65,7 +64,7 @@ func newAleatory(system *system.System, reference []float64,
 	}, nil
 }
 
-func (self *aleatory) Dimensions() (uint, uint) {
+func (self *aleatory) Mapping() (uint, uint) {
 	return self.nz, self.nt
 }
 
@@ -104,10 +103,6 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 	}
 
 	return ω
-}
-
-func (self *aleatory) String() string {
-	return fmt.Sprintf(`{"dimensions": %d}`, self.nz)
 }
 
 func correlate(system *system.System, config *config.Parameter, tasks []uint) ([]float64, error) {

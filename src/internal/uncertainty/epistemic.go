@@ -1,8 +1,6 @@
 package uncertainty
 
 import (
-	"fmt"
-
 	"github.com/turing-complete/laboratory/src/internal/config"
 )
 
@@ -18,7 +16,7 @@ func newEpistemic(reference []float64, config *config.Parameter) (*epistemic, er
 	return &epistemic{base}, nil
 }
 
-func (self *epistemic) Dimensions() (uint, uint) {
+func (self *epistemic) Mapping() (uint, uint) {
 	return self.nu, self.nt
 }
 
@@ -37,8 +35,4 @@ func (self *epistemic) Inverse(z []float64) []float64 {
 		ω[tid] += z[i] * (self.upper[tid] - self.lower[tid])
 	}
 	return ω
-}
-
-func (self *epistemic) String() string {
-	return fmt.Sprintf(`{"dimensions": %d}`, self.nu)
 }

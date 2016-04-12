@@ -6,7 +6,7 @@ import (
 )
 
 type Parameter interface {
-	Dimensions() (uint, uint)
+	Mapping() (uint, uint)
 	Forward([]float64) []float64
 	Inverse([]float64) []float64
 }
@@ -46,18 +46,18 @@ func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertain
 	}, nil
 }
 
-func (self *Uncertainty) Dimensions() (uint, uint) {
-	ni1, no1 := self.Time.Dimensions()
-	ni2, no2 := self.Power.Dimensions()
+func (self *Uncertainty) Mapping() (uint, uint) {
+	ni1, no1 := self.Time.Mapping()
+	ni2, no2 := self.Power.Mapping()
 	return ni1 + ni2, no1 + no2
 }
 
 func (self *Uncertainty) Forward(ω []float64) []float64 {
-	_, no := self.Time.Dimensions()
+	_, no := self.Time.Mapping()
 	return append(self.Time.Forward(ω[:no]), self.Power.Forward(ω[no:])...)
 }
 
 func (self *Uncertainty) Inverse(z []float64) []float64 {
-	ni, _ := self.Time.Dimensions()
+	ni, _ := self.Time.Mapping()
 	return append(self.Time.Inverse(z[:ni]), self.Power.Inverse(z[ni:])...)
 }
