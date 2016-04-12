@@ -36,7 +36,8 @@ func New(system *system.System, uncertainty *uncertainty.Uncertainty,
 	}
 }
 
-func Invoke(compute func([]float64, []float64), points []float64, ni, no uint) []float64 {
+func Invoke(target Target, points []float64) []float64 {
+	ni, no := target.Dimensions()
 	np := uint(len(points)) / ni
 
 	values := make([]float64, np*no)
@@ -48,7 +49,7 @@ func Invoke(compute func([]float64, []float64), points []float64, ni, no uint) [
 	for i := uint(0); i < Workers; i++ {
 		go func() {
 			for j := range jobs {
-				compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
+				target.Compute(points[j*ni:(j+1)*ni], values[j*no:(j+1)*no])
 				group.Done()
 			}
 		}()

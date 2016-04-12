@@ -6,7 +6,10 @@
 	},
 
 	"target": {
-		"name": "maximal-temperature",
-		"refinement": 1e-2
+		"name": "maximal-temperature"
+	},
+
+	"solver": {
+		"localError": 1e-2
 	}
 }

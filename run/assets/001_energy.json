@@ -6,7 +6,10 @@
 	},
 
 	"target": {
-		"name": "total-energy",
-		"refinement": 1e-4
+		"name": "total-energy"
+	},
+
+	"solver": {
+		"localError": 1e-4
 	}
 }

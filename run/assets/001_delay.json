@@ -6,7 +6,10 @@
 	},
 
 	"target": {
-		"name": "end-to-end-delay",
-		"refinement": 1e-4
+		"name": "end-to-end-delay"
+	},
+
+	"solver": {
+		"localError": 1e-4
 	}
 }

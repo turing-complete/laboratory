@@ -6,7 +6,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"runtime"
 	"strings"
 
 	"github.com/ready-steady/linear"
@@ -87,7 +86,7 @@ func function(config *config.Config) error {
 		values = solver.Evaluate(solution, points)
 	} else {
 		log.Printf("Evaluating the original model at %d points...\n", np)
-		values = itarget.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
+		values = itarget.Invoke(target, points)
 	}
 
 	log.Println("Done.")

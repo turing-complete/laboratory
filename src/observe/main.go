@@ -5,7 +5,6 @@ import (
 	"flag"
 	"log"
 	"math"
-	"runtime"
 	"strconv"
 
 	"github.com/turing-complete/laboratory/src/internal/command"
@@ -81,7 +80,7 @@ func function(config *config.Config) error {
 	points := support.Generate(ni, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the original model at %d points...\n", ns)
-	values := itarget.Invoke(target, points, uint(runtime.GOMAXPROCS(0)))
+	values := itarget.Invoke(target, points)
 	log.Println("Done.")
 
 	if err := output.Put("points", points, ni, ns); err != nil {

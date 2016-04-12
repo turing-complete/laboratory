@@ -21,16 +21,12 @@
 		}
 	},
 
-	"target": {
-		"refinement": 1e-4
-	},
-
 	"solver": {
 		"rule": "closed",
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 20,
-		"maxEvaluations": 100000
+		"localError": 1e-4
 	},
 
 	"assessment": {
