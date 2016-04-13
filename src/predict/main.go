@@ -108,7 +108,7 @@ func function(config *config.Config) error {
 	epoints, apoints := generate(etarget, atarget, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
-	log.Printf("%10s %15s\n", "Iteration", "Nodes")
+	log.Printf("%5s %15s\n", "Step", "Nodes")
 
 	nk := uint(len(solution.Active))
 
@@ -126,7 +126,7 @@ func function(config *config.Config) error {
 		}
 		k++
 
-		log.Printf("%10d %15d\n", i, na)
+		log.Printf("%5d %15d\n", i, na)
 
 		s := *solution
 		s.Nodes = na
