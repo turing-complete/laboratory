@@ -14,12 +14,16 @@ type strategy struct {
 
 	ns uint
 	nn uint
+
+	active []uint
 }
 
-func newStrategy(ni, no uint, config *config.Solver, grid algorithm.Grid) *strategy {
-	return &strategy{
-		Strategy: *algorithm.NewStrategy(ni, no, config.MinLevel,
-			config.MaxLevel, config.LocalError, grid),
+func newStrategy(ni, no uint, config *config.Solver, grid algorithm.Grid) func() *strategy {
+	return func() *strategy {
+		return &strategy{
+			Strategy: *algorithm.NewStrategy(ni, no, config.MinLevel,
+				config.MaxLevel, config.LocalError, grid),
+		}
 	}
 }
 
@@ -30,8 +34,10 @@ func (self *strategy) Check(state *interpolation.State, surrogate *interpolation
 
 	nn := uint(len(state.Indices)) / surrogate.Inputs
 	log.Printf("%5d %15d %15d\n", self.ns, nn, self.nn)
+
 	self.nn += nn
 	self.ns += 1
+	self.active = append(self.active, nn)
 
 	return self.Strategy.Check(state, surrogate)
 }
