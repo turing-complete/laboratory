@@ -1,4 +1,4 @@
-package solver
+package solution
 
 import (
 	"testing"
@@ -12,7 +12,7 @@ import (
 	grid "github.com/ready-steady/adapt/grid/equidistant"
 )
 
-func TestSolverCompute(t *testing.T) {
+func TestSolutionCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020.json")
 	system, _ := system.New(&config.System)
 	uncertainty, _ := uncertainty.NewEpistemic(system, &config.Uncertainty)
@@ -20,20 +20,20 @@ func TestSolverCompute(t *testing.T) {
 	target, _ := target.New(system, uncertainty, &config.Target)
 	ni, no := target.Dimensions()
 
-	solver, _ := New(ni, no, &config.Solver)
-	solution := solver.Compute(target)
+	solution, _ := New(ni, no, &config.Solution)
+	surrogate := solution.Compute(target)
 
-	nc := solution.Surrogate.Nodes
+	nc := surrogate.Surrogate.Nodes
 
 	assert.Equal(nc, uint(857), t)
 
 	grid := grid.NewOpen(ni)
-	nodes := grid.Compute(solution.Surrogate.Indices)
+	nodes := grid.Compute(surrogate.Surrogate.Indices)
 
 	values := make([]float64, nc*no)
 	for i := uint(0); i < nc; i++ {
 		target.Compute(nodes[i*ni:(i+1)*ni], values[i*no:(i+1)*no])
 	}
 
-	assert.EqualWithin(values, solver.Evaluate(solution, nodes), 1e-15, t)
+	assert.EqualWithin(values, solution.Evaluate(surrogate, nodes), 1e-15, t)
 }

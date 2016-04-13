@@ -14,7 +14,7 @@ type Config struct {
 	System      System      // Platform and application
 	Target      Target      // Quantity of interest
 	Uncertainty Uncertainty // Probability model
-	Solver      Solver      // Interpolation algorithm
+	Solution    Solution    // Approximation algorithm
 	Assessment  Assessment  // Assessment
 
 	// A flag to display diagnostic information.
@@ -60,16 +60,15 @@ type Parameter struct {
 	Variance float64 // ∈ (0, 1]
 }
 
-// Solver is a configuration of the interpolation algorithm.
-type Solver struct {
-	// The quadrature rule used to distribute interpolation points, which is
-	// either “closed” or “open.”
+// Solution is a configuration of the approximation algorithm.
+type Solution struct {
+	// The quadrature rule, which is either “closed” or “open.”
 	Rule string
-	// The total order respected when constructing interpolating polynomials.
+	// The total order of polynomials.
 	Power uint
-	// The minimum level of interpolation.
+	// The minimum level of approximation.
 	MinLevel uint
-	// The maximum level of interpolation.
+	// The maximum level of approximation.
 	MaxLevel uint
 	// The tolerance of the local error.
 	LocalError float64

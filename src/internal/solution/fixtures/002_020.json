@@ -21,7 +21,7 @@
 		"name": "maximal-temperature"
 	},
 
-	"solver": {
+	"solution": {
 		"rule": "open",
 		"power": 1,
 		"minLevel": 1,

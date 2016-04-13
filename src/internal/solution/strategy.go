@@ -1,4 +1,4 @@
-package solver
+package solution
 
 import (
 	"log"
@@ -18,7 +18,7 @@ type strategy struct {
 	active []uint
 }
 
-func newStrategy(ni, no uint, config *config.Solver, grid algorithm.Grid) func() *strategy {
+func newStrategy(ni, no uint, config *config.Solution, grid algorithm.Grid) func() *strategy {
 	return func() *strategy {
 		return &strategy{
 			Strategy: *algorithm.NewStrategy(ni, no, config.MinLevel,

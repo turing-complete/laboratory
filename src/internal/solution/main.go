@@ -1,4 +1,4 @@
-package solver
+package solution
 
 import (
 	"errors"
@@ -12,7 +12,7 @@ import (
 	grid "github.com/ready-steady/adapt/grid/equidistant"
 )
 
-type Solver struct {
+type Solution struct {
 	algorithm.Interpolator
 
 	strategy func() *strategy
@@ -22,12 +22,12 @@ type Statistics struct {
 	Active []uint
 }
 
-type Solution struct {
+type Surrogate struct {
 	interpolation.Surrogate
 	Statistics
 }
 
-func New(ni, no uint, config *config.Solver) (*Solver, error) {
+func New(ni, no uint, config *config.Solution) (*Solution, error) {
 	power := config.Power
 	if power == 0 {
 		return nil, errors.New("the interpolation power should be positive")
@@ -46,21 +46,21 @@ func New(ni, no uint, config *config.Solver) (*Solver, error) {
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
-	return &Solver{
+	return &Solution{
 		Interpolator: *algorithm.New(ni, no, agrid, abasis),
 		strategy:     newStrategy(ni, no, config, agrid),
 	}, nil
 }
 
-func (self *Solver) Compute(target target.Target) *Solution {
+func (self *Solution) Compute(target target.Target) *Surrogate {
 	strategy := self.strategy()
 	surrogate := self.Interpolator.Compute(target.Compute, strategy)
-	return &Solution{
+	return &Surrogate{
 		Surrogate:  *surrogate,
 		Statistics: Statistics{strategy.active},
 	}
 }
 
-func (self *Solver) Evaluate(solution *Solution, nodes []float64) []float64 {
-	return self.Interpolator.Evaluate(&solution.Surrogate, nodes)
+func (self *Solution) Evaluate(surrogate *Surrogate, nodes []float64) []float64 {
+	return self.Interpolator.Evaluate(&surrogate.Surrogate, nodes)
 }

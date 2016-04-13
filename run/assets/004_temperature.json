@@ -9,7 +9,7 @@
 		"name": "maximal-temperature"
 	},
 
-	"solver": {
+	"solution": {
 		"localError": 1e-2
 	}
 }

@@ -10,7 +10,7 @@
 		"name": "total-energy"
 	},
 
-	"solver": {
+	"solution": {
 		"localError": 1e-4
 	}
 }

@@ -10,7 +10,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
-	"github.com/turing-complete/laboratory/src/internal/solver"
+	"github.com/turing-complete/laboratory/src/internal/solution"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/target"
@@ -93,13 +93,13 @@ func function(config *config.Config) error {
 
 	ni, no := etarget.Dimensions()
 
-	asolver, err := solver.New(ni, no, &config.Solver)
+	asolution, err := solution.New(ni, no, &config.Solution)
 	if err != nil {
 		return err
 	}
 
-	solution := new(solver.Solution)
-	if err = approximate.Get("solution", solution); err != nil {
+	surrogate := new(solution.Surrogate)
+	if err = approximate.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
@@ -110,7 +110,7 @@ func function(config *config.Config) error {
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%5s %15s\n", "Step", "Nodes")
 
-	nk := uint(len(solution.Active))
+	nk := uint(len(surrogate.Active))
 
 	steps := make([]uint, nk)
 	values := make([]float64, 0, ns*no)
@@ -118,8 +118,8 @@ func function(config *config.Config) error {
 	k, Δ := uint(0), float64(nk-1)/(math.Min(maxSteps, float64(nk))-1)
 
 	for i, na := uint(0), uint(0); i < nk; i++ {
-		na += solution.Active[i]
-		steps[k] += solution.Active[i]
+		na += surrogate.Active[i]
+		steps[k] += surrogate.Active[i]
 
 		if i != uint(float64(k)*Δ+0.5) {
 			continue
@@ -128,19 +128,19 @@ func function(config *config.Config) error {
 
 		log.Printf("%5d %15d\n", i, na)
 
-		s := *solution
+		s := *surrogate
 		s.Nodes = na
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		values = append(values, asolver.Evaluate(&s, epoints)...)
+		values = append(values, asolution.Evaluate(&s, epoints)...)
 	}
 
 	nk, steps = k, steps[:k]
 
 	log.Println("Done.")
 
-	if err := output.Put("solution", *solution); err != nil {
+	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
 	if err := output.Put("points", apoints, ni, ns); err != nil {

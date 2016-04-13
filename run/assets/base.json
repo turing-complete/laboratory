@@ -21,7 +21,7 @@
 		}
 	},
 
-	"solver": {
+	"solution": {
 		"rule": "closed",
 		"power": 1,
 		"minLevel": 1,

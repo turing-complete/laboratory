@@ -9,7 +9,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
-	"github.com/turing-complete/laboratory/src/internal/solver"
+	"github.com/turing-complete/laboratory/src/internal/solution"
 )
 
 const (
@@ -73,12 +73,12 @@ func function(_ *config.Config) error {
 		return err
 	}
 
-	solution := new(solver.Solution)
-	if err := predict.Get("solution", solution); err != nil {
+	surrogate := new(solution.Surrogate)
+	if err := predict.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
-	no := solution.Outputs
+	no := surrogate.Outputs
 	nq := no / momentCount
 	nk := uint(len(psteps))
 

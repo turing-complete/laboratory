@@ -12,11 +12,10 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/solution"
 	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
-
-	isolver "github.com/turing-complete/laboratory/src/internal/solver"
-	itarget "github.com/turing-complete/laboratory/src/internal/target"
 )
 
 var (
@@ -48,21 +47,21 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	target, err := itarget.New(system, uncertainty, &config.Target)
+	atarget, err := target.New(system, uncertainty, &config.Target)
 	if err != nil {
 		return err
 	}
 
-	points, err := generate(target, config.Solver.Rule)
+	points, err := generate(atarget, config.Solution.Rule)
 	if err != nil {
 		return err
 	}
 
-	ni, no := target.Dimensions()
+	ni, no := atarget.Dimensions()
 	np := uint(len(points)) / ni
 
 	log.Println(system)
-	log.Println(target)
+	log.Println(atarget)
 
 	var values []float64
 	if len(*approximateFile) > 0 {
@@ -72,21 +71,21 @@ func function(config *config.Config) error {
 		}
 		defer approximate.Close()
 
-		solver, err := isolver.New(ni, no, &config.Solver)
+		asolution, err := solution.New(ni, no, &config.Solution)
 		if err != nil {
 			return err
 		}
 
-		solution := new(isolver.Solution)
-		if err = approximate.Get("solution", solution); err != nil {
+		surrogate := new(solution.Surrogate)
+		if err = approximate.Get("surrogate", surrogate); err != nil {
 			return err
 		}
 
 		log.Printf("Evaluating the approximation at %d points...\n", np)
-		values = solver.Evaluate(solution, points)
+		values = asolution.Evaluate(surrogate, points)
 	} else {
 		log.Printf("Evaluating the original model at %d points...\n", np)
-		values = itarget.Invoke(target, points)
+		values = target.Invoke(atarget, points)
 	}
 
 	log.Println("Done.")
@@ -101,7 +100,7 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(target itarget.Target, rule string) ([]float64, error) {
+func generate(target target.Target, rule string) ([]float64, error) {
 	ni, _ := target.Dimensions()
 	nn := *nodeCount
 
@@ -137,7 +136,7 @@ func generate(target itarget.Target, rule string) ([]float64, error) {
 	return linear.TensorFloat64(parameters...), nil
 }
 
-func detect(target itarget.Target) ([]uint, error) {
+func detect(target target.Target) ([]uint, error) {
 	ni, _ := target.Dimensions()
 
 	index := []uint{}
