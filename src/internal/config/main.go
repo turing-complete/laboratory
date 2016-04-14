@@ -70,6 +70,8 @@ type Solution struct {
 	MinLevel uint
 	// The maximum level of approximation.
 	MaxLevel uint
+	// The maximum number of evaluations.
+	MaxEvaluations uint
 	// The tolerance of the local error.
 	LocalError float64
 	// The tolerance of the total error.

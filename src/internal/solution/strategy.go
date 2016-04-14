@@ -12,6 +12,8 @@ import (
 type strategy struct {
 	algorithm.Strategy
 
+	nmax uint
+
 	ns uint
 	nn uint
 
@@ -23,6 +25,8 @@ func newStrategy(ni, no uint, config *config.Solution, grid algorithm.Grid) func
 		return &strategy{
 			Strategy: *algorithm.NewStrategy(ni, no, config.MinLevel,
 				config.MaxLevel, config.LocalError, config.TotalError, grid),
+
+			nmax: config.MaxEvaluations,
 		}
 	}
 }
@@ -36,6 +40,9 @@ func (self *strategy) Done(state *interpolation.State, surrogate *interpolation.
 	log.Printf("%5d %15d %15d\n", self.ns, nn, self.nn)
 
 	done := self.Strategy.Done(state, surrogate)
+	if self.nn+nn > self.nmax {
+		done = true
+	}
 	if !done {
 		self.nn += nn
 		self.ns += 1
