@@ -72,6 +72,8 @@ type Solution struct {
 	MaxLevel uint
 	// The tolerance of the local error.
 	LocalError float64
+	// The tolerance of the total error.
+	TotalError float64
 }
 
 // Assessment is a configuration of the assessment procedure.
@@ -96,14 +98,12 @@ func New(path string) (*Config, error) {
 		}
 		break
 	}
-
 	config := &Config{}
 	for _, path := range paths {
 		if err := populate(config, path); err != nil {
 			return nil, err
 		}
 	}
-
 	return config, nil
 }
 

@@ -26,7 +26,8 @@
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 20,
-		"localError": 1e-4
+		"localError": 1e-4,
+		"totalError": 1e-2
 	},
 
 	"assessment": {

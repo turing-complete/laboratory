@@ -7,7 +7,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/target"
 
 	interpolation "github.com/ready-steady/adapt/algorithm/external"
-	algorithm "github.com/ready-steady/adapt/algorithm/local"
+	algorithm "github.com/ready-steady/adapt/algorithm/hybrid"
 	basis "github.com/ready-steady/adapt/basis/polynomial"
 	grid "github.com/ready-steady/adapt/grid/equidistant"
 )

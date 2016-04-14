@@ -25,9 +25,9 @@ func TestSolutionCompute(t *testing.T) {
 
 	nc := surrogate.Surrogate.Nodes
 
-	assert.Equal(nc, uint(857), t)
+	assert.Equal(nc, uint(490), t)
 
-	grid := grid.NewOpen(ni)
+	grid := grid.NewClosed(ni)
 	nodes := grid.Compute(surrogate.Surrogate.Indices)
 
 	values := make([]float64, nc*no)

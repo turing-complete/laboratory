@@ -22,10 +22,11 @@
 	},
 
 	"solution": {
-		"rule": "open",
+		"rule": "closed",
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 3,
-		"localError": 1e-2
+		"localError": 1e-2,
+		"totalError": 5e-1
 	}
 }
