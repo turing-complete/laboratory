@@ -2,8 +2,8 @@ function approximate(grid)
   use('Interaction');
 
   filename = locate('approximate');
-  solution = h5read(filename, '/solution');
-  surrogate = solution.Surrogate;
+  surrogate = h5read(filename, '/surrogate');
+  surrogate = surrogate.Surrogate;
 
   ni = double(surrogate.Inputs);
   no = double(surrogate.Outputs);
