@@ -32,14 +32,15 @@ cases += 008_030_delay 008_030_energy 008_030_temperature
 cases += 008_040_delay 008_040_energy 008_040_temperature
 
 define hash
-$(1) := $$(shell hash md5sum 2>/dev/null && (cat $(2) | md5sum | cut -d' ' -f1) || (cat $(2) | md5))
+$(1) := $$(shell hash md5sum 2> /dev/null && \
+	(cat $(2) | md5sum | cut -d' ' -f1) || (cat $(2) | md5))
 endef
 
 define define_case
 $(1)_config_base := assets/$(1).json
 $(call hash,$(1)_hash_base,assets/base.json $$($(1)_config_base))
 
-$(1)_config := $$(shell test -e assets/$(1)_ext.json && echo assets/$(1)_ext.json || echo assets/$(1).json)
+$(1)_config := assets/$(1).json
 $(call hash,$(1)_hash,$$($(1)_config) $$($(1)_config_base))
 
 $(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
@@ -70,7 +71,8 @@ $$($(1)_predict): $$($(1)_approximate) predict
 	@./predict -c $$($(1)_config) -approximate $$< -o $$@
 
 $$($(1)_compare): $$($(1)_reference) $$($(1)_observe) $$($(1)_predict) compare
-	@./compare -c $$($(1)_config) -reference $$($(1)_reference) -observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
+	@./compare -c $$($(1)_config) -reference $$($(1)_reference) \
+		-observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
 
 $(1)_reference: $$($(1)_reference)
 
