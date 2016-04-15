@@ -13,7 +13,7 @@ import (
 )
 
 type Solution struct {
-	algorithm.Interpolator
+	algorithm.Algorithm
 
 	strategy func() *strategy
 }
@@ -47,14 +47,14 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 	}
 
 	return &Solution{
-		Interpolator: *algorithm.New(ni, no, agrid, abasis),
-		strategy:     newStrategy(ni, no, config, agrid),
+		Algorithm: *algorithm.New(ni, no, agrid, abasis),
+		strategy:  newStrategy(ni, no, config, agrid),
 	}, nil
 }
 
 func (self *Solution) Compute(target target.Target) *Surrogate {
 	strategy := self.strategy()
-	surrogate := self.Interpolator.Compute(target.Compute, strategy)
+	surrogate := self.Algorithm.Compute(target.Compute, strategy)
 	return &Surrogate{
 		Surrogate:  *surrogate,
 		Statistics: Statistics{strategy.active},
@@ -62,5 +62,5 @@ func (self *Solution) Compute(target target.Target) *Surrogate {
 }
 
 func (self *Solution) Evaluate(surrogate *Surrogate, nodes []float64) []float64 {
-	return self.Interpolator.Evaluate(&surrogate.Surrogate, nodes)
+	return self.Algorithm.Evaluate(&surrogate.Surrogate, nodes)
 }
