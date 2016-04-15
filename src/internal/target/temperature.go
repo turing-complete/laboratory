@@ -1,6 +1,8 @@
 package target
 
 import (
+	"math"
+
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
@@ -37,12 +39,8 @@ func (self *temperature) Compute(node, value []float64) {
 	P, ΔT := self.system.PartitionPower(power, schedule, ε)
 	Q := self.system.ComputeTemperature(P, ΔT)
 
-	max := Q[0]
+	value[0] = Q[0]
 	for _, q := range Q {
-		if q > max {
-			max = q
-		}
+		value[0] = math.Max(value[0], q)
 	}
-
-	value[0] = max
 }
