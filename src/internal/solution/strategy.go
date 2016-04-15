@@ -36,18 +36,20 @@ func (self *strategy) Done(state *interpolation.State, surrogate *interpolation.
 		log.Printf("%5s %15s %15s\n", "Step", "New Nodes", "Old Nodes")
 	}
 
+	if self.Strategy.Done(state, surrogate) {
+		return true
+	}
+
 	nn := uint(len(state.Indices)) / surrogate.Inputs
+	if self.nn+nn > self.nmax {
+		return true
+	}
+
 	log.Printf("%5d %15d %15d\n", self.ns, nn, self.nn)
 
-	done := self.Strategy.Done(state, surrogate)
-	if self.nn+nn > self.nmax {
-		done = true
-	}
-	if !done {
-		self.nn += nn
-		self.ns += 1
-		self.active = append(self.active, nn)
-	}
+	self.nn += nn
+	self.ns += 1
+	self.active = append(self.active, nn)
 
-	return done
+	return false
 }
