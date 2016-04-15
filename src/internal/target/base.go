@@ -24,5 +24,5 @@ func (self *base) Dimensions() (uint, uint) {
 }
 
 func (self *base) String() string {
-	return fmt.Sprintf(`{inputs:%d, outputs:%d}`, self.ni, self.no)
+	return fmt.Sprintf(`{inputs:%d outputs:%d}`, self.ni, self.no)
 }
