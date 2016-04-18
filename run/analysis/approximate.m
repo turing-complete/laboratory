@@ -8,12 +8,13 @@ function approximate(grid)
   ni = double(surrogate.Inputs);
   no = double(surrogate.Outputs);
   indices = reshape(surrogate.Indices{1}, ni, [])';
-  surpluses = reshape(surrogate.Surpluses{1}, no, [])';
+  errors = abs(reshape(surrogate.Surpluses{1}, no, []))';
+  errors(errors < 1e-10) = 0;
 
   Plot.figure(1200, 400);
   for i = 1:no
     subplot(no, 1, i);
-    semilogy(abs(surpluses(:, i)));
+    semilogy(errors(:, i));
     Plot.title('Output %d', i-1);
   end
 
