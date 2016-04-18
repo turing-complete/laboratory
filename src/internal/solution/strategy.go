@@ -2,6 +2,7 @@ package solution
 
 import (
 	"log"
+	"math"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
 
@@ -52,4 +53,15 @@ func (self *strategy) Done(state *interpolation.State, surrogate *interpolation.
 	self.active = append(self.active, nn)
 
 	return false
+}
+
+func (self *strategy) Score(element *interpolation.Element) float64 {
+	return maxAbsolute(element.Surplus) * element.Volume
+}
+
+func maxAbsolute(data []float64) (value float64) {
+	for i, n := uint(0), uint(len(data)); i < n; i++ {
+		value = math.Max(value, math.Abs(data[i]))
+	}
+	return
 }

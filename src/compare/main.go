@@ -126,36 +126,30 @@ func assess(data1, data2 []float64) []float64 {
 
 func cumulate(data []float64, steps []uint) [][]float64 {
 	count := uint(len(steps))
-
 	sets := make([][]float64, count)
 	for i, sum := uint(0), uint(0); i < count; i++ {
 		sum += steps[i]
 		sets[i] = data[:sum]
 	}
-
 	return sets
 }
 
 func divide(data []float64, count uint) [][]float64 {
 	step := uint(len(data)) / count
-
 	sets := make([][]float64, count)
 	for i := uint(0); i < count; i++ {
 		sets[i] = data[i*step : (i+1)*step]
 	}
-
 	return sets
 }
 
 func slice(data []float64, height, offset, thickness uint) []float64 {
 	width := uint(len(data)) / height
 	piece := make([]float64, thickness*width)
-
 	for i := uint(0); i < thickness; i++ {
 		for j := uint(0); j < width; j++ {
 			piece[j*thickness+i] = data[j*height+offset+i]
 		}
 	}
-
 	return piece
 }

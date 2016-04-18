@@ -55,6 +55,7 @@ func function(config *config.Config) error {
 	log.Println("Constructing a surrogate...")
 
 	surrogate := solution.Compute(target)
+
 	log.Println("Surrogate", surrogate)
 
 	if err := output.Put("surrogate", *surrogate); err != nil {
