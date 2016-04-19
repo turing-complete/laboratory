@@ -1,4 +1,4 @@
-package target
+package quantity
 
 import (
 	"errors"
@@ -10,7 +10,7 @@ import (
 	interpolation "github.com/ready-steady/adapt/algorithm/external"
 )
 
-type Target interface {
+type Quantity interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
 	Forward([]float64) []float64
@@ -18,7 +18,7 @@ type Target interface {
 }
 
 func New(system *system.System, uncertainty *uncertainty.Uncertainty,
-	config *config.Target) (Target, error) {
+	config *config.Quantity) (Quantity, error) {
 
 	switch config.Name {
 	case "end-to-end-delay":
@@ -28,11 +28,11 @@ func New(system *system.System, uncertainty *uncertainty.Uncertainty,
 	case "maximal-temperature":
 		return newTemperature(system, uncertainty, config)
 	default:
-		return nil, errors.New("the target is unknown")
+		return nil, errors.New("the quantity is unknown")
 	}
 }
 
-func Invoke(target Target, points []float64) []float64 {
-	ni, no := target.Dimensions()
-	return interpolation.Invoke(target.Compute, points, ni, no)
+func Invoke(quantity Quantity, points []float64) []float64 {
+	ni, no := quantity.Dimensions()
+	return interpolation.Invoke(quantity.Compute, points, ni, no)
 }

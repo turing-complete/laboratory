@@ -7,9 +7,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/quantity"
 	"github.com/turing-complete/laboratory/src/internal/solution"
 	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
@@ -38,12 +38,12 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	target, err := target.New(system, uncertainty, &config.Target)
+	quantity, err := quantity.New(system, uncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	ni, no := target.Dimensions()
+	ni, no := quantity.Dimensions()
 
 	solution, err := solution.New(ni, no, &config.Solution)
 	if err != nil {
@@ -51,10 +51,10 @@ func function(config *config.Config) error {
 	}
 
 	log.Println("System", system)
-	log.Println("Target", target)
+	log.Println("Quantity", quantity)
 	log.Println("Constructing a surrogate...")
 
-	surrogate := solution.Compute(target)
+	surrogate := solution.Compute(quantity)
 
 	log.Println("Surrogate", surrogate)
 

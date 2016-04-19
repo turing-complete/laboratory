@@ -1,4 +1,4 @@
-package target
+package quantity
 
 import (
 	"github.com/turing-complete/laboratory/src/internal/config"
@@ -11,7 +11,7 @@ type delay struct {
 }
 
 func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
-	config *config.Target) (*delay, error) {
+	config *config.Quantity) (*delay, error) {
 
 	ni, _ := uncertainty.Time.Mapping()
 	base, err := newBase(system, uncertainty.Time, config, ni, 1)

@@ -10,9 +10,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/quantity"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
@@ -67,18 +67,18 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	atarget, err := target.New(system, uncertainty, &config.Target)
+	aquantity, err := quantity.New(system, uncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	ni, no := atarget.Dimensions()
+	ni, no := aquantity.Dimensions()
 	ns := config.Assessment.Samples
 
 	points := support.Generate(ni, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the original model at %d points...\n", ns)
-	values := target.Invoke(atarget, points)
+	values := quantity.Invoke(aquantity, points)
 	log.Println("Done.")
 
 	if err := output.Put("points", points, ni, ns); err != nil {

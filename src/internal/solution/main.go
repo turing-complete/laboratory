@@ -4,7 +4,7 @@ import (
 	"errors"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/laboratory/src/internal/target"
+	"github.com/turing-complete/laboratory/src/internal/quantity"
 
 	interpolation "github.com/ready-steady/adapt/algorithm/external"
 	algorithm "github.com/ready-steady/adapt/algorithm/hybrid"
@@ -55,9 +55,9 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 	}, nil
 }
 
-func (self *Solution) Compute(target target.Target) *Surrogate {
-	strategy := newStrategy(target, self.grid, self.config)
-	surrogate := self.Algorithm.Compute(target.Compute, strategy)
+func (self *Solution) Compute(quantity quantity.Quantity) *Surrogate {
+	strategy := newStrategy(quantity, self.grid, self.config)
+	surrogate := self.Algorithm.Compute(quantity.Compute, strategy)
 	return &Surrogate{
 		Surrogate:  *surrogate,
 		Statistics: Statistics{strategy.active},

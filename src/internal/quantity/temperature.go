@@ -1,4 +1,4 @@
-package target
+package quantity
 
 import (
 	"math"
@@ -13,7 +13,7 @@ type temperature struct {
 }
 
 func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
-	config *config.Target) (*temperature, error) {
+	config *config.Quantity) (*temperature, error) {
 
 	ni, _ := uncertainty.Mapping()
 	base, err := newBase(system, uncertainty, config, ni, 1)

@@ -10,10 +10,10 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/quantity"
 	"github.com/turing-complete/laboratory/src/internal/solution"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
@@ -81,17 +81,17 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	atarget, err := target.New(system, auncertainty, &config.Target)
+	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	etarget, err := target.New(system, euncertainty, &config.Target)
+	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	ni, no := etarget.Dimensions()
+	ni, no := equantity.Dimensions()
 
 	asolution, err := solution.New(ni, no, &config.Solution)
 	if err != nil {
@@ -105,7 +105,7 @@ func function(config *config.Config) error {
 
 	ns := config.Assessment.Samples
 
-	epoints, apoints := generate(etarget, atarget, ns, config.Assessment.Seed)
+	epoints, apoints := generate(equantity, aquantity, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%5s %15s\n", "Step", "Nodes")
@@ -156,7 +156,7 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(into, from target.Target, ns uint, seed int64) ([]float64, []float64) {
+func generate(into, from quantity.Quantity, ns uint, seed int64) ([]float64, []float64) {
 	nif, _ := from.Dimensions()
 	nii, _ := into.Dimensions()
 

@@ -17,7 +17,7 @@
 		}
 	},
 
-	"target": {
+	"quantity": {
 		"name": "maximal-temperature"
 	},
 

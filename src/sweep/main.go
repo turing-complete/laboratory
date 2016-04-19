@@ -12,9 +12,9 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
+	"github.com/turing-complete/laboratory/src/internal/quantity"
 	"github.com/turing-complete/laboratory/src/internal/solution"
 	"github.com/turing-complete/laboratory/src/internal/system"
-	"github.com/turing-complete/laboratory/src/internal/target"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
@@ -47,21 +47,21 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	atarget, err := target.New(system, uncertainty, &config.Target)
+	aquantity, err := quantity.New(system, uncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	points, err := generate(atarget, config.Solution.Rule)
+	points, err := generate(aquantity, config.Solution.Rule)
 	if err != nil {
 		return err
 	}
 
-	ni, no := atarget.Dimensions()
+	ni, no := aquantity.Dimensions()
 	np := uint(len(points)) / ni
 
 	log.Println(system)
-	log.Println(atarget)
+	log.Println(aquantity)
 
 	var values []float64
 	if len(*approximateFile) > 0 {
@@ -85,7 +85,7 @@ func function(config *config.Config) error {
 		values = asolution.Evaluate(surrogate, points)
 	} else {
 		log.Printf("Evaluating the original model at %d points...\n", np)
-		values = target.Invoke(atarget, points)
+		values = quantity.Invoke(aquantity, points)
 	}
 
 	log.Println("Done.")
@@ -100,11 +100,11 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(target target.Target, rule string) ([]float64, error) {
-	ni, _ := target.Dimensions()
+func generate(quantity quantity.Quantity, rule string) ([]float64, error) {
+	ni, _ := quantity.Dimensions()
 	nn := *nodeCount
 
-	index, err := detect(target)
+	index, err := detect(quantity)
 	if err != nil {
 		return nil, err
 	}
@@ -136,8 +136,8 @@ func generate(target target.Target, rule string) ([]float64, error) {
 	return linear.TensorFloat64(parameters...), nil
 }
 
-func detect(target target.Target) ([]uint, error) {
-	ni, _ := target.Dimensions()
+func detect(quantity quantity.Quantity) ([]uint, error) {
+	ni, _ := quantity.Dimensions()
 
 	index := []uint{}
 

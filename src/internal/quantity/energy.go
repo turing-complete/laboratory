@@ -1,4 +1,4 @@
-package target
+package quantity
 
 import (
 	"github.com/turing-complete/laboratory/src/internal/config"
@@ -11,7 +11,7 @@ type energy struct {
 }
 
 func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,
-	config *config.Target) (*energy, error) {
+	config *config.Quantity) (*energy, error) {
 
 	ni, _ := uncertainty.Mapping()
 	base, err := newBase(system, uncertainty, config, ni, 1)

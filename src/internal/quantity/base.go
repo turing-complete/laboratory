@@ -1,4 +1,4 @@
-package target
+package quantity
 
 import (
 	"fmt"
@@ -12,14 +12,14 @@ type base struct {
 	uncertainty.Transform
 
 	system *system.System
-	config *config.Target
+	config *config.Quantity
 
 	ni uint
 	no uint
 }
 
 func newBase(system *system.System, transform uncertainty.Transform,
-	config *config.Target, ni, no uint) (base, error) {
+	config *config.Quantity, ni, no uint) (base, error) {
 
 	return base{
 		Transform: transform,

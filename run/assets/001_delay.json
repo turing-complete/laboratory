@@ -5,7 +5,7 @@
 		"floorplan": "assets/001.flp"
 	},
 
-	"target": {
+	"quantity": {
 		"name": "end-to-end-delay"
 	},
 

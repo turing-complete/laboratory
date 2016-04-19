@@ -5,7 +5,7 @@
 		"floorplan": "assets/004.flp"
 	},
 
-	"target": {
+	"quantity": {
 		"name": "total-energy"
 	},
 

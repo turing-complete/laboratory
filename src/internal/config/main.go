@@ -12,7 +12,7 @@ type Config struct {
 	Inherit string
 
 	System      System      // Platform and application
-	Target      Target      // Quantity of interest
+	Quantity    Quantity    // Quantity of interest
 	Uncertainty Uncertainty // Probability model
 	Solution    Solution    // Approximation algorithm
 	Assessment  Assessment  // Assessment
@@ -29,8 +29,8 @@ type System struct {
 	temperature.Config
 }
 
-// Target is a configuration of the quantity of interest.
-type Target struct {
+// Quantity is a configuration of the quantity of interest.
+type Quantity struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “maximal-temperature.”
 	Name string
