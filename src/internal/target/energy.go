@@ -8,29 +8,25 @@ import (
 
 type energy struct {
 	base
-	uncertainty.Uncertainty
 }
 
 func newEnergy(system *system.System, uncertainty *uncertainty.Uncertainty,
 	config *config.Target) (*energy, error) {
 
 	ni, _ := uncertainty.Mapping()
-	base, err := newBase(system, config, ni, 1)
+	base, err := newBase(system, uncertainty, config, ni, 1)
 	if err != nil {
 		return nil, err
 	}
-	return &energy{base: base, Uncertainty: *uncertainty}, nil
+	return &energy{base}, nil
 }
 
 func (self *energy) Compute(node, value []float64) {
-	nit, _ := self.Time.Mapping()
-	nip, _ := self.Power.Mapping()
-
-	time := self.Time.Inverse(node[:nit])
-	power := self.Power.Inverse(node[nit : nit+nip])
+	nt := uint(self.system.Application.Len())
+	timePower := self.Inverse(node)
 
 	value[0] = 0
-	for i := range time {
-		value[0] += time[i] * power[i]
+	for i := uint(0); i < nt; i++ {
+		value[0] += timePower[i] * timePower[nt+i]
 	}
 }

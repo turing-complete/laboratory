@@ -5,9 +5,12 @@ import (
 
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
+	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 type base struct {
+	uncertainty.Transform
+
 	system *system.System
 	config *config.Target
 
@@ -15,8 +18,18 @@ type base struct {
 	no uint
 }
 
-func newBase(system *system.System, config *config.Target, ni, no uint) (base, error) {
-	return base{system: system, config: config, ni: ni, no: no}, nil
+func newBase(system *system.System, transform uncertainty.Transform,
+	config *config.Target, ni, no uint) (base, error) {
+
+	return base{
+		Transform: transform,
+
+		system: system,
+		config: config,
+
+		ni: ni,
+		no: no,
+	}, nil
 }
 
 func (self *base) Dimensions() (uint, uint) {
