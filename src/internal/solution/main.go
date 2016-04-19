@@ -15,7 +15,8 @@ import (
 type Solution struct {
 	algorithm.Algorithm
 
-	strategy func() *strategy
+	config *config.Solution
+	grid   algorithm.Grid
 }
 
 type Statistics struct {
@@ -48,12 +49,14 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 
 	return &Solution{
 		Algorithm: *algorithm.New(ni, no, agrid, abasis),
-		strategy:  newStrategy(ni, no, agrid, config),
+
+		config: config,
+		grid:   agrid,
 	}, nil
 }
 
 func (self *Solution) Compute(target target.Target) *Surrogate {
-	strategy := self.strategy()
+	strategy := newStrategy(target, self.grid, self.config)
 	surrogate := self.Algorithm.Compute(target.Compute, strategy)
 	return &Surrogate{
 		Surrogate:  *surrogate,

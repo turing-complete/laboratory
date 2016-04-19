@@ -5,6 +5,7 @@ import (
 	"math"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/target"
 
 	interpolation "github.com/ready-steady/adapt/algorithm/external"
 	algorithm "github.com/ready-steady/adapt/algorithm/hybrid"
@@ -21,14 +22,13 @@ type strategy struct {
 	active []uint
 }
 
-func newStrategy(ni, no uint, grid algorithm.Grid, config *config.Solution) func() *strategy {
-	return func() *strategy {
-		return &strategy{
-			Strategy: *algorithm.NewStrategy(ni, no, grid, config.MinLevel,
-				config.MaxLevel, config.LocalError, config.TotalError),
+func newStrategy(target target.Target, grid algorithm.Grid, config *config.Solution) *strategy {
+	ni, no := target.Dimensions()
+	return &strategy{
+		Strategy: *algorithm.NewStrategy(ni, no, grid, config.MinLevel,
+			config.MaxLevel, config.LocalError, config.TotalError),
 
-			nmax: config.MaxEvaluations,
-		}
+		nmax: config.MaxEvaluations,
 	}
 }
 

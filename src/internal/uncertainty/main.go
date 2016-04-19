@@ -5,15 +5,15 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
-type Parameter interface {
+type Transform interface {
 	Mapping() (uint, uint)
 	Forward([]float64) []float64
 	Inverse([]float64) []float64
 }
 
 type Uncertainty struct {
-	Time  Parameter
-	Power Parameter
+	Time  Transform
+	Power Transform
 }
 
 func NewAleatory(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
