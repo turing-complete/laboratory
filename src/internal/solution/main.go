@@ -48,7 +48,7 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 
 	return &Solution{
 		Algorithm: *algorithm.New(ni, no, agrid, abasis),
-		strategy:  newStrategy(ni, no, config, agrid),
+		strategy:  newStrategy(ni, no, agrid, config),
 	}, nil
 }
 

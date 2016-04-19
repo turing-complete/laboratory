@@ -21,11 +21,11 @@ type strategy struct {
 	active []uint
 }
 
-func newStrategy(ni, no uint, config *config.Solution, grid algorithm.Grid) func() *strategy {
+func newStrategy(ni, no uint, grid algorithm.Grid, config *config.Solution) func() *strategy {
 	return func() *strategy {
 		return &strategy{
-			Strategy: *algorithm.NewStrategy(ni, no, config.MinLevel,
-				config.MaxLevel, config.LocalError, config.TotalError, grid),
+			Strategy: *algorithm.NewStrategy(ni, no, grid, config.MinLevel,
+				config.MaxLevel, config.LocalError, config.TotalError),
 
 			nmax: config.MaxEvaluations,
 		}
