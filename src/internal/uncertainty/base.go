@@ -31,7 +31,8 @@ func newBase(reference []float64, config *config.Parameter) (base, error) {
 	copy(upper, reference)
 
 	for _, tid := range tasks {
-		upper[tid] *= (1.0 + config.Deviation)
+		lower[tid] -= config.Deviation * reference[tid]
+		upper[tid] += config.Deviation * reference[tid]
 	}
 
 	return base{

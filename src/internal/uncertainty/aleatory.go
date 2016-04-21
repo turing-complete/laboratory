@@ -15,9 +15,9 @@ import (
 )
 
 var (
-	standardGaussian = probability.NewGaussian(0, 1)
-	nInfinity        = math.Inf(-1)
-	pInfinity        = math.Inf(1)
+	standardGaussian = probability.NewGaussian(0.0, 1.0)
+	nInfinity        = math.Inf(-1.0)
+	pInfinity        = math.Inf(1.0)
 )
 
 type aleatory struct {
@@ -52,7 +52,7 @@ func newAleatory(system *system.System, reference []float64,
 
 	marginals := make([]probability.Inverter, base.nu)
 	for i, tid := range base.tasks {
-		marginals[i] = marginalizer(0, base.upper[tid]-base.lower[tid])
+		marginals[i] = marginalizer(base.lower[tid], base.upper[tid])
 	}
 
 	return &aleatory{
@@ -99,21 +99,21 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	for i, tid := range self.tasks {
-		ω[tid] += self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+		ω[tid] = self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
 	}
 
 	return ω
 }
 
 func correlate(system *system.System, config *config.Parameter, tasks []uint) ([]float64, error) {
-	if config.Correlation < 0 {
+	if config.Correlation < 0.0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
-	if config.Variance <= 0 {
+	if config.Variance <= 0.0 {
 		return nil, errors.New("the variance threshold should be positive")
 	}
 
-	if config.Correlation == 0 {
+	if config.Correlation == 0.0 {
 		return matrix.Identity(uint(len(tasks))), nil
 	}
 
@@ -132,9 +132,9 @@ func multiply(A, x, y []float64, m, n uint) {
 	for i := range x {
 		switch x[i] {
 		case nInfinity:
-			infinite, z[i] = true, -1
+			infinite, z[i] = true, -1.0
 		case pInfinity:
-			infinite, z[i] = true, 1
+			infinite, z[i] = true, 1.0
 		}
 	}
 
@@ -147,18 +147,18 @@ func multiply(A, x, y []float64, m, n uint) {
 		Σ1, Σ2 := 0.0, 0.0
 		for j := uint(0); j < n; j++ {
 			a := A[j*m+i]
-			if a == 0 {
+			if a == 0.0 {
 				continue
 			}
-			if z[j] == 0 {
+			if z[j] == 0.0 {
 				Σ1 += a * x[j]
 			} else {
 				Σ2 += a * z[j]
 			}
 		}
-		if Σ2 < 0 {
+		if Σ2 < 0.0 {
 			y[i] = nInfinity
-		} else if Σ2 > 0 {
+		} else if Σ2 > 0.0 {
 			y[i] = pInfinity
 		} else {
 			y[i] = Σ1

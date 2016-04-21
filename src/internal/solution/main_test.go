@@ -23,15 +23,15 @@ func TestSolutionCompute(t *testing.T) {
 	solution, _ := New(ni, no, &config.Solution)
 	surrogate := solution.Compute(quantity)
 
-	nc := surrogate.Surrogate.Nodes
+	nn := surrogate.Surrogate.Nodes
 
-	assert.Equal(nc, uint(490), t)
+	assert.Equal(nn, uint(960), t)
 
 	grid := grid.NewClosed(ni)
 	nodes := grid.Compute(surrogate.Surrogate.Indices)
 
-	values := make([]float64, nc*no)
-	for i := uint(0); i < nc; i++ {
+	values := make([]float64, nn*no)
+	for i := uint(0); i < nn; i++ {
 		quantity.Compute(nodes[i*ni:(i+1)*ni], values[i*no:(i+1)*no])
 	}
 
