@@ -10,26 +10,36 @@ import (
 )
 
 func TestNewAleatory001(t *testing.T) {
+	const (
+		nt = 10
+		σ  = 0.2
+	)
+
 	config, _ := config.New("fixtures/001_010.json")
 	system, _ := system.New(&config.System)
 	reference := system.ReferenceTime()
 	uncertainty, _ := newAleatory(system, reference, &config.Uncertainty.Time)
 
-	for i := 0; i < 10; i++ {
-		min, max := 0.8*reference[i], 1.2*reference[i]
+	for i := 0; i < nt; i++ {
+		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
 		assert.EqualWithin(uncertainty.marginals[i].InvCDF(0.0), min, 1e-15, t)
 		assert.EqualWithin(uncertainty.marginals[i].InvCDF(1.0), max, 1e-15, t)
 	}
 }
 
 func TestNewAleatory002(t *testing.T) {
+	const (
+		nt = 20
+		σ  = 0.2
+	)
+
 	config, _ := config.New("fixtures/002_020.json")
 	system, _ := system.New(&config.System)
 	reference := system.ReferenceTime()
 	uncertainty, _ := newAleatory(system, reference, &config.Uncertainty.Time)
 
-	for i := 0; i < 20; i++ {
-		min, max := 0.8*reference[i], 1.2*reference[i]
+	for i := 0; i < nt; i++ {
+		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
 		assert.EqualWithin(uncertainty.marginals[i].InvCDF(0.0), min, 1e-15, t)
 		assert.EqualWithin(uncertainty.marginals[i].InvCDF(1.0), max, 1e-15, t)
 	}
