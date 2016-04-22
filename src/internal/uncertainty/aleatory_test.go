@@ -22,8 +22,8 @@ func TestNewAleatory001(t *testing.T) {
 
 	for i := 0; i < nt; i++ {
 		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
-		assert.EqualWithin(uncertainty.marginals[i].InvCDF(0.0), min, 1e-15, t)
-		assert.EqualWithin(uncertainty.marginals[i].InvCDF(1.0), max, 1e-15, t)
+		assert.EqualWithin(uncertainty.marginals[i].Decumulate(0.0), min, 1e-15, t)
+		assert.EqualWithin(uncertainty.marginals[i].Decumulate(1.0), max, 1e-15, t)
 	}
 }
 
@@ -40,8 +40,8 @@ func TestNewAleatory002(t *testing.T) {
 
 	for i := 0; i < nt; i++ {
 		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
-		assert.EqualWithin(uncertainty.marginals[i].InvCDF(0.0), min, 1e-15, t)
-		assert.EqualWithin(uncertainty.marginals[i].InvCDF(1.0), max, 1e-15, t)
+		assert.EqualWithin(uncertainty.marginals[i].Decumulate(0.0), min, 1e-15, t)
+		assert.EqualWithin(uncertainty.marginals[i].Decumulate(1.0), max, 1e-15, t)
 	}
 }
 

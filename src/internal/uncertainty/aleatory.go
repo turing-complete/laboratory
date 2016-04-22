@@ -23,7 +23,7 @@ var (
 type aleatory struct {
 	base
 	correlator []float64
-	marginals  []probability.Inverter
+	marginals  []probability.Decumulator
 
 	nz uint
 }
@@ -50,7 +50,7 @@ func newAleatory(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginals := make([]probability.Inverter, base.nu)
+	marginals := make([]probability.Decumulator, base.nu)
 	for i, tid := range base.tasks {
 		marginals[i] = marginalizer(base.lower[tid], base.upper[tid])
 	}
@@ -86,7 +86,7 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 
 	// Independent uniform to independent Gaussian
 	for i := range n {
-		n[i] = standardGaussian.InvCDF(z[i])
+		n[i] = standardGaussian.Decumulate(z[i])
 	}
 
 	// Independent Gaussian to dependent Gaussian
@@ -94,12 +94,12 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
-		u[i] = standardGaussian.CDF(u[i])
+		u[i] = standardGaussian.Cumulate(u[i])
 	}
 
 	// Dependent uniform to dependent desired
 	for i, tid := range self.tasks {
-		ω[tid] = self.marginals[i].InvCDF(standardGaussian.CDF(u[i]))
+		ω[tid] = self.marginals[i].Decumulate(standardGaussian.Cumulate(u[i]))
 	}
 
 	return ω
