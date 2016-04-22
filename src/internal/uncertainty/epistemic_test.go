@@ -17,7 +17,7 @@ func TestNewEpistemic001(t *testing.T) {
 	config, _ := config.New("fixtures/001_010.json")
 	system, _ := system.New(&config.System)
 	reference := system.ReferenceTime()
-	uncertainty, _ := newEpistemic(reference, &config.Uncertainty.Time)
+	uncertainty, _ := newEpistemic(system, reference, &config.Uncertainty.Time)
 
 	point := make([]float64, nt)
 	value := make([]float64, nt)

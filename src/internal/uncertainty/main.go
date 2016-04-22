@@ -32,11 +32,11 @@ func NewAleatory(system *system.System, config *config.Uncertainty) (*Uncertaint
 }
 
 func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newEpistemic(system.ReferenceTime(), &config.Time)
+	time, err := newEpistemic(system, system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
 	}
-	power, err := newEpistemic(system.ReferencePower(), &config.Power)
+	power, err := newEpistemic(system, system.ReferencePower(), &config.Power)
 	if err != nil {
 		return nil, err
 	}
