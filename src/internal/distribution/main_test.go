@@ -6,7 +6,7 @@ import (
 	"github.com/ready-steady/assert"
 )
 
-func TestParseInverter(t *testing.T) {
+func TestParseDecumulator(t *testing.T) {
 	cases := []struct {
 		line    string
 		success bool
@@ -21,10 +21,12 @@ func TestParseInverter(t *testing.T) {
 		{"beta(1, -1)", false},
 		{"beta(1, 0)", false},
 		{"beta(1, 0)", false},
+		{"uniform()", true},
+		{"uniform( )", true},
 	}
 
 	for _, c := range cases {
-		if _, err := ParseInverter(c.line); c.success {
+		if _, err := ParseDecumulator(c.line); c.success {
 			assert.Success(err, t)
 		} else {
 			assert.Failure(err, t)

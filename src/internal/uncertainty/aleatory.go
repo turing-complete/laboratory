@@ -45,7 +45,7 @@ func newAleatory(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginalizer, err := distribution.ParseInverter(config.Distribution)
+	marginalizer, err := distribution.ParseDecumulator(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
