@@ -6,7 +6,7 @@ import (
 	"github.com/ready-steady/assert"
 )
 
-func TestParseDecumulator(t *testing.T) {
+func TestParse(t *testing.T) {
 	cases := []struct {
 		line    string
 		success bool
@@ -26,7 +26,7 @@ func TestParseDecumulator(t *testing.T) {
 	}
 
 	for _, c := range cases {
-		if _, err := ParseDecumulator(c.line); c.success {
+		if _, err := Parse(c.line); c.success {
 			assert.Success(err, t)
 		} else {
 			assert.Failure(err, t)

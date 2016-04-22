@@ -17,16 +17,16 @@ const (
 	uniformFamily
 )
 
-func ParseDecumulator(line string) (func(float64, float64) probability.Decumulator, error) {
+func Parse(line string) (func(float64, float64) probability.Distribution, error) {
 	family, params := parse(line)
 
 	switch family {
 	case betaFamily:
-		return func(min, max float64) probability.Decumulator {
+		return func(min, max float64) probability.Distribution {
 			return probability.NewBeta(params[0], params[1], min, max)
 		}, nil
 	case uniformFamily:
-		return func(min, max float64) probability.Decumulator {
+		return func(min, max float64) probability.Distribution {
 			return probability.NewUniform(min, max)
 		}, nil
 	default:

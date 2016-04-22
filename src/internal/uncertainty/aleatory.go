@@ -23,7 +23,7 @@ var (
 type aleatory struct {
 	base
 	correlator []float64
-	marginals  []probability.Decumulator
+	marginals  []probability.Distribution
 
 	nz uint
 }
@@ -45,12 +45,12 @@ func newAleatory(system *system.System, reference []float64,
 		return nil, err
 	}
 
-	marginalizer, err := distribution.ParseDecumulator(config.Distribution)
+	marginalizer, err := distribution.Parse(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
 
-	marginals := make([]probability.Decumulator, base.nu)
+	marginals := make([]probability.Distribution, base.nu)
 	for i, tid := range base.tasks {
 		marginals[i] = marginalizer(base.lower[tid], base.upper[tid])
 	}
