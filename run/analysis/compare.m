@@ -46,7 +46,10 @@ function compare(extended)
   ppoints = h5read(filename, '/points');
   pvalues = pvalues(1:2:end, :);
 
-  fprintf('Points norm: %e\n', norm(opoints - ppoints));
+  error = norm(opoints - ppoints);
+  if error > 1e-15
+    fprintf('Points norm: %e\n', error);
+  end
 
   ns = size(pvalues, 2) / nk;
 
