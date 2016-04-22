@@ -99,7 +99,7 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	for i, tid := range self.tasks {
-		ω[tid] = self.marginals[i].Decumulate(standardGaussian.Cumulate(u[i]))
+		ω[tid] = self.marginals[i].Decumulate(u[i])
 	}
 
 	return ω
