@@ -106,15 +106,14 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 }
 
 func correlate(system *system.System, config *config.Parameter, tasks []uint) ([]float64, error) {
+	if config.Correlation == 0.0 {
+		return matrix.Identity(uint(len(tasks))), nil
+	}
 	if config.Correlation < 0.0 {
 		return nil, errors.New("the correlation length should be nonnegative")
 	}
 	if config.Variance <= 0.0 {
 		return nil, errors.New("the variance threshold should be positive")
-	}
-
-	if config.Correlation == 0.0 {
-		return matrix.Identity(uint(len(tasks))), nil
 	}
 
 	C := icorrelation.Compute(system.Application, tasks, config.Correlation)
