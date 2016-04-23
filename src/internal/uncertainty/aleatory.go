@@ -107,7 +107,7 @@ func (self *aleatory) Forward(ω []float64) []float64 {
 func (self *aleatory) Inverse(z []float64) []float64 {
 	nu, nz := self.nu, self.nz
 
-	ω := append(([]float64)(nil), self.lower...)
+	ω := append([]float64(nil), self.lower...)
 	if nu == 0 {
 		return ω
 	}
@@ -141,7 +141,7 @@ func correlate(system *system.System, config *config.Parameter,
 
 	if config.Correlation == 0.0 {
 		identity := matrix.Identity(uint(len(tasks)))
-		return identity, append(([]float64)(nil), identity...), nil
+		return identity, append([]float64(nil), identity...), nil
 	}
 	if config.Correlation < 0.0 {
 		return nil, nil, errors.New("the correlation length should be nonnegative")
