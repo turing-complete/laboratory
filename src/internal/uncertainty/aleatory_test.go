@@ -5,9 +5,53 @@ import (
 	"testing"
 
 	"github.com/ready-steady/assert"
+	"github.com/ready-steady/probability"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 )
+
+func TestAleatoryForwardInverse(t *testing.T) {
+	uncertainty := &aleatory{
+		base: base{
+			tasks: []uint{0, 1, 2},
+			lower: []float64{42.0, 42.0, 42.0},
+			upper: []float64{42.0, 42.0, 42.0},
+
+			nt: 3,
+			nu: 3,
+		},
+
+		correlator: []float64{
+			1.0, 2.0, 3.0,
+			4.0, 5.0, 6.0,
+		},
+		decorrelator: []float64{
+			6.0, 5.0,
+			4.0, 3.0,
+			2.0, 1.0,
+		},
+		marginals: []probability.Distribution{
+			probability.NewUniform(10.0, 20.0),
+			probability.NewUniform(20.0, 30.0),
+			probability.NewUniform(30.0, 40.0),
+		},
+
+		nz: 2,
+	}
+
+	forward := uncertainty.Forward([]float64{18.0, 21.0, 36.0})
+	assert.EqualWithin(forward, []float64{
+		6.664804998759882e-01,
+		7.313162037785672e-01,
+	}, 1e-14, t)
+
+	inverse := uncertainty.Inverse([]float64{0.45, 0.65})
+	assert.EqualWithin(inverse, []float64{
+		1.921556679782504e+01,
+		2.953060310728164e+01,
+		3.973501094321997e+01,
+	}, 1e-14, t)
+}
 
 func TestNewAleatory(t *testing.T) {
 	const (
