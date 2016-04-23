@@ -105,10 +105,9 @@ func (self *aleatory) Forward(ω []float64) []float64 {
 }
 
 func (self *aleatory) Inverse(z []float64) []float64 {
-	nt, nu, nz := self.nt, self.nu, self.nz
+	nu, nz := self.nu, self.nz
 
-	ω := make([]float64, nt)
-	copy(ω, self.lower)
+	ω := append(([]float64)(nil), self.lower...)
 	if nu == 0 {
 		return ω
 	}
