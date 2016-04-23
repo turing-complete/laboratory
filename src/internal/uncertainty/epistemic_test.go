@@ -8,7 +8,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 )
 
-func TestNewEpistemic10(t *testing.T) {
+func TestNewEpistemic(t *testing.T) {
 	const (
 		nt = 10
 		σ  = 0.2
