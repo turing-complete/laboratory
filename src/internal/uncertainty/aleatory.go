@@ -22,8 +22,10 @@ var (
 
 type aleatory struct {
 	base
-	correlator []float64
-	marginals  []probability.Distribution
+
+	correlator   []float64
+	decorrelator []float64
+	marginals    []probability.Distribution
 
 	nz uint
 }
@@ -40,7 +42,7 @@ func newAleatory(system *system.System, reference []float64,
 		return &aleatory{base: base}, nil
 	}
 
-	correlator, err := correlate(system, config, base.tasks)
+	correlator, decorrelator, err := correlate(system, config, base.tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -56,9 +58,11 @@ func newAleatory(system *system.System, reference []float64,
 	}
 
 	return &aleatory{
-		base:       base,
-		correlator: correlator,
-		marginals:  marginals,
+		base: base,
+
+		correlator:   correlator,
+		decorrelator: decorrelator,
+		marginals:    marginals,
 
 		nz: uint(len(correlator)) / base.nu,
 	}, nil
@@ -68,8 +72,36 @@ func (self *aleatory) Mapping() (uint, uint) {
 	return self.nz, self.nt
 }
 
-func (_ *aleatory) Forward(_ []float64) []float64 {
-	return nil
+func (self *aleatory) Forward(ω []float64) []float64 {
+	nu, nz := self.nu, self.nz
+
+	z := make([]float64, nz)
+	if nz == 0 {
+		return z
+	}
+
+	u := make([]float64, nu)
+	n := make([]float64, nz)
+
+	// Dependent desired to dependent uniform
+	for i, tid := range self.tasks {
+		u[i] = self.marginals[i].Cumulate(ω[tid])
+	}
+
+	// Dependent uniform to dependent Gaussian
+	for i := range u {
+		u[i] = standardGaussian.Decumulate(u[i])
+	}
+
+	// Dependent Gaussian to independent Gaussian
+	multiply(self.decorrelator, u, n, nz, nu)
+
+	// Independent Gaussian to independent uniform
+	for i := range n {
+		z[i] = standardGaussian.Cumulate(n[i])
+	}
+
+	return z
 }
 
 func (self *aleatory) Inverse(z []float64) []float64 {
@@ -105,24 +137,27 @@ func (self *aleatory) Inverse(z []float64) []float64 {
 	return ω
 }
 
-func correlate(system *system.System, config *config.Parameter, tasks []uint) ([]float64, error) {
+func correlate(system *system.System, config *config.Parameter,
+	tasks []uint) ([]float64, []float64, error) {
+
 	if config.Correlation == 0.0 {
-		return matrix.Identity(uint(len(tasks))), nil
+		identity := matrix.Identity(uint(len(tasks)))
+		return identity, append(([]float64)(nil), identity...), nil
 	}
 	if config.Correlation < 0.0 {
-		return nil, errors.New("the correlation length should be nonnegative")
+		return nil, nil, errors.New("the correlation length should be nonnegative")
 	}
 	if config.Variance <= 0.0 {
-		return nil, errors.New("the variance threshold should be positive")
+		return nil, nil, errors.New("the variance threshold should be positive")
 	}
 
 	C := icorrelation.Compute(system.Application, tasks, config.Correlation)
-	correlator, _, err := correlation.Decompose(C, uint(len(tasks)), config.Variance)
+	correlator, decorrelator, _, err := correlation.Decompose(C, uint(len(tasks)), config.Variance)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return correlator, nil
+	return correlator, decorrelator, nil
 }
 
 func multiply(A, x, y []float64, m, n uint) {
