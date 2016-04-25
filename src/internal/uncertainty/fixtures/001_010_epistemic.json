@@ -10,8 +10,8 @@
 		"time": {
 			"tasks": "[0:end]",
 			"deviation": 0.2,
-			"distribution": "Beta(1, 1)",
-			"correlation": 5,
+			"distribution": "Uniform()",
+			"correlation": 0.0,
 			"variance": 0.95
 		}
 	}

@@ -1,0 +1,18 @@
+{
+	"system": {
+		"floorplan": "fixtures/001.flp",
+		"configuration": "fixtures/hotspot.config",
+		"specification": "fixtures/001_010.tgff",
+		"ambience": 318.15
+	},
+
+	"uncertainty": {
+		"time": {
+			"tasks": "[0:end]",
+			"deviation": 0.2,
+			"distribution": "Beta(2, 1)",
+			"correlation": 5.0,
+			"variance": 0.95
+		}
+	}
+}

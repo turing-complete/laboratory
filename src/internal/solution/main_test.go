@@ -15,7 +15,7 @@ import (
 func TestSolutionCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	uncertainty, _ := uncertainty.New(system, &config.Uncertainty)
 
 	quantity, _ := quantity.New(system, uncertainty, &config.Quantity)
 	ni, no := quantity.Dimensions()

@@ -16,27 +16,12 @@ type Uncertainty struct {
 	Power Transform
 }
 
-func NewAleatory(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newAleatory(system, system.ReferenceTime(), &config.Time)
+func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+	time, err := newBase(system, system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
 	}
-	power, err := newAleatory(system, system.ReferencePower(), &config.Power)
-	if err != nil {
-		return nil, err
-	}
-	return &Uncertainty{
-		Time:  time,
-		Power: power,
-	}, nil
-}
-
-func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
-	time, err := newEpistemic(system, system.ReferenceTime(), &config.Time)
-	if err != nil {
-		return nil, err
-	}
-	power, err := newEpistemic(system, system.ReferencePower(), &config.Power)
+	power, err := newBase(system, system.ReferencePower(), &config.Power)
 	if err != nil {
 		return nil, err
 	}

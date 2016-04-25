@@ -71,27 +71,17 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
 
-	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	quantity, err := quantity.New(system, uncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
-	if err != nil {
-		return err
-	}
-
-	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
-	if err != nil {
-		return err
-	}
-
-	ni, no := equantity.Dimensions()
+	ni, no := quantity.Dimensions()
 
 	asolution, err := solution.New(ni, no, &config.Solution)
 	if err != nil {
@@ -105,7 +95,7 @@ func function(config *config.Config) error {
 
 	ns := config.Assessment.Samples
 
-	epoints, apoints := generate(equantity, aquantity, ns, config.Assessment.Seed)
+	points := support.Generate(ni, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%5s %15s\n", "Step", "Nodes")
@@ -133,7 +123,7 @@ func function(config *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		values = append(values, asolution.Evaluate(&s, epoints)...)
+		values = append(values, asolution.Evaluate(&s, points)...)
 	}
 
 	nk, steps = k, steps[:k]
@@ -143,7 +133,7 @@ func function(config *config.Config) error {
 	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
-	if err := output.Put("points", apoints, ni, ns); err != nil {
+	if err := output.Put("points", points, ni, ns); err != nil {
 		return err
 	}
 	if err := output.Put("steps", steps); err != nil {
@@ -154,18 +144,4 @@ func function(config *config.Config) error {
 	}
 
 	return nil
-}
-
-func generate(into, from quantity.Quantity, ns uint, seed int64) ([]float64, []float64) {
-	nif, _ := from.Dimensions()
-	nii, _ := into.Dimensions()
-
-	zf := support.Generate(nif, ns, seed)
-	zi := make([]float64, nii*ns)
-
-	for i := uint(0); i < ns; i++ {
-		copy(zi[i*nii:(i+1)*nii], into.Forward(from.Inverse(zf[i*nif:(i+1)*nif])))
-	}
-
-	return zi, zf
 }

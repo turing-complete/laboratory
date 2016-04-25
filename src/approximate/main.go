@@ -33,7 +33,7 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	uncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}

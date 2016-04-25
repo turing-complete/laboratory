@@ -42,7 +42,13 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	uncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	approximation := len(*approximateFile) > 0
+	if approximation {
+		makeEpistemic(&config.Uncertainty.Time)
+		makeEpistemic(&config.Uncertainty.Power)
+	}
+
+	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
@@ -52,19 +58,25 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	points, err := generate(aquantity, config.Solution.Rule)
+	ni, no := aquantity.Dimensions()
+
+	index, err := detect(ni, *parameterIndex)
 	if err != nil {
 		return err
 	}
 
-	ni, no := aquantity.Dimensions()
+	points, err := generate(ni, *nodeCount, config.Solution.Rule, index)
+	if err != nil {
+		return err
+	}
+
 	np := uint(len(points)) / ni
 
 	log.Println(system)
 	log.Println(aquantity)
 
 	var values []float64
-	if len(*approximateFile) > 0 {
+	if approximation {
 		approximate, err := database.Open(*approximateFile)
 		if err != nil {
 			return err
@@ -100,15 +112,29 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(quantity quantity.Quantity, rule string) ([]float64, error) {
-	ni, _ := quantity.Dimensions()
-	nn := *nodeCount
+func detect(ni uint, line string) ([]uint, error) {
+	index := []uint{}
 
-	index, err := detect(quantity)
-	if err != nil {
+	decoder := json.NewDecoder(strings.NewReader(line))
+	if err := decoder.Decode(&index); err != nil {
 		return nil, err
 	}
+	if len(index) == 0 {
+		index = make([]uint, ni)
+		for i := uint(0); i < ni; i++ {
+			index[i] = i
+		}
+	}
+	for _, i := range index {
+		if i >= ni {
+			return nil, errors.New(fmt.Sprintf("the indices should be less than %v", ni))
+		}
+	}
 
+	return index, nil
+}
+
+func generate(ni, nn uint, rule string, index []uint) ([]float64, error) {
 	steady := []float64{*defaultNode}
 
 	sweep := make([]float64, nn)
@@ -136,28 +162,8 @@ func generate(quantity quantity.Quantity, rule string) ([]float64, error) {
 	return linear.TensorFloat64(parameters...), nil
 }
 
-func detect(quantity quantity.Quantity) ([]uint, error) {
-	ni, _ := quantity.Dimensions()
-
-	index := []uint{}
-
-	decoder := json.NewDecoder(strings.NewReader(*parameterIndex))
-	if err := decoder.Decode(&index); err != nil {
-		return nil, err
-	}
-
-	if len(index) == 0 {
-		index = make([]uint, ni)
-		for i := uint(0); i < ni; i++ {
-			index[i] = i
-		}
-	}
-
-	for _, i := range index {
-		if i >= ni {
-			return nil, errors.New(fmt.Sprintf("the indices should be less than %v", ni))
-		}
-	}
-
-	return index, nil
+func makeEpistemic(parameter *config.Parameter) {
+	parameter.Distribution = "Uniform()"
+	parameter.Correlation = 0.0
+	parameter.Variance = 1.0
 }
