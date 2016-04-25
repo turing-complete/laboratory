@@ -46,3 +46,9 @@ func (self *Uncertainty) Inverse(z []float64) []float64 {
 	ni, _ := self.Time.Mapping()
 	return append(self.Time.Inverse(z[:ni]), self.Power.Inverse(z[ni:])...)
 }
+
+func Epistemize(parameter *config.Parameter) {
+	parameter.Distribution = "Uniform()"
+	parameter.Correlation = 0.0
+	parameter.Variance = 1.0
+}

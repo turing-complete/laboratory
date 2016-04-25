@@ -44,8 +44,8 @@ func function(config *config.Config) error {
 
 	approximation := len(*approximateFile) > 0
 	if approximation {
-		makeEpistemic(&config.Uncertainty.Time)
-		makeEpistemic(&config.Uncertainty.Power)
+		uncertainty.Epistemize(&config.Uncertainty.Time)
+		uncertainty.Epistemize(&config.Uncertainty.Power)
 	}
 
 	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
@@ -160,10 +160,4 @@ func generate(ni, nn uint, rule string, index []uint) ([]float64, error) {
 	}
 
 	return linear.TensorFloat64(parameters...), nil
-}
-
-func makeEpistemic(parameter *config.Parameter) {
-	parameter.Distribution = "Uniform()"
-	parameter.Correlation = 0.0
-	parameter.Variance = 1.0
 }
