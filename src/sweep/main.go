@@ -42,13 +42,7 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	approximation := len(*approximateFile) > 0
-	if approximation {
-		uncertainty.Epistemize(&config.Uncertainty.Time)
-		uncertainty.Epistemize(&config.Uncertainty.Power)
-	}
-
-	uncertainty, err := uncertainty.New(system, &config.Uncertainty)
+	uncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
@@ -76,7 +70,7 @@ func function(config *config.Config) error {
 	log.Println(aquantity)
 
 	var values []float64
-	if approximation {
+	if len(*approximateFile) > 0 {
 		approximate, err := database.Open(*approximateFile)
 		if err != nil {
 			return err

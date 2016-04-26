@@ -16,7 +16,7 @@ type Uncertainty struct {
 	Power Transform
 }
 
-func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+func NewAleatory(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
 	time, err := newBase(system, system.ReferenceTime(), &config.Time)
 	if err != nil {
 		return nil, err
@@ -29,6 +29,13 @@ func New(system *system.System, config *config.Uncertainty) (*Uncertainty, error
 		Time:  time,
 		Power: power,
 	}, nil
+}
+
+func NewEpistemic(system *system.System, config *config.Uncertainty) (*Uncertainty, error) {
+	clone := *config
+	epistemize(&clone.Time)
+	epistemize(&clone.Power)
+	return NewAleatory(system, &clone)
 }
 
 func (self *Uncertainty) Mapping() (uint, uint) {
@@ -47,7 +54,7 @@ func (self *Uncertainty) Inverse(z []float64) []float64 {
 	return append(self.Time.Inverse(z[:ni]), self.Power.Inverse(z[ni:])...)
 }
 
-func Epistemize(parameter *config.Parameter) {
+func epistemize(parameter *config.Parameter) {
 	parameter.Distribution = "Uniform()"
 	parameter.Correlation = 0.0
 	parameter.Variance = 1.0

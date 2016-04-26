@@ -50,13 +50,33 @@ func TestBaseForwardInverse(t *testing.T) {
 	}, 1e-14, t)
 }
 
-func TestBasePassThrough(t *testing.T) {
+func TestBaseAleatory(t *testing.T) {
 	const (
 		nt = 10
 		σ  = 0.2
 	)
 
-	config, _ := config.New("fixtures/001_010_epistemic.json")
+	config, _ := config.New("fixtures/001_010.json")
+	system, _ := system.New(&config.System)
+	reference := system.ReferenceTime()
+	uncertainty, _ := newBase(system, reference, &config.Uncertainty.Time)
+
+	for i := 0; i < nt; i++ {
+		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
+		assert.EqualWithin(uncertainty.marginals[i].Decumulate(0.0), min, 1e-15, t)
+		assert.EqualWithin(uncertainty.marginals[i].Decumulate(1.0), max, 1e-15, t)
+	}
+}
+
+func TestBaseEpistemic(t *testing.T) {
+	const (
+		nt = 10
+		σ  = 0.2
+	)
+
+	config, _ := config.New("fixtures/001_010.json")
+	epistemize(&config.Uncertainty.Time)
+
 	system, _ := system.New(&config.System)
 	reference := system.ReferenceTime()
 	uncertainty, _ := newBase(system, reference, &config.Uncertainty.Time)
@@ -70,24 +90,6 @@ func TestBasePassThrough(t *testing.T) {
 	}
 
 	assert.EqualWithin(uncertainty.Inverse(point), value, 1e-15, t)
-}
-
-func TestBaseMarginals(t *testing.T) {
-	const (
-		nt = 10
-		σ  = 0.2
-	)
-
-	config, _ := config.New("fixtures/001_010_aleatory.json")
-	system, _ := system.New(&config.System)
-	reference := system.ReferenceTime()
-	uncertainty, _ := newBase(system, reference, &config.Uncertainty.Time)
-
-	for i := 0; i < nt; i++ {
-		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
-		assert.EqualWithin(uncertainty.marginals[i].Decumulate(0.0), min, 1e-15, t)
-		assert.EqualWithin(uncertainty.marginals[i].Decumulate(1.0), max, 1e-15, t)
-	}
 }
 
 func TestMultiply(t *testing.T) {
