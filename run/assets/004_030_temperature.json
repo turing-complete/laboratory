@@ -1,7 +1,0 @@
-{
-	"inherit": "assets/004_temperature.json",
-
-	"system": {
-		"specification": "assets/004_030.tgff"
-	}
-}
