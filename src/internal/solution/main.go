@@ -16,7 +16,7 @@ type Solution struct {
 	algorithm.Algorithm
 
 	config *config.Solution
-	grid   algorithm.Grid
+	guide  algorithm.Guide
 }
 
 type Statistics struct {
@@ -34,7 +34,10 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 		return nil, errors.New("the interpolation power should be positive")
 	}
 
-	var agrid algorithm.Grid
+	var agrid interface {
+		algorithm.Grid
+		algorithm.Guide
+	}
 	var abasis algorithm.Basis
 	switch config.Rule {
 	case "closed":
@@ -51,12 +54,12 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 		Algorithm: *algorithm.New(ni, no, agrid, abasis),
 
 		config: config,
-		grid:   agrid,
+		guide:  agrid,
 	}, nil
 }
 
 func (self *Solution) Compute(quantity quantity.Quantity) *Surrogate {
-	strategy := newStrategy(quantity, self.grid, self.config)
+	strategy := newStrategy(quantity, self.guide, self.config)
 	surrogate := self.Algorithm.Compute(quantity.Compute, strategy)
 	return &Surrogate{
 		Surrogate:  *surrogate,

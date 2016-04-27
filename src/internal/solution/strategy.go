@@ -22,12 +22,12 @@ type strategy struct {
 	active []uint
 }
 
-func newStrategy(quantity quantity.Quantity, grid algorithm.Grid,
+func newStrategy(quantity quantity.Quantity, guide algorithm.Guide,
 	config *config.Solution) *strategy {
 
 	ni, no := quantity.Dimensions()
 	return &strategy{
-		Strategy: *algorithm.NewStrategy(ni, no, grid, config.MinLevel,
+		Strategy: *algorithm.NewStrategy(ni, no, guide, config.MinLevel,
 			config.MaxLevel, config.LocalError, config.TotalError),
 
 		nmax: config.MaxEvaluations,
