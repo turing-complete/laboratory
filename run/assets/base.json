@@ -1,24 +1,15 @@
 {
 	"system": {
 		"configuration": "assets/hotspot.config",
-		"ambience": 45
+		"ambience": 45.0
 	},
 
 	"uncertainty": {
-		"time": {
-			"tasks": "[0:end]",
-			"deviation": 0.2,
-			"distribution": "Beta(2, 5)",
-			"correlation": 5,
-			"variance": 1
-		},
-		"power": {
-			"tasks": "[0:end]",
-			"deviation": 0.2,
-			"distribution": "Beta(2, 5)",
-			"correlation": 5,
-			"variance": 1
-		}
+		"tasks": "[0:end]",
+		"deviation": 0.2,
+		"distribution": "Beta(2, 5)",
+		"correlation": 5.0,
+		"variance": 1.0
 	},
 
 	"solution": {

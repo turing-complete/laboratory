@@ -10,9 +10,11 @@ import (
 
 type temperature struct {
 	base
+
+	power []float64
 }
 
-func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
+func newTemperature(system *system.System, uncertainty uncertainty.Uncertainty,
 	config *config.Quantity) (*temperature, error) {
 
 	ni, _ := uncertainty.Mapping()
@@ -20,7 +22,10 @@ func newTemperature(system *system.System, uncertainty *uncertainty.Uncertainty,
 	if err != nil {
 		return nil, err
 	}
-	return &temperature{base}, nil
+	return &temperature{
+		base:  base,
+		power: system.ReferencePower(),
+	}, nil
 }
 
 func (self *temperature) Compute(node, value []float64) {
@@ -28,11 +33,8 @@ func (self *temperature) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	nt := uint(self.system.Application.Len())
-	timePower := self.Inverse(node)
-
-	schedule := self.system.ComputeSchedule(timePower[:nt])
-	P, ΔT := self.system.PartitionPower(timePower[nt:], schedule, ε)
+	schedule := self.system.ComputeSchedule(self.Inverse(node))
+	P, ΔT := self.system.PartitionPower(self.power, schedule, ε)
 	Q := self.system.ComputeTemperature(P, ΔT)
 
 	value[0] = Q[0]

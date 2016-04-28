@@ -35,7 +35,9 @@ type base struct {
 	marginals    []probability.Distribution
 }
 
-func newBase(system *system.System, reference []float64, config *config.Parameter) (*base, error) {
+func newBase(system *system.System, reference []float64,
+	config *config.Uncertainty) (*base, error) {
+
 	nt := uint(len(reference))
 
 	tasks, err := support.ParseNaturalIndex(config.Tasks, 0, nt-1)
@@ -164,7 +166,7 @@ func (self *base) Inverse(z []float64) []float64 {
 	return ω
 }
 
-func correlate(system *system.System, config *config.Parameter,
+func correlate(system *system.System, config *config.Uncertainty,
 	tasks []uint) ([]float64, []float64, error) {
 
 	if config.Correlation == 0.0 {

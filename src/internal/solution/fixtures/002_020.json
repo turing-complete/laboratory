@@ -7,20 +7,11 @@
 	},
 
 	"uncertainty": {
-		"time": {
-			"tasks": "[0:end]",
-			"deviation": 0.2,
-			"distribution": "Uniform()",
-			"correlation": 0.0,
-			"variance": 1.0
-		},
-		"power": {
-			"tasks": "[0:end]",
-			"deviation": 0.2,
-			"distribution": "Uniform()",
-			"correlation": 0.0,
-			"variance": 1.0
-		}
+		"tasks": "[0:end]",
+		"deviation": 0.2,
+		"distribution": "Beta(2, 5)",
+		"correlation": 5.0,
+		"variance": 1.0
 	},
 
 	"quantity": {
@@ -30,10 +21,10 @@
 	"solution": {
 		"rule": "closed",
 		"power": 1,
-		"minLevel": 1,
+		"minLevel": 3,
 		"maxLevel": 3,
 		"maxEvaluations": 1000,
 		"localError": 1e-2,
-		"totalError": 5e-1
+		"totalError": 1e-2
 	}
 }

@@ -15,7 +15,7 @@ import (
 func TestSolutionCompute(t *testing.T) {
 	config, _ := config.New("fixtures/002_020.json")
 	system, _ := system.New(&config.System)
-	uncertainty, _ := uncertainty.NewAleatory(system, &config.Uncertainty)
+	uncertainty, _ := uncertainty.NewEpistemic(system, &config.Uncertainty)
 
 	quantity, _ := quantity.New(system, uncertainty, &config.Quantity)
 	ni, no := quantity.Dimensions()
@@ -25,7 +25,7 @@ func TestSolutionCompute(t *testing.T) {
 
 	nn := surrogate.Surrogate.Nodes
 
-	assert.Equal(nn, uint(882), t)
+	assert.Equal(nn, uint(921), t)
 
 	grid := grid.NewClosed(ni)
 	nodes := grid.Compute(surrogate.Surrogate.Indices)

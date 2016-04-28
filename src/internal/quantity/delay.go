@@ -10,11 +10,11 @@ type delay struct {
 	base
 }
 
-func newDelay(system *system.System, uncertainty *uncertainty.Uncertainty,
+func newDelay(system *system.System, uncertainty uncertainty.Uncertainty,
 	config *config.Quantity) (*delay, error) {
 
-	ni, _ := uncertainty.Time.Mapping()
-	base, err := newBase(system, uncertainty.Time, config, ni, 1)
+	ni, _ := uncertainty.Mapping()
+	base, err := newBase(system, uncertainty, config, ni, 1)
 	if err != nil {
 		return nil, err
 	}

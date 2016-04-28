@@ -9,7 +9,7 @@ import (
 )
 
 type base struct {
-	uncertainty.Transform
+	uncertainty.Uncertainty
 
 	system *system.System
 	config *config.Quantity
@@ -18,11 +18,11 @@ type base struct {
 	no uint
 }
 
-func newBase(system *system.System, transform uncertainty.Transform,
+func newBase(system *system.System, uncertainty uncertainty.Uncertainty,
 	config *config.Quantity, ni, no uint) (base, error) {
 
 	return base{
-		Transform: transform,
+		Uncertainty: uncertainty,
 
 		system: system,
 		config: config,

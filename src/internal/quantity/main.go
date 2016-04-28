@@ -17,7 +17,7 @@ type Quantity interface {
 	Inverse([]float64) []float64
 }
 
-func New(system *system.System, uncertainty *uncertainty.Uncertainty,
+func New(system *system.System, uncertainty uncertainty.Uncertainty,
 	config *config.Quantity) (Quantity, error) {
 
 	switch config.Name {
