@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/002_delay.json",
+
+	"system": {
+		"specification": "assets/002_020.tgff"
+	}
+}

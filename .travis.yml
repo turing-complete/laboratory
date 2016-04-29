@@ -14,7 +14,7 @@ install:
 
 script:
   - go test ./...
-  - cd run && make && make 001_010_delay
+  - cd run && make && make 002_020_delay
 
 notifications:
   email: false

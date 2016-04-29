@@ -24,7 +24,7 @@ function compare(extended)
       Plot.title(sprintf('Quantity %d, Metric %d', i, j));
       Plot.label('Evaluations', 'log(Error)');
       Plot.legend('Observe', 'Predict');
-      Plot.limit(t);
+      if length(t) > 1; Plot.limit(t); end
     end
   end
 

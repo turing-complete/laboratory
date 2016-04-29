@@ -16,8 +16,8 @@ endef
 
 $(foreach command,$(commands),$(eval $(call define_command,$(command))))
 
-cases := 001_010_delay 001_010_energy 001_010_temperature
-cases += 001_020_delay 001_020_energy 001_020_temperature
+cases := 002_010_delay 002_010_energy 002_010_temperature
+cases += 002_020_delay 002_020_energy 002_020_temperature
 
 cases += 004_010_delay 004_010_energy 004_010_temperature
 cases += 004_020_delay 004_020_energy 004_020_temperature

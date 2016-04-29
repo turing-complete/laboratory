@@ -1,6 +1,6 @@
 all:
-	@./generate 1 10
-	@./generate 1 20
+	@./generate 2 10
+	@./generate 2 20
 
 	@./generate 4 10
 	@./generate 4 20

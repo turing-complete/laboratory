@@ -2,14 +2,13 @@
 	"inherit": "assets/base.json",
 
 	"system": {
-		"floorplan": "assets/001.flp"
+		"floorplan": "assets/002.flp"
 	},
 
 	"quantity": {
-		"name": "maximal-temperature"
+		"name": "total-energy"
 	},
 
 	"solution": {
-		"localError": 1e-2
 	}
 }
