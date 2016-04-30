@@ -68,7 +68,7 @@ func newBase(system *system.System, reference []float64,
 		}, nil
 	}
 
-	correlator, decorrelator, err := correlate(system, config, tasks)
+	correlator, decorrelator, _, err := correlate(system, config, tasks)
 	if err != nil {
 		return nil, err
 	}
@@ -167,26 +167,36 @@ func (self *base) Inverse(z []float64) []float64 {
 }
 
 func correlate(system *system.System, config *config.Uncertainty,
-	tasks []uint) ([]float64, []float64, error) {
+	tasks []uint) ([]float64, []float64, []float64, error) {
+
+	nu := uint(len(tasks))
 
 	if config.Correlation == 0.0 {
-		identity := matrix.Identity(uint(len(tasks)))
-		return identity, append([]float64(nil), identity...), nil
+		return matrix.Identity(nu), matrix.Identity(nu), matrix.Identity(nu), nil
 	}
 	if config.Correlation < 0.0 {
-		return nil, nil, errors.New("the correlation length should be nonnegative")
+		return nil, nil, nil, errors.New("the correlation length should be nonnegative")
 	}
 	if config.Variance <= 0.0 {
-		return nil, nil, errors.New("the variance threshold should be positive")
+		return nil, nil, nil, errors.New("the variance threshold should be positive")
 	}
 
 	C := icorrelation.Compute(system.Application, tasks, config.Correlation)
-	correlator, decorrelator, _, err := correlation.Decompose(C, uint(len(tasks)), config.Variance)
+
+	correlator, decorrelator, _, err := correlation.Decompose(C, nu, config.Variance)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 
-	return correlator, decorrelator, nil
+	denser := C
+	if err := matrix.Inverse(denser, nu); err != nil {
+		return nil, nil, nil, err
+	}
+	for i := uint(0); i < nu; i++ {
+		denser[i*nu+i] -= 1.0
+	}
+
+	return correlator, decorrelator, denser, nil
 }
 
 func multiply(A, x, y []float64, m, n uint) {
