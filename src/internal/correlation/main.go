@@ -10,10 +10,10 @@ func Compute(application *system.Application, index []uint, length float64) []fl
 	nt, nd := uint(len(application.Tasks)), uint(len(index))
 
 	distance := measure(application)
-	C := make([]float64, nd*nd)
+	R := make([]float64, nd*nd)
 
 	for i := uint(0); i < nd; i++ {
-		C[i*nd+i] = 1
+		R[i*nd+i] = 1
 
 		if length == 0 {
 			continue
@@ -21,12 +21,12 @@ func Compute(application *system.Application, index []uint, length float64) []fl
 
 		for j := i + 1; j < nd; j++ {
 			d := distance[index[i]*nt+index[j]]
-			C[j*nd+i] = math.Exp(-d * d / (length * length))
-			C[i*nd+j] = C[j*nd+i]
+			R[j*nd+i] = math.Exp(-d * d / (length * length))
+			R[i*nd+j] = R[j*nd+i]
 		}
 	}
 
-	return C
+	return R
 }
 
 func measure(application *system.Application) []float64 {
