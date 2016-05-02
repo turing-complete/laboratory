@@ -110,14 +110,42 @@ func (self *base) Mapping() (uint, uint) {
 	return self.nz, self.nt
 }
 
+func (self *base) Evaluate(ω []float64) float64 {
+	nu, nz := self.nu, self.nz
+
+	if nu != nz {
+		panic("model-order reduction is not supported")
+	}
+
+	u := make([]float64, nu)
+
+	// Dependent desired to dependent uniform
+	for i, tid := range self.tasks {
+		u[i] = self.marginals[i].Cumulate(ω[tid])
+	}
+
+	// Dependent uniform to dependent Gaussian
+	for i := range u {
+		u[i] = standardGaussian.Invert(u[i])
+	}
+
+	exponent := -0.5 * quadratic(self.correlation.P, u, nu)
+
+	amplitude := 1.0
+	for i, tid := range self.tasks {
+		amplitude *= self.marginals[i].Weigh(ω[tid])
+	}
+	amplitude = math.Abs(amplitude)
+
+	normalization := math.Sqrt(self.correlation.detR)
+
+	return amplitude * math.Exp(exponent) / normalization
+}
+
 func (self *base) Forward(ω []float64) []float64 {
 	nu, nz := self.nu, self.nz
 
 	z := make([]float64, nz)
-	if nz == 0 {
-		return z
-	}
-
 	u := make([]float64, nu)
 	n := make([]float64, nz)
 
@@ -146,10 +174,6 @@ func (self *base) Backward(z []float64) []float64 {
 	nu, nz := self.nu, self.nz
 
 	ω := append([]float64(nil), self.lower...)
-	if nu == 0 {
-		return ω
-	}
-
 	n := make([]float64, nz)
 	u := make([]float64, nu)
 
@@ -172,45 +196,6 @@ func (self *base) Backward(z []float64) []float64 {
 	}
 
 	return ω
-}
-
-func (self *base) Weigh(ω []float64) float64 {
-	nu, nz := self.nu, self.nz
-
-	if nu != nz {
-		panic("model-order reduction is not supported")
-	}
-
-	u := make([]float64, nu)
-	n := make([]float64, nz)
-
-	// Dependent desired to dependent uniform
-	for i, tid := range self.tasks {
-		u[i] = self.marginals[i].Cumulate(ω[tid])
-	}
-
-	// Dependent uniform to dependent Gaussian
-	for i := range u {
-		u[i] = standardGaussian.Invert(u[i])
-	}
-
-	multiply(self.correlation.P, u, n, nz, nu)
-
-	amplitude := 1.0
-	for i, tid := range self.tasks {
-		amplitude *= self.marginals[i].Weigh(ω[tid])
-	}
-	amplitude = math.Abs(amplitude)
-
-	exponent := 0.0
-	for i := range n {
-		exponent += u[i] * n[i]
-	}
-	exponent *= -0.5
-
-	normalization := math.Sqrt(self.correlation.detR)
-
-	return amplitude * math.Exp(exponent) / normalization
 }
 
 func correlate(system *system.System, config *config.Uncertainty,

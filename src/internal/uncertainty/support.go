@@ -29,42 +29,80 @@ func invert(U, Λ []float64, m uint) ([]float64, error) {
 	return I, nil
 }
 
-func multiply(A, x, y []float64, m, n uint) {
-	infinite, z := false, make([]float64, n)
-
-	for i := range x {
+func inspect(x []float64, m uint) (ok bool, signs []float64) {
+	ok, signs = true, make([]float64, m)
+	for i := uint(0); i < m; i++ {
 		switch x[i] {
 		case -infinity:
-			infinite, z[i] = true, -1.0
+			ok, signs[i] = false, -1.0
 		case infinity:
-			infinite, z[i] = true, 1.0
+			ok, signs[i] = false, 1.0
 		}
 	}
+	return
+}
 
-	if !infinite {
+func multiply(A, x, y []float64, m, n uint) {
+	ok, signs := inspect(x, n)
+	if ok {
 		matrix.Multiply(A, x, y, m, n, 1)
 		return
 	}
-
 	for i := uint(0); i < m; i++ {
-		Σ1, Σ2 := 0.0, 0.0
+		fin, inf := 0.0, 0.0
 		for j := uint(0); j < n; j++ {
 			a := A[j*m+i]
 			if a == 0.0 {
 				continue
 			}
-			if z[j] == 0.0 {
-				Σ1 += a * x[j]
+			if signs[j] == 0.0 {
+				fin += a * x[j]
 			} else {
-				Σ2 += a * z[j]
+				inf += a * signs[j]
 			}
 		}
-		if Σ2 < 0.0 {
-			y[i] = -infinity
-		} else if Σ2 > 0.0 {
-			y[i] = infinity
+		if inf != 0.0 {
+			y[i] = inf * infinity
 		} else {
-			y[i] = Σ1
+			y[i] = fin
 		}
+	}
+}
+
+func quadratic(A, x []float64, m uint) float64 {
+	ok, signs := inspect(x, m)
+	if ok {
+		y := make([]float64, m)
+		matrix.Multiply(A, x, y, m, m, 1)
+		return matrix.Dot(x, y, m)
+	}
+	Fin, Inf, InfSquared := 0.0, 0.0, 0.0
+	for i := uint(0); i < m; i++ {
+		fin, inf := 0.0, 0.0
+		for j := uint(0); j < m; j++ {
+			a := A[j*m+i]
+			if a == 0.0 {
+				continue
+			}
+			if signs[j] == 0.0 {
+				fin += a * x[j]
+			} else {
+				inf += a * signs[j]
+			}
+		}
+		if signs[i] == 0.0 {
+			Fin += x[i] * fin
+			Inf += x[i] * inf
+		} else {
+			Inf += fin
+			InfSquared += inf
+		}
+	}
+	if InfSquared != 0.0 {
+		return InfSquared * infinity
+	} else if Inf != 0.0 {
+		return Inf * infinity
+	} else {
+		return Fin
 	}
 }
