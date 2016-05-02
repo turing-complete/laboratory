@@ -6,7 +6,7 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/distribution"
 )
 
 type family uint
@@ -17,17 +17,17 @@ const (
 	uniformFamily
 )
 
-func Parse(line string) (func(float64, float64) probability.Distribution, error) {
+func Parse(line string) (func(float64, float64) distribution.Continuous, error) {
 	family, params := parse(line)
 
 	switch family {
 	case betaFamily:
-		return func(min, max float64) probability.Distribution {
-			return probability.NewBeta(params[0], params[1], min, max)
+		return func(min, max float64) distribution.Continuous {
+			return distribution.NewBeta(params[0], params[1], min, max)
 		}, nil
 	case uniformFamily:
-		return func(min, max float64) probability.Distribution {
-			return probability.NewUniform(min, max)
+		return func(min, max float64) distribution.Continuous {
+			return distribution.NewUniform(min, max)
 		}, nil
 	default:
 		return nil, errors.New("the marginal distribution is unknown")
