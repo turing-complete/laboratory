@@ -22,8 +22,8 @@ func TestNewAleatory(t *testing.T) {
 
 	for i := 0; i < nt; i++ {
 		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
-		assert.EqualWithin(base.marginals[i].Decumulate(0.0), min, 1e-15, t)
-		assert.EqualWithin(base.marginals[i].Decumulate(1.0), max, 1e-15, t)
+		assert.EqualWithin(base.marginals[i].Invert(0.0), min, 1e-15, t)
+		assert.EqualWithin(base.marginals[i].Invert(1.0), max, 1e-15, t)
 	}
 }
 

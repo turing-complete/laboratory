@@ -7,9 +7,9 @@ import (
 
 type Uncertainty interface {
 	Mapping() (uint, uint)
-	Density([]float64) float64
 	Forward([]float64) []float64
 	Inverse([]float64) []float64
+	Weigh([]float64) float64
 }
 
 func NewAleatory(system *system.System, config *config.Uncertainty) (Uncertainty, error) {

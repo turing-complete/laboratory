@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ready-steady/assert"
-	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/distribution"
 )
 
 func TestBaseForwardInverse(t *testing.T) {
@@ -29,10 +29,10 @@ func TestBaseForwardInverse(t *testing.T) {
 				2.0, 1.0,
 			},
 		},
-		marginals: []probability.Distribution{
-			probability.NewUniform(10.0, 20.0),
-			probability.NewUniform(20.0, 30.0),
-			probability.NewUniform(30.0, 40.0),
+		marginals: []distribution.Continuous{
+			distribution.NewUniform(10.0, 20.0),
+			distribution.NewUniform(20.0, 30.0),
+			distribution.NewUniform(30.0, 40.0),
 		},
 	}
 

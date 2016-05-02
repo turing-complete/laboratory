@@ -5,19 +5,19 @@ import (
 	"math"
 
 	"github.com/ready-steady/linear/matrix"
-	"github.com/ready-steady/probability"
+	"github.com/ready-steady/probability/distribution"
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/laboratory/src/internal/distribution"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 
 	scorrelation "github.com/ready-steady/statistics/correlation"
 	icorrelation "github.com/turing-complete/laboratory/src/internal/correlation"
+	idistribution "github.com/turing-complete/laboratory/src/internal/distribution"
 )
 
 var (
 	epsilon          = math.Nextafter(1.0, 2.0) - 1.0
-	standardGaussian = probability.NewGaussian(0.0, 1.0)
+	standardGaussian = distribution.NewGaussian(0.0, 1.0)
 )
 
 type base struct {
@@ -30,14 +30,14 @@ type base struct {
 	nz uint
 
 	correlation *correlation
-	marginals   []probability.Distribution
+	marginals   []distribution.Continuous
 }
 
 type correlation struct {
 	R []float64
-	C []float64
-	D []float64
-	P []float64
+	C []float64 // x = C * z
+	D []float64 // z = D * x
+	P []float64 // R^(-1) - I
 
 	detR float64
 }
@@ -82,12 +82,12 @@ func newBase(system *system.System, reference []float64,
 
 	nz := uint(len(correlation.C)) / nu
 
-	marginalizer, err := distribution.Parse(config.Distribution)
+	marginalizer, err := idistribution.Parse(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
 
-	marginals := make([]probability.Distribution, nu)
+	marginals := make([]distribution.Continuous, nu)
 	for i, tid := range tasks {
 		marginals[i] = marginalizer(lower[tid], upper[tid])
 	}
@@ -110,10 +110,6 @@ func (self *base) Mapping() (uint, uint) {
 	return self.nz, self.nt
 }
 
-func (self *base) Density(ω []float64) float64 {
-	return 0.0
-}
-
 func (self *base) Forward(ω []float64) []float64 {
 	nu, nz := self.nu, self.nz
 
@@ -132,7 +128,7 @@ func (self *base) Forward(ω []float64) []float64 {
 
 	// Dependent uniform to dependent Gaussian
 	for i := range u {
-		u[i] = standardGaussian.Decumulate(u[i])
+		u[i] = standardGaussian.Invert(u[i])
 	}
 
 	// Dependent Gaussian to independent Gaussian
@@ -159,7 +155,7 @@ func (self *base) Inverse(z []float64) []float64 {
 
 	// Independent uniform to independent Gaussian
 	for i := range n {
-		n[i] = standardGaussian.Decumulate(z[i])
+		n[i] = standardGaussian.Invert(z[i])
 	}
 
 	// Independent Gaussian to dependent Gaussian
@@ -172,10 +168,49 @@ func (self *base) Inverse(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	for i, tid := range self.tasks {
-		ω[tid] = self.marginals[i].Decumulate(u[i])
+		ω[tid] = self.marginals[i].Invert(u[i])
 	}
 
 	return ω
+}
+
+func (self *base) Weigh(ω []float64) float64 {
+	nu, nz := self.nu, self.nz
+
+	if nu != nz {
+		panic("model-order reduction is not supported")
+	}
+
+	u := make([]float64, nu)
+	n := make([]float64, nz)
+
+	// Dependent desired to dependent uniform
+	for i, tid := range self.tasks {
+		u[i] = self.marginals[i].Cumulate(ω[tid])
+	}
+
+	// Dependent uniform to dependent Gaussian
+	for i := range u {
+		u[i] = standardGaussian.Invert(u[i])
+	}
+
+	multiply(self.correlation.P, u, n, nz, nu)
+
+	amplitude := 1.0
+	for i, tid := range self.tasks {
+		amplitude *= self.marginals[i].Weigh(ω[tid])
+	}
+	amplitude = math.Abs(amplitude)
+
+	exponent := 0.0
+	for i := range n {
+		exponent += u[i] * n[i]
+	}
+	exponent *= -0.5
+
+	normalization := math.Sqrt(self.correlation.detR)
+
+	return amplitude * math.Exp(exponent) / normalization
 }
 
 func correlate(system *system.System, config *config.Uncertainty,
