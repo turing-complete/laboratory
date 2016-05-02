@@ -8,7 +8,7 @@ import (
 type Uncertainty interface {
 	Mapping() (uint, uint)
 	Forward([]float64) []float64
-	Inverse([]float64) []float64
+	Backward([]float64) []float64
 	Weigh([]float64) float64
 }
 

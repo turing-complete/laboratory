@@ -22,5 +22,5 @@ func newDelay(system *system.System, uncertainty uncertainty.Uncertainty,
 }
 
 func (self *delay) Compute(node []float64, value []float64) {
-	value[0] = self.system.ComputeSchedule(self.Inverse(node)).Span
+	value[0] = self.system.ComputeSchedule(self.Backward(node)).Span
 }

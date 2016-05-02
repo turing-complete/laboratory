@@ -142,7 +142,7 @@ func (self *base) Forward(ω []float64) []float64 {
 	return z
 }
 
-func (self *base) Inverse(z []float64) []float64 {
+func (self *base) Backward(z []float64) []float64 {
 	nu, nz := self.nu, self.nz
 
 	ω := append([]float64(nil), self.lower...)
@@ -252,7 +252,7 @@ func correlate(system *system.System, config *config.Uncertainty,
 		detR *= λ
 	}
 
-	P, err := inverse(U, Λ, nu)
+	P, err := invert(U, Λ, nu)
 	if err != nil {
 		return nil, err
 	}

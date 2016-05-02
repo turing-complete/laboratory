@@ -14,7 +14,7 @@ type Quantity interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
 	Forward([]float64) []float64
-	Inverse([]float64) []float64
+	Backward([]float64) []float64
 }
 
 func New(system *system.System, uncertainty uncertainty.Uncertainty,

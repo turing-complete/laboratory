@@ -27,7 +27,7 @@ func newEnergy(system *system.System, uncertainty uncertainty.Uncertainty,
 }
 
 func (self *energy) Compute(node, value []float64) {
-	time := self.Inverse(node)
+	time := self.Backward(node)
 
 	value[0] = 0.0
 	for i, power := range self.power {

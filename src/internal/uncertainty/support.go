@@ -11,7 +11,7 @@ var (
 	infinity = math.Inf(1.0)
 )
 
-func inverse(U, Λ []float64, m uint) ([]float64, error) {
+func invert(U, Λ []float64, m uint) ([]float64, error) {
 	T := make([]float64, m*m)
 	for i := uint(0); i < m; i++ {
 		if Λ[i] == 0.0 {

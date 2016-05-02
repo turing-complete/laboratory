@@ -33,7 +33,7 @@ func (self *temperature) Compute(node, value []float64) {
 		ε = 1e-10
 	)
 
-	schedule := self.system.ComputeSchedule(self.Inverse(node))
+	schedule := self.system.ComputeSchedule(self.Backward(node))
 	P, ΔT := self.system.PartitionPower(self.power, schedule, ε)
 	Q := self.system.ComputeTemperature(P, ΔT)
 

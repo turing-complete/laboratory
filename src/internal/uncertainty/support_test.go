@@ -22,10 +22,10 @@ func TestInverse(t *testing.T) {
 	err := decomposition.SymmetricEigen(A, U, Λ, m)
 	assert.Equal(err, nil, t)
 
-	err = matrix.Inverse(A, m)
+	err = matrix.Invert(A, m)
 	assert.Equal(err, nil, t)
 
-	I, err := inverse(U, Λ, m)
+	I, err := invert(U, Λ, m)
 	assert.Equal(err, nil, t)
 	assert.EqualWithin(A, I, 1e-14, t)
 }

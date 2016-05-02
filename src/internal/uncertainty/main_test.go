@@ -46,5 +46,5 @@ func TestNewEpistemic(t *testing.T) {
 		value[i] = (1.0 - σ + 2.0*σ*α) * reference[i]
 	}
 
-	assert.EqualWithin(uncertainty.Inverse(point), value, 1e-15, t)
+	assert.EqualWithin(uncertainty.Backward(point), value, 1e-15, t)
 }

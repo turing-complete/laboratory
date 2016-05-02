@@ -8,7 +8,7 @@ import (
 	"github.com/ready-steady/probability/distribution"
 )
 
-func TestBaseForwardInverse(t *testing.T) {
+func TestBaseForwardInvert(t *testing.T) {
 	uncertainty := &base{
 		tasks: []uint{0, 1, 2},
 		lower: []float64{42.0, 42.0, 42.0},
@@ -42,8 +42,8 @@ func TestBaseForwardInverse(t *testing.T) {
 		7.313162037785672e-01,
 	}, 1e-14, t)
 
-	inverse := uncertainty.Inverse([]float64{0.45, 0.65})
-	assert.EqualWithin(inverse, []float64{
+	backward := uncertainty.Backward([]float64{0.45, 0.65})
+	assert.EqualWithin(backward, []float64{
 		1.921556679782504e+01,
 		2.953060310728164e+01,
 		3.973501094321997e+01,

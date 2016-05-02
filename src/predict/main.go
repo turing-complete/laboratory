@@ -164,7 +164,7 @@ func generate(into, from quantity.Quantity, ns uint, seed int64) ([]float64, []f
 	zi := make([]float64, nii*ns)
 
 	for i := uint(0); i < ns; i++ {
-		copy(zi[i*nii:(i+1)*nii], into.Forward(from.Inverse(zf[i*nif:(i+1)*nif])))
+		copy(zi[i*nii:(i+1)*nii], into.Forward(from.Backward(zf[i*nif:(i+1)*nif])))
 	}
 
 	return zi, zf
