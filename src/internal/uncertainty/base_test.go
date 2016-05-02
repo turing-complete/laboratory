@@ -18,14 +18,16 @@ func TestBaseForwardInverse(t *testing.T) {
 		nu: 3,
 		nz: 2,
 
-		correlator: []float64{
-			1.0, 2.0, 3.0,
-			4.0, 5.0, 6.0,
-		},
-		decorrelator: []float64{
-			6.0, 5.0,
-			4.0, 3.0,
-			2.0, 1.0,
+		correlation: &correlation{
+			C: []float64{
+				1.0, 2.0, 3.0,
+				4.0, 5.0, 6.0,
+			},
+			D: []float64{
+				6.0, 5.0,
+				4.0, 3.0,
+				2.0, 1.0,
+			},
 		},
 		marginals: []probability.Distribution{
 			probability.NewUniform(10.0, 20.0),

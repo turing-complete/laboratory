@@ -6,19 +6,18 @@ import (
 
 	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability"
-	"github.com/ready-steady/statistics/correlation"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/distribution"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 
+	scorrelation "github.com/ready-steady/statistics/correlation"
 	icorrelation "github.com/turing-complete/laboratory/src/internal/correlation"
 )
 
 var (
+	epsilon          = math.Nextafter(1.0, 2.0) - 1.0
 	standardGaussian = probability.NewGaussian(0.0, 1.0)
-	nInfinity        = math.Inf(-1.0)
-	pInfinity        = math.Inf(1.0)
 )
 
 type base struct {
@@ -30,9 +29,17 @@ type base struct {
 	nu uint
 	nz uint
 
-	correlator   []float64
-	decorrelator []float64
-	marginals    []probability.Distribution
+	correlation *correlation
+	marginals   []probability.Distribution
+}
+
+type correlation struct {
+	R []float64
+	C []float64
+	D []float64
+	P []float64
+
+	detR float64
 }
 
 func newBase(system *system.System, reference []float64,
@@ -68,10 +75,12 @@ func newBase(system *system.System, reference []float64,
 		}, nil
 	}
 
-	correlator, decorrelator, _, err := correlate(system, config, tasks)
+	correlation, err := correlate(system, config, tasks)
 	if err != nil {
 		return nil, err
 	}
+
+	nz := uint(len(correlation.C)) / nu
 
 	marginalizer, err := distribution.Parse(config.Distribution)
 	if err != nil {
@@ -90,16 +99,19 @@ func newBase(system *system.System, reference []float64,
 
 		nt: nt,
 		nu: nu,
-		nz: uint(len(correlator)) / nu,
+		nz: nz,
 
-		correlator:   correlator,
-		decorrelator: decorrelator,
-		marginals:    marginals,
+		correlation: correlation,
+		marginals:   marginals,
 	}, nil
 }
 
 func (self *base) Mapping() (uint, uint) {
 	return self.nz, self.nt
+}
+
+func (self *base) Density(ω []float64) float64 {
+	return 0.0
 }
 
 func (self *base) Forward(ω []float64) []float64 {
@@ -124,7 +136,7 @@ func (self *base) Forward(ω []float64) []float64 {
 	}
 
 	// Dependent Gaussian to independent Gaussian
-	multiply(self.decorrelator, u, n, nz, nu)
+	multiply(self.correlation.D, u, n, nz, nu)
 
 	// Independent Gaussian to independent uniform
 	for i := range n {
@@ -151,7 +163,7 @@ func (self *base) Inverse(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	multiply(self.correlator, n, u, nu, nz)
+	multiply(self.correlation.C, n, u, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
@@ -167,74 +179,58 @@ func (self *base) Inverse(z []float64) []float64 {
 }
 
 func correlate(system *system.System, config *config.Uncertainty,
-	tasks []uint) ([]float64, []float64, []float64, error) {
+	tasks []uint) (*correlation, error) {
+
+	ε := math.Sqrt(epsilon)
 
 	nu := uint(len(tasks))
 
 	if config.Correlation == 0.0 {
-		return matrix.Identity(nu), matrix.Identity(nu), matrix.Identity(nu), nil
+		return &correlation{
+			R: matrix.Identity(nu),
+			C: matrix.Identity(nu),
+			D: matrix.Identity(nu),
+			P: make([]float64, nu*nu),
+
+			detR: 1.0,
+		}, nil
 	}
 	if config.Correlation < 0.0 {
-		return nil, nil, nil, errors.New("the correlation length should be nonnegative")
+		return nil, errors.New("the correlation length should be nonnegative")
 	}
 	if config.Variance <= 0.0 {
-		return nil, nil, nil, errors.New("the variance threshold should be positive")
+		return nil, errors.New("the variance threshold should be positive")
 	}
 
-	C := icorrelation.Compute(system.Application, tasks, config.Correlation)
+	R := icorrelation.Compute(system.Application, tasks, config.Correlation)
 
-	correlator, decorrelator, _, err := correlation.Decompose(C, nu, config.Variance)
+	C, D, U, Λ, err := scorrelation.Decompose(R, nu, config.Variance, ε)
 	if err != nil {
-		return nil, nil, nil, err
+		return nil, err
 	}
 
-	denser := C
-	if err := matrix.Inverse(denser, nu); err != nil {
-		return nil, nil, nil, err
+	detR := 1.0
+	for _, λ := range Λ {
+		if λ <= 0.0 {
+			return nil, errors.New("the corelation matrix is invalid or singular")
+		}
+		detR *= λ
+	}
+
+	P, err := inverse(U, Λ, nu)
+	if err != nil {
+		return nil, err
 	}
 	for i := uint(0); i < nu; i++ {
-		denser[i*nu+i] -= 1.0
+		P[i*nu+i] -= 1.0
 	}
 
-	return correlator, decorrelator, denser, nil
-}
+	return &correlation{
+		R: R,
+		C: C,
+		D: D,
+		P: P,
 
-func multiply(A, x, y []float64, m, n uint) {
-	infinite, z := false, make([]float64, n)
-
-	for i := range x {
-		switch x[i] {
-		case nInfinity:
-			infinite, z[i] = true, -1.0
-		case pInfinity:
-			infinite, z[i] = true, 1.0
-		}
-	}
-
-	if !infinite {
-		matrix.Multiply(A, x, y, m, n, 1)
-		return
-	}
-
-	for i := uint(0); i < m; i++ {
-		Σ1, Σ2 := 0.0, 0.0
-		for j := uint(0); j < n; j++ {
-			a := A[j*m+i]
-			if a == 0.0 {
-				continue
-			}
-			if z[j] == 0.0 {
-				Σ1 += a * x[j]
-			} else {
-				Σ2 += a * z[j]
-			}
-		}
-		if Σ2 < 0.0 {
-			y[i] = nInfinity
-		} else if Σ2 > 0.0 {
-			y[i] = pInfinity
-		} else {
-			y[i] = Σ1
-		}
-	}
+		detR: detR,
+	}, nil
 }
