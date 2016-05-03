@@ -78,8 +78,8 @@ func newBase(system *system.System, reference []float64,
 	}
 
 	marginals := make([]distribution.Continuous, nu)
-	for i, tid := range tasks {
-		marginals[i] = marginalizer(lower[tid], upper[tid])
+	for i := uint(0); i < nu; i++ {
+		marginals[i] = marginalizer(0.0, 1.0)
 	}
 
 	return &base{
@@ -102,30 +102,22 @@ func (self *base) Mapping() (uint, uint) {
 
 func (self *base) Evaluate(ω []float64) float64 {
 	nu, nz := self.nu, self.nz
+	lower, upper := self.lower, self.upper
 
 	if nu != nz {
 		panic("model-order reduction is not supported")
 	}
 
+	amplitude := 1.0
+
 	u := make([]float64, nu)
-
-	// Dependent desired to dependent uniform
 	for i, tid := range self.tasks {
-		u[i] = self.marginals[i].Cumulate(ω[tid])
-	}
-
-	// Dependent uniform to dependent Gaussian
-	for i := range u {
-		u[i] = gaussian.Invert(u[i])
+		ω := (ω[tid] - lower[tid]) / (upper[tid] - lower[tid])
+		u[i] = gaussian.Invert(self.marginals[i].Cumulate(ω))
+		amplitude *= self.marginals[i].Weigh(ω)
 	}
 
 	exponent := -0.5 * quadratic(self.correlation.P, u, nu)
-
-	amplitude := 1.0
-	for i, tid := range self.tasks {
-		amplitude *= self.marginals[i].Weigh(ω[tid])
-	}
-
 	normalization := math.Sqrt(self.correlation.detR)
 
 	return amplitude * math.Exp(exponent) / normalization
@@ -133,13 +125,15 @@ func (self *base) Evaluate(ω []float64) float64 {
 
 func (self *base) Forward(ω []float64) []float64 {
 	nu, nz := self.nu, self.nz
+	lower, upper := self.lower, self.upper
 
 	z := make([]float64, nz)
 	u := make([]float64, nu)
 
 	// Dependent desired to dependent uniform
 	for i, tid := range self.tasks {
-		u[i] = self.marginals[i].Cumulate(ω[tid])
+		ω := (ω[tid] - lower[tid]) / (upper[tid] - lower[tid])
+		u[i] = self.marginals[i].Cumulate(ω)
 	}
 
 	// Dependent uniform to dependent Gaussian
@@ -160,8 +154,9 @@ func (self *base) Forward(ω []float64) []float64 {
 
 func (self *base) Backward(z []float64) []float64 {
 	nu, nz := self.nu, self.nz
+	lower, upper := self.lower, self.upper
 
-	ω := append([]float64(nil), self.lower...)
+	ω := append([]float64(nil), lower...)
 	n := make([]float64, nz)
 
 	// Independent uniform to independent Gaussian
@@ -179,7 +174,7 @@ func (self *base) Backward(z []float64) []float64 {
 
 	// Dependent uniform to dependent desired
 	for i, tid := range self.tasks {
-		ω[tid] = self.marginals[i].Invert(u[i])
+		ω[tid] += (upper[tid] - lower[tid]) * self.marginals[i].Invert(u[i])
 	}
 
 	return ω

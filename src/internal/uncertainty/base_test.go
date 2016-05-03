@@ -10,8 +10,8 @@ import (
 func TestBaseForwardInvert(t *testing.T) {
 	uncertainty := &base{
 		tasks: []uint{0, 1, 2},
-		lower: []float64{42.0, 42.0, 42.0},
-		upper: []float64{42.0, 42.0, 42.0},
+		lower: []float64{10.0, 20.0, 30.0},
+		upper: []float64{20.0, 30.0, 40.0},
 
 		nt: 3,
 		nu: 3,
@@ -29,9 +29,9 @@ func TestBaseForwardInvert(t *testing.T) {
 			},
 		},
 		marginals: []distribution.Continuous{
-			distribution.NewUniform(10.0, 20.0),
-			distribution.NewUniform(20.0, 30.0),
-			distribution.NewUniform(30.0, 40.0),
+			distribution.NewUniform(0.0, 1.0),
+			distribution.NewUniform(0.0, 1.0),
+			distribution.NewUniform(0.0, 1.0),
 		},
 	}
 

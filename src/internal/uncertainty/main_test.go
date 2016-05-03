@@ -16,15 +16,20 @@ func TestNewAleatory(t *testing.T) {
 
 	config, _ := config.New("fixtures/001_010.json")
 	system, _ := system.New(&config.System)
-	reference := system.ReferenceTime()
 	uncertainty, _ := NewAleatory(system, &config.Uncertainty)
-	base := uncertainty.(*base)
 
+	point := make([]float64, nt)
 	for i := 0; i < nt; i++ {
-		min, max := (1.0-σ)*reference[i], (1.0+σ)*reference[i]
-		assert.EqualWithin(base.marginals[i].Invert(0.0), min, 1e-15, t)
-		assert.EqualWithin(base.marginals[i].Invert(1.0), max, 1e-15, t)
+		point[i] = 0.5
 	}
+
+	assert.EqualWithin(uncertainty.Backward(point), []float64{
+		3.1402438661763954e-02, 1.7325483399593899e-02,
+		2.7071067811865485e-02, 3.1402438661763954e-02,
+		4.0065180361560912e-02, 3.2485281374238568e-02,
+		1.7325483399593888e-02, 2.5988225099390850e-02,
+		1.6242640687119302e-02, 3.2485281374238568e-02,
+	}, 1e-15, t)
 }
 
 func TestNewEpistemic(t *testing.T) {
