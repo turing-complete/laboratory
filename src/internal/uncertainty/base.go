@@ -135,7 +135,6 @@ func (self *base) Evaluate(ω []float64) float64 {
 	for i, tid := range self.tasks {
 		amplitude *= self.marginals[i].Weigh(ω[tid])
 	}
-	amplitude = math.Abs(amplitude)
 
 	normalization := math.Sqrt(self.correlation.detR)
 
