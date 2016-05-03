@@ -4,6 +4,7 @@ import (
 	"errors"
 	"math"
 
+	"github.com/ready-steady/infinity"
 	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability/distribution"
 	"github.com/turing-complete/laboratory/src/internal/config"
@@ -117,7 +118,7 @@ func (self *base) Evaluate(ω []float64) float64 {
 		amplitude *= self.marginals[i].Weigh(ω)
 	}
 
-	exponent := -0.5 * quadratic(self.correlation.P, u, nu)
+	exponent := -0.5 * infinity.Quadratic(self.correlation.P, u, nu)
 	normalization := math.Sqrt(self.correlation.detR)
 
 	return amplitude * math.Exp(exponent) / normalization
@@ -142,7 +143,7 @@ func (self *base) Forward(ω []float64) []float64 {
 	}
 
 	// Dependent Gaussian to independent Gaussian
-	n := multiply(self.correlation.D, u, nz, nu)
+	n := infinity.Linear(self.correlation.D, u, nz, nu)
 
 	// Independent Gaussian to independent uniform
 	for i := range n {
@@ -165,7 +166,7 @@ func (self *base) Backward(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	u := multiply(self.correlation.C, n, nu, nz)
+	u := infinity.Linear(self.correlation.C, n, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
