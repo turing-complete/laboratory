@@ -65,16 +65,6 @@ func newBase(system *system.System, reference []float64,
 		upper[tid] += config.Deviation * reference[tid]
 	}
 
-	if nu == 0 {
-		return &base{
-			tasks: tasks,
-			lower: lower,
-			upper: upper,
-
-			nt: nt,
-		}, nil
-	}
-
 	correlation, err := correlate(system, config, tasks)
 	if err != nil {
 		return nil, err
