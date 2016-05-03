@@ -85,4 +85,5 @@ func TestQuadratic(t *testing.T) {
 	test([]float64{1.0, infinity, 3.0}, -infinity)
 	test([]float64{1.0, 2.0, infinity}, infinity)
 	test([]float64{1.0, 1.0, infinity}, -2.0)
+	test([]float64{1.0, 1.0, -infinity}, -2.0)
 }

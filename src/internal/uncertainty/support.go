@@ -94,8 +94,8 @@ func quadratic(A, x []float64, m uint) float64 {
 			Fin += x[i] * fin
 			Inf += x[i] * inf
 		} else {
-			Inf += fin
-			INF += inf
+			Inf += signs[i] * fin
+			INF += signs[i] * inf
 		}
 	}
 	if INF != 0.0 {
