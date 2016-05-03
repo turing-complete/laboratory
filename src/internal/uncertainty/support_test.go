@@ -40,9 +40,7 @@ func TestMultiply(t *testing.T) {
 	}
 
 	test := func(x, y []float64) {
-		z := make([]float64, m)
-		multiply(A, x, z, m, n)
-		assert.Equal(z, y, t)
+		assert.Equal(multiply(A, x, m, n), y, t)
 	}
 
 	test(

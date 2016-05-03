@@ -42,11 +42,12 @@ func inspect(x []float64, m uint) (ok bool, signs []float64) {
 	return
 }
 
-func multiply(A, x, y []float64, m, n uint) {
+func multiply(A, x []float64, m, n uint) []float64 {
+	y := make([]float64, m)
 	ok, signs := inspect(x, n)
 	if ok {
 		matrix.Multiply(A, x, y, m, n, 1)
-		return
+		return y
 	}
 	for i := uint(0); i < m; i++ {
 		fin, inf := 0.0, 0.0
@@ -67,6 +68,7 @@ func multiply(A, x, y []float64, m, n uint) {
 			y[i] = fin
 		}
 	}
+	return y
 }
 
 func quadratic(A, x []float64, m uint) float64 {

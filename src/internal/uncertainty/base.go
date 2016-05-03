@@ -147,7 +147,6 @@ func (self *base) Forward(ω []float64) []float64 {
 
 	z := make([]float64, nz)
 	u := make([]float64, nu)
-	n := make([]float64, nz)
 
 	// Dependent desired to dependent uniform
 	for i, tid := range self.tasks {
@@ -160,7 +159,7 @@ func (self *base) Forward(ω []float64) []float64 {
 	}
 
 	// Dependent Gaussian to independent Gaussian
-	multiply(self.correlation.D, u, n, nz, nu)
+	n := multiply(self.correlation.D, u, nz, nu)
 
 	// Independent Gaussian to independent uniform
 	for i := range n {
@@ -175,7 +174,6 @@ func (self *base) Backward(z []float64) []float64 {
 
 	ω := append([]float64(nil), self.lower...)
 	n := make([]float64, nz)
-	u := make([]float64, nu)
 
 	// Independent uniform to independent Gaussian
 	for i := range n {
@@ -183,7 +181,7 @@ func (self *base) Backward(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	multiply(self.correlation.C, n, u, nu, nz)
+	u := multiply(self.correlation.C, n, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
