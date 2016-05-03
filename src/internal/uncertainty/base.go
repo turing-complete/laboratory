@@ -16,8 +16,8 @@ import (
 )
 
 var (
-	epsilon          = math.Nextafter(1.0, 2.0) - 1.0
-	standardGaussian = distribution.NewGaussian(0.0, 1.0)
+	epsilon  = math.Nextafter(1.0, 2.0) - 1.0
+	gaussian = distribution.NewGaussian(0.0, 1.0)
 )
 
 type base struct {
@@ -126,7 +126,7 @@ func (self *base) Evaluate(ω []float64) float64 {
 
 	// Dependent uniform to dependent Gaussian
 	for i := range u {
-		u[i] = standardGaussian.Invert(u[i])
+		u[i] = gaussian.Invert(u[i])
 	}
 
 	exponent := -0.5 * quadratic(self.correlation.P, u, nu)
@@ -154,7 +154,7 @@ func (self *base) Forward(ω []float64) []float64 {
 
 	// Dependent uniform to dependent Gaussian
 	for i := range u {
-		u[i] = standardGaussian.Invert(u[i])
+		u[i] = gaussian.Invert(u[i])
 	}
 
 	// Dependent Gaussian to independent Gaussian
@@ -162,7 +162,7 @@ func (self *base) Forward(ω []float64) []float64 {
 
 	// Independent Gaussian to independent uniform
 	for i := range n {
-		z[i] = standardGaussian.Cumulate(n[i])
+		z[i] = gaussian.Cumulate(n[i])
 	}
 
 	return z
@@ -176,7 +176,7 @@ func (self *base) Backward(z []float64) []float64 {
 
 	// Independent uniform to independent Gaussian
 	for i := range n {
-		n[i] = standardGaussian.Invert(z[i])
+		n[i] = gaussian.Invert(z[i])
 	}
 
 	// Independent Gaussian to dependent Gaussian
@@ -184,7 +184,7 @@ func (self *base) Backward(z []float64) []float64 {
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
-		u[i] = standardGaussian.Cumulate(u[i])
+		u[i] = gaussian.Cumulate(u[i])
 	}
 
 	// Dependent uniform to dependent desired
