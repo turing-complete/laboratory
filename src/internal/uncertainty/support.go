@@ -11,6 +11,19 @@ var (
 	infinity = math.Inf(1.0)
 )
 
+func inspect(x []float64, m uint) (bool, []float64) {
+	ok, signs := true, make([]float64, m)
+	for i := uint(0); i < m; i++ {
+		switch x[i] {
+		case -infinity:
+			ok, signs[i] = false, -1.0
+		case infinity:
+			ok, signs[i] = false, +1.0
+		}
+	}
+	return ok, signs
+}
+
 func invert(U, Λ []float64, m uint) ([]float64, error) {
 	T := make([]float64, m*m)
 	for i := uint(0); i < m; i++ {
@@ -27,19 +40,6 @@ func invert(U, Λ []float64, m uint) ([]float64, error) {
 	matrix.Multiply(U, T, I, m, m, m)
 
 	return I, nil
-}
-
-func inspect(x []float64, m uint) (bool, []float64) {
-	ok, signs := true, make([]float64, m)
-	for i := uint(0); i < m; i++ {
-		switch x[i] {
-		case -infinity:
-			ok, signs[i] = false, -1.0
-		case infinity:
-			ok, signs[i] = false, +1.0
-		}
-	}
-	return ok, signs
 }
 
 func multiply(A, x []float64, m, n uint) []float64 {
