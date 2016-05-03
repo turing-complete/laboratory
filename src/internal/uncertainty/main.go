@@ -7,6 +7,7 @@ import (
 
 type Uncertainty interface {
 	Mapping() (uint, uint)
+
 	Evaluate([]float64) float64
 	Forward([]float64) []float64
 	Backward([]float64) []float64

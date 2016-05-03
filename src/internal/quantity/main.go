@@ -13,6 +13,8 @@ import (
 type Quantity interface {
 	Dimensions() (uint, uint)
 	Compute([]float64, []float64)
+
+	Evaluate([]float64) float64
 	Forward([]float64) []float64
 	Backward([]float64) []float64
 }

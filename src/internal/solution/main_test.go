@@ -21,7 +21,7 @@ func TestSolutionCompute(t *testing.T) {
 	ni, no := quantity.Dimensions()
 
 	solution, _ := New(ni, no, &config.Solution)
-	surrogate := solution.Compute(quantity)
+	surrogate := solution.Compute(quantity, quantity)
 
 	nn := surrogate.Surrogate.Nodes
 

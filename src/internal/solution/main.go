@@ -58,9 +58,9 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 	}, nil
 }
 
-func (self *Solution) Compute(quantity quantity.Quantity) *Surrogate {
-	strategy := newStrategy(quantity, self.guide, self.config)
-	surrogate := self.Algorithm.Compute(quantity.Compute, strategy)
+func (self *Solution) Compute(target, reference quantity.Quantity) *Surrogate {
+	strategy := newStrategy(target, reference, self.guide, self.config)
+	surrogate := self.Algorithm.Compute(target.Compute, strategy)
 	return &Surrogate{
 		Surrogate:  *surrogate,
 		Statistics: Statistics{strategy.active},
