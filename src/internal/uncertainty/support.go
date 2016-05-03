@@ -76,7 +76,7 @@ func quadratic(A, x []float64, m uint) float64 {
 		matrix.Multiply(A, x, y, m, m, 1)
 		return matrix.Dot(x, y, m)
 	}
-	Fin, Inf, InfSquared := 0.0, 0.0, 0.0
+	Fin, Inf, INF := 0.0, 0.0, 0.0
 	for i := uint(0); i < m; i++ {
 		fin, inf := 0.0, 0.0
 		for j := uint(0); j < m; j++ {
@@ -95,11 +95,11 @@ func quadratic(A, x []float64, m uint) float64 {
 			Inf += x[i] * inf
 		} else {
 			Inf += fin
-			InfSquared += inf
+			INF += inf
 		}
 	}
-	if InfSquared != 0.0 {
-		return InfSquared * infinity
+	if INF != 0.0 {
+		return INF * infinity
 	} else if Inf != 0.0 {
 		return Inf * infinity
 	} else {
