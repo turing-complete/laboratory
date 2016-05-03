@@ -72,14 +72,14 @@ func newBase(system *system.System, reference []float64,
 
 	nz := uint(len(correlation.C)) / nu
 
-	marginalizer, err := idistribution.Parse(config.Distribution)
+	marginal, err := idistribution.Parse(config.Distribution)
 	if err != nil {
 		return nil, err
 	}
 
 	marginals := make([]distribution.Continuous, nu)
 	for i := uint(0); i < nu; i++ {
-		marginals[i] = marginalizer(0.0, 1.0)
+		marginals[i] = marginal
 	}
 
 	return &base{

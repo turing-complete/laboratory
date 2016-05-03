@@ -17,18 +17,14 @@ const (
 	uniformFamily
 )
 
-func Parse(line string) (func(float64, float64) distribution.Continuous, error) {
+func Parse(line string) (distribution.Continuous, error) {
 	family, params := parse(line)
 
 	switch family {
 	case betaFamily:
-		return func(min, max float64) distribution.Continuous {
-			return distribution.NewBeta(params[0], params[1], min, max)
-		}, nil
+		return distribution.NewBeta(params[0], params[1], 0.0, 1.0), nil
 	case uniformFamily:
-		return func(min, max float64) distribution.Continuous {
-			return distribution.NewUniform(min, max)
-		}, nil
+		return distribution.NewUniform(0.0, 1.0), nil
 	default:
 		return nil, errors.New("the marginal distribution is unknown")
 	}
