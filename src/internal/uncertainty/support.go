@@ -29,22 +29,22 @@ func invert(U, Λ []float64, m uint) ([]float64, error) {
 	return I, nil
 }
 
-func inspect(x []float64, m uint) (ok bool, signs []float64) {
-	ok, signs = true, make([]float64, m)
+func inspect(x []float64, m uint) (bool, []float64) {
+	ok, signs := true, make([]float64, m)
 	for i := uint(0); i < m; i++ {
 		switch x[i] {
 		case -infinity:
 			ok, signs[i] = false, -1.0
 		case infinity:
-			ok, signs[i] = false, 1.0
+			ok, signs[i] = false, +1.0
 		}
 	}
-	return
+	return ok, signs
 }
 
 func multiply(A, x []float64, m, n uint) []float64 {
 	y := make([]float64, m)
-	ok, signs := inspect(x, n)
+	ok, s := inspect(x, n)
 	if ok {
 		matrix.Multiply(A, x, y, m, n, 1)
 		return y
@@ -56,10 +56,10 @@ func multiply(A, x []float64, m, n uint) []float64 {
 			if a == 0.0 {
 				continue
 			}
-			if signs[j] == 0.0 {
+			if s[j] == 0.0 {
 				fin += a * x[j]
 			} else {
-				inf += a * signs[j]
+				inf += a * s[j]
 			}
 		}
 		if inf != 0.0 {
@@ -72,7 +72,7 @@ func multiply(A, x []float64, m, n uint) []float64 {
 }
 
 func quadratic(A, x []float64, m uint) float64 {
-	ok, signs := inspect(x, m)
+	ok, s := inspect(x, m)
 	if ok {
 		y := make([]float64, m)
 		matrix.Multiply(A, x, y, m, m, 1)
@@ -86,18 +86,18 @@ func quadratic(A, x []float64, m uint) float64 {
 			if a == 0.0 {
 				continue
 			}
-			if signs[j] == 0.0 {
+			if s[j] == 0.0 {
 				fin += a * x[j]
 			} else {
-				inf += a * signs[j]
+				inf += a * s[j]
 			}
 		}
-		if signs[i] == 0.0 {
+		if s[i] == 0.0 {
 			Fin += x[i] * fin
 			Inf += x[i] * inf
 		} else {
-			Inf += signs[i] * fin
-			INF += signs[i] * inf
+			Inf += s[i] * fin
+			INF += s[i] * inf
 		}
 	}
 	if INF != 0.0 {
