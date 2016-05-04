@@ -7,11 +7,11 @@ import (
 	"github.com/ready-steady/infinity"
 	"github.com/ready-steady/linear/matrix"
 	"github.com/ready-steady/probability/distribution"
+	"github.com/ready-steady/statistics/correlation"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 
-	scorrelation "github.com/ready-steady/statistics/correlation"
 	icorrelation "github.com/turing-complete/laboratory/src/internal/correlation"
 	idistribution "github.com/turing-complete/laboratory/src/internal/distribution"
 )
@@ -30,17 +30,26 @@ type base struct {
 	nu uint
 	nz uint
 
-	correlation *correlation
-	marginals   []distribution.Continuous
+	copula    *copula
+	marginals []distribution.Continuous
 }
 
-type correlation struct {
+// x(z) = F^(-1)(u(z))
+// u(z) = Φ(C * Φ^(-1)(z))
+//
+// z(x) = Φ(D * Φ^(-1)(u(x)))
+// u(x) = F(x)
+//
+// f(u) = exp(-0.5 * Φ^(-1)(u)^T * (R^(-1) - I) * Φ^(-1)(u)) / sqrt(det(R))
+//      = exp(-0.5 * Φ^(-1)(u)^T * P * Φ^(-1)(u)) / N
+//
+// f(x) = prod(f(x)) * f(F(x))
+type copula struct {
 	R []float64
-	C []float64 // x = C * z
-	D []float64 // z = D * x
-	P []float64 // R^(-1) - I
-
-	detR float64
+	C []float64
+	D []float64
+	P []float64
+	N float64
 }
 
 func newBase(system *system.System, reference []float64,
@@ -66,12 +75,12 @@ func newBase(system *system.System, reference []float64,
 		upper[tid] += config.Deviation * reference[tid]
 	}
 
-	correlation, err := correlate(system, config, tasks)
+	copula, err := correlate(system, config, tasks)
 	if err != nil {
 		return nil, err
 	}
 
-	nz := uint(len(correlation.C)) / nu
+	nz := uint(len(copula.C)) / nu
 
 	marginal, err := idistribution.Parse(config.Distribution)
 	if err != nil {
@@ -92,8 +101,8 @@ func newBase(system *system.System, reference []float64,
 		nu: nu,
 		nz: nz,
 
-		correlation: correlation,
-		marginals:   marginals,
+		copula:    copula,
+		marginals: marginals,
 	}, nil
 }
 
@@ -109,19 +118,16 @@ func (self *base) Evaluate(ω []float64) float64 {
 		panic("model-order reduction is not supported")
 	}
 
-	amplitude := 1.0
-
-	u := make([]float64, nu)
+	amplitude, u := 1.0, make([]float64, nu)
 	for i, tid := range self.tasks {
 		ω := (ω[tid] - lower[tid]) / (upper[tid] - lower[tid])
 		u[i] = gaussian.Invert(self.marginals[i].Cumulate(ω))
 		amplitude *= self.marginals[i].Weigh(ω)
 	}
 
-	exponent := -0.5 * infinity.Quadratic(self.correlation.P, u, nu)
-	normalization := math.Sqrt(self.correlation.detR)
+	exponent := -0.5 * infinity.Quadratic(self.copula.P, u, nu)
 
-	return amplitude * math.Exp(exponent) / normalization
+	return amplitude * math.Exp(exponent) / self.copula.N
 }
 
 func (self *base) Forward(ω []float64) []float64 {
@@ -143,7 +149,7 @@ func (self *base) Forward(ω []float64) []float64 {
 	}
 
 	// Dependent Gaussian to independent Gaussian
-	n := infinity.Linear(self.correlation.D, u, nz, nu)
+	n := infinity.Linear(self.copula.D, u, nz, nu)
 
 	// Independent Gaussian to independent uniform
 	for i := range n {
@@ -166,7 +172,7 @@ func (self *base) Backward(z []float64) []float64 {
 	}
 
 	// Independent Gaussian to dependent Gaussian
-	u := infinity.Linear(self.correlation.C, n, nu, nz)
+	u := infinity.Linear(self.copula.C, n, nu, nz)
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
@@ -182,20 +188,19 @@ func (self *base) Backward(z []float64) []float64 {
 }
 
 func correlate(system *system.System, config *config.Uncertainty,
-	tasks []uint) (*correlation, error) {
+	tasks []uint) (*copula, error) {
 
 	ε := math.Sqrt(epsilon)
 
 	nu := uint(len(tasks))
 
 	if config.Correlation == 0.0 {
-		return &correlation{
+		return &copula{
 			R: matrix.Identity(nu),
 			C: matrix.Identity(nu),
 			D: matrix.Identity(nu),
 			P: make([]float64, nu*nu),
-
-			detR: 1.0,
+			N: 1.0,
 		}, nil
 	}
 	if config.Correlation < 0.0 {
@@ -207,7 +212,7 @@ func correlate(system *system.System, config *config.Uncertainty,
 
 	R := icorrelation.Compute(system.Application, tasks, config.Correlation)
 
-	C, D, U, Λ, err := scorrelation.Decompose(R, nu, config.Variance, ε)
+	C, D, U, Λ, err := correlation.Decompose(R, nu, config.Variance, ε)
 	if err != nil {
 		return nil, err
 	}
@@ -228,12 +233,11 @@ func correlate(system *system.System, config *config.Uncertainty,
 		P[i*nu+i] -= 1.0
 	}
 
-	return &correlation{
+	return &copula{
 		R: R,
 		C: C,
 		D: D,
 		P: P,
-
-		detR: detR,
+		N: math.Sqrt(detR),
 	}, nil
 }
