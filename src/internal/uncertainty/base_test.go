@@ -17,7 +17,7 @@ func TestBaseForwardInvert(t *testing.T) {
 		nu: 3,
 		nz: 2,
 
-		correlation: &correlation{
+		copula: &copula{
 			C: []float64{
 				1.0, 2.0, 3.0,
 				4.0, 5.0, 6.0,
