@@ -1,10 +1,8 @@
-language: go
 sudo: false
 
-addons:
-  apt:
-    packages:
-      - gfortran
+language: go
+go:
+  - 1.6
 
 install:
   - go get -d -t ./...
@@ -18,3 +16,8 @@ script:
 
 notifications:
   email: false
+
+addons:
+  apt:
+    packages:
+      - gfortran
