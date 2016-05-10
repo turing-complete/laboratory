@@ -65,6 +65,9 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 func (self *Solution) Compute(target, reference quantity.Quantity) *Surrogate {
 	strategy := newStrategy(target, reference, self.grid, self.config)
 	surrogate := self.Algorithm.Compute(target.Compute, strategy)
+	if !algorithm.Validate(surrogate.Indices, surrogate.Inputs, self.grid) {
+		panic("something went wrong")
+	}
 	return &Surrogate{
 		Surrogate:  *surrogate,
 		Statistics: Statistics{strategy.active},
