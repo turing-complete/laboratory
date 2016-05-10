@@ -1,18 +1,22 @@
 package solution
 
 import (
+	"fmt"
 	"log"
 	"math"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/quantity"
 
-	interpolation "github.com/ready-steady/adapt/algorithm/external"
+	interpolation "github.com/ready-steady/adapt/algorithm"
 	algorithm "github.com/ready-steady/adapt/algorithm/hybrid"
 )
 
 type strategy struct {
 	algorithm.Strategy
+
+	target    quantity.Quantity
+	reference quantity.Quantity
 
 	nmax uint
 

@@ -7,7 +7,7 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 
-	interpolation "github.com/ready-steady/adapt/algorithm/external"
+	interpolation "github.com/ready-steady/adapt/algorithm"
 )
 
 type Quantity interface {
