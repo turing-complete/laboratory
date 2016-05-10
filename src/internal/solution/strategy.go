@@ -4,15 +4,14 @@ import (
 	"log"
 	"math"
 
+	"github.com/ready-steady/adapt/algorithm"
+	"github.com/ready-steady/adapt/algorithm/hybrid"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/quantity"
-
-	interpolation "github.com/ready-steady/adapt/algorithm"
-	algorithm "github.com/ready-steady/adapt/algorithm/hybrid"
 )
 
 type strategy struct {
-	algorithm.Strategy
+	hybrid.Strategy
 
 	target    quantity.Quantity
 	reference quantity.Quantity
@@ -25,12 +24,12 @@ type strategy struct {
 	active []uint
 }
 
-func newStrategy(target, reference quantity.Quantity, guide algorithm.Guide,
+func newStrategy(target, reference quantity.Quantity, guide hybrid.Guide,
 	config *config.Solution) *strategy {
 
 	ni, no := target.Dimensions()
 	return &strategy{
-		Strategy: *algorithm.NewStrategy(ni, no, guide, config.MinLevel,
+		Strategy: *hybrid.NewStrategy(ni, no, guide, config.MinLevel,
 			config.MaxLevel, config.LocalError, config.TotalError),
 
 		target:    target,
@@ -40,7 +39,7 @@ func newStrategy(target, reference quantity.Quantity, guide algorithm.Guide,
 	}
 }
 
-func (self *strategy) Done(state *interpolation.State, surrogate *interpolation.Surrogate) bool {
+func (self *strategy) Done(state *algorithm.State, surrogate *algorithm.Surrogate) bool {
 	if self.ns == 0 {
 		log.Printf("%5s %15s %15s %15s\n", "Step", "Old Nodes", "New Nodes", "New Level")
 	}
@@ -66,7 +65,7 @@ func (self *strategy) Done(state *interpolation.State, surrogate *interpolation.
 	return false
 }
 
-func (self *strategy) Score(element *interpolation.Element) float64 {
+func (self *strategy) Score(element *algorithm.Element) float64 {
 	return maxAbsolute(element.Surplus) * element.Volume
 }
 

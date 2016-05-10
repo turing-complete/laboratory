@@ -3,20 +3,23 @@ package solution
 import (
 	"errors"
 
+	"github.com/ready-steady/adapt/algorithm"
+	"github.com/ready-steady/adapt/algorithm/hybrid"
+	"github.com/ready-steady/adapt/basis/polynomial"
+	"github.com/ready-steady/adapt/grid"
+	"github.com/ready-steady/adapt/grid/equidistant"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/quantity"
-
-	interpolation "github.com/ready-steady/adapt/algorithm"
-	algorithm "github.com/ready-steady/adapt/algorithm/hybrid"
-	basis "github.com/ready-steady/adapt/basis/polynomial"
-	grid "github.com/ready-steady/adapt/grid/equidistant"
 )
 
 type Solution struct {
-	algorithm.Algorithm
+	hybrid.Algorithm
 
 	config *config.Solution
-	guide  algorithm.Guide
+	grid   interface {
+		hybrid.Guide
+		grid.Parenter
+	}
 }
 
 type Statistics struct {
@@ -24,7 +27,7 @@ type Statistics struct {
 }
 
 type Surrogate struct {
-	interpolation.Surrogate
+	algorithm.Surrogate
 	Statistics
 }
 
@@ -35,31 +38,32 @@ func New(ni, no uint, config *config.Solution) (*Solution, error) {
 	}
 
 	var agrid interface {
-		algorithm.Grid
-		algorithm.Guide
+		hybrid.Grid
+		hybrid.Guide
+		grid.Parenter
 	}
-	var abasis algorithm.Basis
+	var abasis hybrid.Basis
 	switch config.Rule {
 	case "closed":
-		agrid = grid.NewClosed(ni)
-		abasis = basis.NewClosed(ni, power)
+		agrid = equidistant.NewClosed(ni)
+		abasis = polynomial.NewClosed(ni, power)
 	case "open":
-		agrid = grid.NewOpen(ni)
-		abasis = basis.NewOpen(ni, power)
+		agrid = equidistant.NewOpen(ni)
+		abasis = polynomial.NewOpen(ni, power)
 	default:
 		return nil, errors.New("the interpolation rule is unknown")
 	}
 
 	return &Solution{
-		Algorithm: *algorithm.New(ni, no, agrid, abasis),
+		Algorithm: *hybrid.New(ni, no, agrid, abasis),
 
 		config: config,
-		guide:  agrid,
+		grid:   agrid,
 	}, nil
 }
 
 func (self *Solution) Compute(target, reference quantity.Quantity) *Surrogate {
-	strategy := newStrategy(target, reference, self.guide, self.config)
+	strategy := newStrategy(target, reference, self.grid, self.config)
 	surrogate := self.Algorithm.Compute(target.Compute, strategy)
 	return &Surrogate{
 		Surrogate:  *surrogate,
