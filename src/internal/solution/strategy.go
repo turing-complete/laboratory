@@ -39,30 +39,35 @@ func newStrategy(target, reference quantity.Quantity, guide hybrid.Guide,
 	}
 }
 
-func (self *strategy) Done(state *algorithm.State, surrogate *algorithm.Surrogate) bool {
+func (self *strategy) Next(state *algorithm.State,
+	surrogate *algorithm.Surrogate) *algorithm.State {
+
 	if self.ns == 0 {
 		log.Printf("%5s %15s %15s %15s\n", "Step", "Old Nodes", "New Nodes", "New Level")
 	}
 
-	if self.Strategy.Done(state, surrogate) {
-		return true
-	}
-
 	ni := surrogate.Inputs
+
 	nn := uint(len(state.Indices)) / ni
-	if self.nn+nn > self.nmax {
-		return true
-	}
-
-	level := maxLevel(state.Lindices, ni)
-
-	log.Printf("%5d %15d %15d %15d\n", self.ns, self.nn, nn, level)
-
-	self.ns += 1
 	self.nn += nn
 	self.active = append(self.active, nn)
 
-	return false
+	state = self.Strategy.Next(state, surrogate)
+	if state == nil {
+		return nil
+	}
+
+	nn = uint(len(state.Indices)) / ni
+	if self.nn+nn > self.nmax {
+		return nil
+	}
+
+	level := maxLevel(state.Lindices, ni)
+	log.Printf("%5d %15d %15d %15d\n", self.ns, self.nn, nn, level)
+
+	self.ns += 1
+
+	return state
 }
 
 func (self *strategy) Score(element *algorithm.Element) float64 {
