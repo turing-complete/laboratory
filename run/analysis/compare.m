@@ -13,9 +13,9 @@ function compare(extended)
   count = cumsum(steps);
 
   for i = 1:nq
-    t = count(2:end);
-    o = oerror(:, 2:end, i);
-    p = perror(:, 2:end, i);
+    t = count;
+    o = oerror(:, :, i);
+    p = perror(:, :, i);
 
     Plot.figure(600 * nm, 400);
     for j = 1:nm
