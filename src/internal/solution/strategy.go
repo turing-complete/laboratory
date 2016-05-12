@@ -62,7 +62,7 @@ func (self *strategy) Next(state *algorithm.State,
 		return nil
 	}
 
-	level := maxLevel(state.Lindices, ni)
+	level := maxLevel(state.Lndices, ni)
 	log.Printf("%5d %15d %15d %15d\n", self.ns, self.nn, nn, level)
 
 	self.ns += 1
@@ -81,12 +81,12 @@ func maxAbsolute(data []float64) (value float64) {
 	return
 }
 
-func maxLevel(lindices []uint64, ni uint) (level uint64) {
-	nn := uint(len(lindices)) / ni
+func maxLevel(lndices []uint64, ni uint) (level uint64) {
+	nn := uint(len(lndices)) / ni
 	for i := uint(0); i < nn; i++ {
 		l := uint64(0)
 		for j := uint(0); j < ni; j++ {
-			l += lindices[i*ni+j]
+			l += lndices[i*ni+j]
 		}
 		if l > level {
 			level = l
