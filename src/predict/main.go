@@ -32,7 +32,7 @@ func main() {
 
 func function(config *config.Config) error {
 	const (
-		maxSteps = 10
+		maxSteps = 20
 	)
 
 	if len(*sampleSeed) > 0 {
