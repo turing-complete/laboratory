@@ -64,10 +64,12 @@ type Solution struct {
 	MaxLevel uint
 	// The maximum number of evaluations.
 	MaxEvaluations uint
-	// The tolerance of the local error.
-	LocalError float64
-	// The tolerance of the total error.
-	TotalError float64
+	// The tolerance of the absolute error.
+	AbsoluteError float64
+	// The tolerance of the relative error.
+	RelativeError float64
+	// The tolerance of the score error.
+	ScoreError float64
 }
 
 // Assessment is a configuration of the assessment procedure.

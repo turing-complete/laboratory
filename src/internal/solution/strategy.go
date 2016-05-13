@@ -29,8 +29,8 @@ func newStrategy(target, reference quantity.Quantity, guide hybrid.Guide,
 
 	ni, no := target.Dimensions()
 	return &strategy{
-		Strategy: *hybrid.NewStrategy(ni, no, guide, config.MinLevel,
-			config.MaxLevel, config.LocalError, config.TotalError),
+		Strategy: *hybrid.NewStrategy(ni, no, guide, config.MinLevel, config.MaxLevel,
+			config.AbsoluteError, config.RelativeError, config.ScoreError),
 
 		target:    target,
 		reference: reference,

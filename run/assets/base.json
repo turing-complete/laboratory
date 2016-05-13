@@ -13,13 +13,14 @@
 	},
 
 	"solution": {
-		"rule": "closed",
+		"rule": "open",
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 20,
 		"maxEvaluations": 100000,
-		"localError": 1e-4,
-		"totalError": 1e-2
+		"absoluteError": 1e-3,
+		"relativeError": 1e-2,
+		"scoreError": 1e-4
 	},
 
 	"assessment": {
