@@ -133,6 +133,10 @@ func function(config *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
+		if !asolution.Validate(&s) {
+			panic("something went wrong")
+		}
+
 		values = append(values, asolution.Evaluate(&s, epoints)...)
 	}
 
