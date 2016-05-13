@@ -17,6 +17,10 @@ import (
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
+const (
+	maxSteps = 20
+)
+
 var (
 	approximateFile = flag.String("approximate", "", "an output of `approximate` (required)")
 	outputFile      = flag.String("o", "", "an output file (required)")
@@ -31,10 +35,6 @@ func main() {
 }
 
 func function(config *config.Config) error {
-	const (
-		maxSteps = 20
-	)
-
 	if len(*sampleSeed) > 0 {
 		if number, err := strconv.ParseInt(*sampleSeed, 0, 64); err != nil {
 			return err
