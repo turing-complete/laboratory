@@ -18,6 +18,7 @@ func NewAleatory(system *system.System, config *config.Uncertainty) (Uncertainty
 }
 
 func NewEpistemic(system *system.System, config *config.Uncertainty) (Uncertainty, error) {
-	config.Distribution, config.Correlation, config.Variance = "Uniform()", 0.0, 1.0
-	return newBase(system, system.ReferenceTime(), config)
+	clone := *config
+	clone.Distribution, clone.Correlation, clone.Variance = "Uniform()", 0.0, 1.0
+	return newBase(system, system.ReferenceTime(), &clone)
 }
