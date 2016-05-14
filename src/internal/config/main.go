@@ -54,6 +54,9 @@ type Uncertainty struct {
 
 // Solution is a configuration of the approximation algorithm.
 type Solution struct {
+	// A flag to interpolate with the probability distribution of the uncertain
+	// parameters embedded into the surrogate.
+	Aleatory bool
 	// The quadrature rule, which is either “closed” or “open.”
 	Rule string
 	// The total order of polynomials.

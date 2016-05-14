@@ -13,6 +13,7 @@
 	},
 
 	"solution": {
+		"aleatory": false,
 		"rule": "open",
 		"power": 1,
 		"minLevel": 1,

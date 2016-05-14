@@ -71,15 +71,6 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
-	if err != nil {
-		return err
-	}
-	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
-	if err != nil {
-		return err
-	}
-
 	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
 	if err != nil {
 		return err
@@ -89,22 +80,36 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	nie, no := equantity.Dimensions()
-	nia, _ := aquantity.Dimensions()
+	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
+	if err != nil {
+		return err
+	}
+
+	var target, proxy quantity.Quantity
+	if config.Solution.Aleatory {
+		target, proxy = aquantity, aquantity // noop
+	} else {
+		target, proxy = equantity, aquantity
+	}
+
+	ni, no := target.Dimensions()
+	ns := config.Assessment.Samples
 
 	surrogate := new(solution.Surrogate)
 	if err = approximate.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
-	solution, err := solution.New(nie, no, &config.Solution)
+	solution, err := solution.New(ni, no, &config.Solution)
 	if err != nil {
 		return err
 	}
 
-	ns := config.Assessment.Samples
-
-	epoints, apoints := generate(equantity, aquantity, ns, config.Assessment.Seed)
+	points := generate(target, proxy, ns, config.Assessment.Seed)
 
 	log.Printf("Evaluating the surrogate model at %d points...\n", ns)
 	log.Printf("%5s %15s\n", "Step", "Nodes")
@@ -129,14 +134,14 @@ func function(config *config.Config) error {
 
 		s := *surrogate
 		s.Nodes = na
-		s.Indices = s.Indices[:na*nie]
+		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
 		if !solution.Validate(&s) {
 			panic("something went wrong")
 		}
 
-		values = append(values, solution.Evaluate(&s, epoints)...)
+		values = append(values, solution.Evaluate(&s, points)...)
 	}
 
 	nk, steps = k, steps[:k]
@@ -146,10 +151,7 @@ func function(config *config.Config) error {
 	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
-	if err := output.Put("epoints", epoints, nie, ns); err != nil {
-		return err
-	}
-	if err := output.Put("apoints", apoints, nia, ns); err != nil {
+	if err := output.Put("points", points, ni, ns); err != nil {
 		return err
 	}
 	if err := output.Put("steps", steps); err != nil {
@@ -162,16 +164,21 @@ func function(config *config.Config) error {
 	return nil
 }
 
-func generate(into, from quantity.Quantity, ns uint, seed int64) ([]float64, []float64) {
-	nii, _ := into.Dimensions()
-	nif, _ := from.Dimensions()
-
-	zi := make([]float64, nii*ns)
-	zf := support.Generate(nif, ns, seed)
-
+func generate(into, from quantity.Quantity, ns uint, seed int64) []float64 {
+	ni, _ := into.Dimensions()
+	nf, _ := from.Dimensions()
+	zi := make([]float64, ni*ns)
+	zf := support.Generate(nf, ns, seed)
 	for i := uint(0); i < ns; i++ {
-		copy(zi[i*nii:(i+1)*nii], into.Forward(from.Backward(zf[i*nif:(i+1)*nif])))
+		copy(zi[i*ni:(i+1)*ni], into.Forward(from.Backward(zf[i*nf:(i+1)*nf])))
 	}
-
-	return zi, zf
+	if into == from {
+		ε := 1e-15
+		for i := range zi {
+			if math.Abs(zi[i]-zf[i]) > ε {
+				panic("something went wrong")
+			}
+		}
+	}
+	return zi
 }

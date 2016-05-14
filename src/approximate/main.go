@@ -33,15 +33,6 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
-	if err != nil {
-		return err
-	}
-	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
-	if err != nil {
-		return err
-	}
-
 	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
 	if err != nil {
 		return err
@@ -51,7 +42,23 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	ni, no := equantity.Dimensions()
+	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
+	if err != nil {
+		return err
+	}
+
+	var target, reference quantity.Quantity
+	if config.Solution.Aleatory {
+		target, reference = aquantity, equantity
+	} else {
+		target, reference = equantity, aquantity
+	}
+
+	ni, no := target.Dimensions()
 
 	solution, err := solution.New(ni, no, &config.Solution)
 	if err != nil {
@@ -59,10 +66,15 @@ func function(config *config.Config) error {
 	}
 
 	log.Println("System", system)
-	log.Println("Quantity", equantity)
-	log.Println("Constructing a surrogate...")
+	log.Println("Quantity", target)
 
-	surrogate := solution.Compute(equantity, aquantity)
+	if config.Solution.Aleatory {
+		log.Println("Constructing an aleatory surrogate...")
+	} else {
+		log.Println("Constructing an epistemic surrogate...")
+	}
+
+	surrogate := solution.Compute(target, reference)
 
 	log.Println("Surrogate", surrogate)
 

@@ -8,10 +8,7 @@
 
 	"uncertainty": {
 		"tasks": "[0:end]",
-		"deviation": 0.2,
-		"distribution": "Beta(2, 5)",
-		"correlation": 5.0,
-		"variance": 1.0
+		"deviation": 0.2
 	},
 
 	"quantity": {
