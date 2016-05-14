@@ -9,11 +9,11 @@
 		"deviation": 0.2,
 		"distribution": "Beta(2, 5)",
 		"correlation": 5.0,
-		"variance": 1.0
+		"variance": 0.95
 	},
 
 	"solution": {
-		"aleatory": false,
+		"aleatory": true,
 		"rule": "open",
 		"power": 1,
 		"minLevel": 1,
