@@ -172,13 +172,5 @@ func generate(into, from quantity.Quantity, ns uint, seed int64) []float64 {
 	for i := uint(0); i < ns; i++ {
 		copy(zi[i*ni:(i+1)*ni], into.Forward(from.Backward(zf[i*nf:(i+1)*nf])))
 	}
-	if into == from {
-		ε := 1e-15
-		for i := range zi {
-			if math.Abs(zi[i]-zf[i]) > ε {
-				panic("something went wrong")
-			}
-		}
-	}
 	return zi
 }
