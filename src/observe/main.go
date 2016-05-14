@@ -60,12 +60,11 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	uncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
+	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
-
-	aquantity, err := quantity.New(system, uncertainty, &config.Quantity)
+	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
