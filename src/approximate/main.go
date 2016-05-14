@@ -33,22 +33,20 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
-	if err != nil {
-		return err
-	}
-
-	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
-	if err != nil {
-		return err
-	}
-
 	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
-
 	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
+	if err != nil {
+		return err
+	}
+
+	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
