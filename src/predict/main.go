@@ -146,7 +146,10 @@ func function(config *config.Config) error {
 	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
-	if err := output.Put("points", apoints, nia, ns); err != nil {
+	if err := output.Put("epoints", epoints, nie, ns); err != nil {
+		return err
+	}
+	if err := output.Put("apoints", apoints, nia, ns); err != nil {
 		return err
 	}
 	if err := output.Put("steps", steps); err != nil {
