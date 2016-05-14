@@ -89,14 +89,15 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	ni, no := equantity.Dimensions()
+	nie, no := equantity.Dimensions()
+	nia, _ := aquantity.Dimensions()
 
 	surrogate := new(solution.Surrogate)
 	if err = approximate.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
-	solution, err := solution.New(ni, no, &config.Solution)
+	solution, err := solution.New(nie, no, &config.Solution)
 	if err != nil {
 		return err
 	}
@@ -128,7 +129,7 @@ func function(config *config.Config) error {
 
 		s := *surrogate
 		s.Nodes = na
-		s.Indices = s.Indices[:na*ni]
+		s.Indices = s.Indices[:na*nie]
 		s.Surpluses = s.Surpluses[:na*no]
 
 		if !solution.Validate(&s) {
@@ -145,7 +146,7 @@ func function(config *config.Config) error {
 	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}
-	if err := output.Put("points", apoints, ni, ns); err != nil {
+	if err := output.Put("points", apoints, nia, ns); err != nil {
 		return err
 	}
 	if err := output.Put("steps", steps); err != nil {
