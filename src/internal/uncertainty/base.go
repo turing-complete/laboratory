@@ -17,8 +17,8 @@ import (
 )
 
 var (
-	epsilon  = math.Nextafter(1.0, 2.0) - 1.0
-	gaussian = distribution.NewGaussian(0.0, 1.0)
+	eigenEpsilon     = 1e-10
+	standardGaussian = distribution.NewGaussian(0.0, 1.0)
 )
 
 type base struct {
@@ -121,7 +121,7 @@ func (self *base) Evaluate(ω []float64) float64 {
 	amplitude, u := 1.0, make([]float64, nu)
 	for i, tid := range self.tasks {
 		ω := (ω[tid] - lower[tid]) / (upper[tid] - lower[tid])
-		u[i] = gaussian.Invert(self.marginals[i].Cumulate(ω))
+		u[i] = standardGaussian.Invert(self.marginals[i].Cumulate(ω))
 		amplitude *= self.marginals[i].Weigh(ω)
 	}
 
@@ -145,7 +145,7 @@ func (self *base) Forward(ω []float64) []float64 {
 
 	// Dependent uniform to dependent Gaussian
 	for i := range u {
-		u[i] = gaussian.Invert(u[i])
+		u[i] = standardGaussian.Invert(u[i])
 	}
 
 	// Dependent Gaussian to independent Gaussian
@@ -153,7 +153,7 @@ func (self *base) Forward(ω []float64) []float64 {
 
 	// Independent Gaussian to independent uniform
 	for i := range n {
-		z[i] = gaussian.Cumulate(n[i])
+		z[i] = standardGaussian.Cumulate(n[i])
 	}
 
 	return z
@@ -168,7 +168,7 @@ func (self *base) Backward(z []float64) []float64 {
 
 	// Independent uniform to independent Gaussian
 	for i := range n {
-		n[i] = gaussian.Invert(z[i])
+		n[i] = standardGaussian.Invert(z[i])
 	}
 
 	// Independent Gaussian to dependent Gaussian
@@ -176,7 +176,7 @@ func (self *base) Backward(z []float64) []float64 {
 
 	// Dependent Gaussian to dependent uniform
 	for i := range u {
-		u[i] = gaussian.Cumulate(u[i])
+		u[i] = standardGaussian.Cumulate(u[i])
 	}
 
 	// Dependent uniform to dependent desired
@@ -189,8 +189,6 @@ func (self *base) Backward(z []float64) []float64 {
 
 func correlate(system *system.System, config *config.Uncertainty,
 	tasks []uint) (*copula, error) {
-
-	ε := math.Sqrt(epsilon)
 
 	nu := uint(len(tasks))
 
@@ -212,7 +210,7 @@ func correlate(system *system.System, config *config.Uncertainty,
 
 	R := icorrelation.Compute(system.Application, tasks, config.Correlation)
 
-	C, D, U, Λ, err := correlation.Decompose(R, nu, config.Variance, ε)
+	C, D, U, Λ, err := correlation.Decompose(R, nu, config.Variance, eigenEpsilon)
 	if err != nil {
 		return nil, err
 	}
@@ -233,11 +231,5 @@ func correlate(system *system.System, config *config.Uncertainty,
 		P[i*nu+i] -= 1.0
 	}
 
-	return &copula{
-		R: R,
-		C: C,
-		D: D,
-		P: P,
-		N: math.Sqrt(detR),
-	}, nil
+	return &copula{R: R, C: C, D: D, P: P, N: math.Sqrt(detR)}, nil
 }
