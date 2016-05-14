@@ -161,11 +161,11 @@ func function(config *config.Config) error {
 }
 
 func generate(into, from quantity.Quantity, ns uint, seed int64) ([]float64, []float64) {
-	nif, _ := from.Dimensions()
 	nii, _ := into.Dimensions()
+	nif, _ := from.Dimensions()
 
-	zf := support.Generate(nif, ns, seed)
 	zi := make([]float64, nii*ns)
+	zf := support.Generate(nif, ns, seed)
 
 	for i := uint(0); i < ns; i++ {
 		copy(zi[i*nii:(i+1)*nii], into.Forward(from.Backward(zf[i*nif:(i+1)*nif])))
