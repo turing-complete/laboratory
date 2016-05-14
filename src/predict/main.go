@@ -71,35 +71,33 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
-	if err != nil {
-		return err
-	}
-
 	euncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
 	if err != nil {
 		return err
 	}
-
-	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
+	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
-	equantity, err := quantity.New(system, euncertainty, &config.Quantity)
+	auncertainty, err := uncertainty.NewAleatory(system, &config.Uncertainty)
+	if err != nil {
+		return err
+	}
+	aquantity, err := quantity.New(system, auncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
 
 	ni, no := equantity.Dimensions()
 
-	asolution, err := solution.New(ni, no, &config.Solution)
-	if err != nil {
+	surrogate := new(solution.Surrogate)
+	if err = approximate.Get("surrogate", surrogate); err != nil {
 		return err
 	}
 
-	surrogate := new(solution.Surrogate)
-	if err = approximate.Get("surrogate", surrogate); err != nil {
+	solution, err := solution.New(ni, no, &config.Solution)
+	if err != nil {
 		return err
 	}
 
@@ -133,11 +131,11 @@ func function(config *config.Config) error {
 		s.Indices = s.Indices[:na*ni]
 		s.Surpluses = s.Surpluses[:na*no]
 
-		if !asolution.Validate(&s) {
+		if !solution.Validate(&s) {
 			panic("something went wrong")
 		}
 
-		values = append(values, asolution.Evaluate(&s, epoints)...)
+		values = append(values, solution.Evaluate(&s, epoints)...)
 	}
 
 	nk, steps = k, steps[:k]
