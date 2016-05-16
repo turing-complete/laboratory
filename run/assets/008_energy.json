@@ -5,11 +5,7 @@
 		"floorplan": "assets/008.flp"
 	},
 
-
 	"quantity": {
 		"name": "total-energy"
-	},
-
-	"solution": {
 	}
 }
