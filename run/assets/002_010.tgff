@@ -1,34 +1,35 @@
-@HYPERPERIOD 600
+@HYPERPERIOD 500
 
 @APPLICATION 0 {
-	PERIOD 600
+	PERIOD 500
 
-	TASK t0_0	TYPE 9 
-	TASK t0_1	TYPE 3 
-	TASK t0_2	TYPE 4 
-	TASK t0_3	TYPE 9 
-	TASK t0_4	TYPE 9 
-	TASK t0_5	TYPE 5 
-	TASK t0_6	TYPE 3 
-	TASK t0_7	TYPE 6 
-	TASK t0_8	TYPE 8 
-	TASK t0_9	TYPE 5 
+	TASK t0_0	TYPE 5 
+	TASK t0_1	TYPE 8 
+	TASK t0_2	TYPE 6 
+	TASK t0_3	TYPE 5 
+	TASK t0_4	TYPE 6 
+	TASK t0_5	TYPE 7 
+	TASK t0_6	TYPE 7 
+	TASK t0_7	TYPE 4 
+	TASK t0_8	TYPE 3 
+	TASK t0_9	TYPE 6 
 
-	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 21
-	ARC a0_1 	FROM t0_1  TO  t0_2 TYPE 42
-	ARC a0_2 	FROM t0_1  TO  t0_3 TYPE 31
-	ARC a0_3 	FROM t0_2  TO  t0_4 TYPE 45
-	ARC a0_4 	FROM t0_4  TO  t0_5 TYPE 49
-	ARC a0_5 	FROM t0_4  TO  t0_6 TYPE 45
-	ARC a0_6 	FROM t0_4  TO  t0_7 TYPE 4
-	ARC a0_7 	FROM t0_4  TO  t0_8 TYPE 38
-	ARC a0_8 	FROM t0_3  TO  t0_9 TYPE 35
-	ARC a0_9 	FROM t0_7  TO  t0_9 TYPE 11
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 38
+	ARC a0_1 	FROM t0_0  TO  t0_2 TYPE 40
+	ARC a0_2 	FROM t0_0  TO  t0_3 TYPE 46
+	ARC a0_3 	FROM t0_0  TO  t0_4 TYPE 24
+	ARC a0_4 	FROM t0_1  TO  t0_5 TYPE 28
+	ARC a0_5 	FROM t0_4  TO  t0_6 TYPE 15
+	ARC a0_6 	FROM t0_5  TO  t0_7 TYPE 48
+	ARC a0_7 	FROM t0_4  TO  t0_7 TYPE 24
+	ARC a0_8 	FROM t0_6  TO  t0_8 TYPE 45
+	ARC a0_9 	FROM t0_7  TO  t0_8 TYPE 1
+	ARC a0_10 	FROM t0_2  TO  t0_9 TYPE 40
+	ARC a0_11 	FROM t0_6  TO  t0_9 TYPE 30
 
-	HARD_DEADLINE d0_0 ON t0_5 AT 500
-	HARD_DEADLINE d0_1 ON t0_6 AT 500
-	HARD_DEADLINE d0_2 ON t0_8 AT 500
-	HARD_DEADLINE d0_3 ON t0_9 AT 600
+	HARD_DEADLINE d0_0 ON t0_3 AT 200
+	HARD_DEADLINE d0_1 ON t0_8 AT 500
+	HARD_DEADLINE d0_2 ON t0_9 AT 400
 }
 
 
@@ -36,39 +37,39 @@
 
 @PROCESSOR 0 {
 # price
-  9.87968
+  7.51852
 
 #------------------------------------------------------------------------------
 # type version dynamic_power   execution_time
-  0    0       7.739           0.015
-  1    0       15.124          0.03
-  2    0       9.524           0.019
-  3    0       17.75           0.036
-  4    0       8.02            0.016
-  5    0       9.922           0.02
-  6    0       8.004           0.016
-  7    0       12.536          0.025
-  8    0       17.189          0.034
-  9    0       8.761           0.018
+  0    0       7.07            0.014
+  1    0       10.148          0.02
+  2    0       9.775           0.02
+  3    0       17.703          0.035
+  4    0       16.172          0.032
+  5    0       5.854           0.012
+  6    0       14.193          0.028
+  7    0       19.142          0.038
+  8    0       17.518          0.035
+  9    0       18.737          0.037
 }
 
 
 @PROCESSOR 1 {
 # price
-  9.42162
+  9.57011
 
 #------------------------------------------------------------------------------
 # type version dynamic_power   execution_time
-  0    0       5.668           0.011
-  1    0       10.494          0.021
-  2    0       6.661           0.013
-  3    0       12.807          0.026
-  4    0       5.81            0.012
-  5    0       6.906           0.014
-  6    0       5.802           0.012
-  7    0       8.638           0.017
-  8    0       12.246          0.024
-  9    0       6.213           0.012
+  0    0       7.013           0.014
+  1    0       10.058          0.02
+  2    0       9.689           0.019
+  3    0       17.596          0.035
+  4    0       16.054          0.032
+  5    0       5.817           0.012
+  6    0       14.073          0.028
+  7    0       19.045          0.038
+  8    0       17.41           0.035
+  9    0       18.637          0.037
 }
 
 

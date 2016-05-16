@@ -28,7 +28,7 @@ class Application
 
     puts("Generating #{@base}...")
 
-    seed = 0
+    seed = 42
     loop do
       File.open(output, 'w') do |file|
         template.complete(seed: seed, cores: @cores, tasks: @tasks) do |line|
@@ -88,7 +88,7 @@ class Template
 end
 
 if ARGV.length != 2
-  puts 'Usage: tgff <number of cores> <number of tasks>'
+  puts 'Usage: generate <number of cores> <number of tasks>'
   exit
 end
 

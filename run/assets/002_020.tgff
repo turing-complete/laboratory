@@ -1,61 +1,61 @@
-@HYPERPERIOD 800
+@HYPERPERIOD 600
 
 @APPLICATION 0 {
-	PERIOD 800
+	PERIOD 600
 
-	TASK t0_0	TYPE 14 
-	TASK t0_1	TYPE 3 
-	TASK t0_2	TYPE 1 
-	TASK t0_3	TYPE 15 
-	TASK t0_4	TYPE 1 
-	TASK t0_5	TYPE 6 
-	TASK t0_6	TYPE 1 
-	TASK t0_7	TYPE 9 
-	TASK t0_8	TYPE 12 
-	TASK t0_9	TYPE 9 
-	TASK t0_10	TYPE 0 
-	TASK t0_11	TYPE 14 
-	TASK t0_12	TYPE 8 
-	TASK t0_13	TYPE 15 
+	TASK t0_0	TYPE 10 
+	TASK t0_1	TYPE 12 
+	TASK t0_2	TYPE 7 
+	TASK t0_3	TYPE 1 
+	TASK t0_4	TYPE 14 
+	TASK t0_5	TYPE 14 
+	TASK t0_6	TYPE 2 
+	TASK t0_7	TYPE 6 
+	TASK t0_8	TYPE 4 
+	TASK t0_9	TYPE 11 
+	TASK t0_10	TYPE 4 
+	TASK t0_11	TYPE 3 
+	TASK t0_12	TYPE 14 
+	TASK t0_13	TYPE 1 
 	TASK t0_14	TYPE 8 
-	TASK t0_15	TYPE 4 
+	TASK t0_15	TYPE 16 
 	TASK t0_16	TYPE 8 
-	TASK t0_17	TYPE 12 
-	TASK t0_18	TYPE 14 
-	TASK t0_19	TYPE 8 
+	TASK t0_17	TYPE 11 
+	TASK t0_18	TYPE 18 
+	TASK t0_19	TYPE 16 
 
-	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 40
-	ARC a0_1 	FROM t0_1  TO  t0_2 TYPE 44
-	ARC a0_2 	FROM t0_1  TO  t0_3 TYPE 27
-	ARC a0_3 	FROM t0_2  TO  t0_4 TYPE 34
-	ARC a0_4 	FROM t0_4  TO  t0_5 TYPE 44
-	ARC a0_5 	FROM t0_4  TO  t0_6 TYPE 39
-	ARC a0_6 	FROM t0_4  TO  t0_7 TYPE 34
-	ARC a0_7 	FROM t0_4  TO  t0_8 TYPE 37
-	ARC a0_8 	FROM t0_3  TO  t0_9 TYPE 9
-	ARC a0_9 	FROM t0_7  TO  t0_9 TYPE 1
-	ARC a0_10 	FROM t0_5  TO  t0_10 TYPE 38
-	ARC a0_11 	FROM t0_3  TO  t0_10 TYPE 28
-	ARC a0_12 	FROM t0_5  TO  t0_11 TYPE 27
-	ARC a0_13 	FROM t0_2  TO  t0_11 TYPE 17
-	ARC a0_14 	FROM t0_11  TO  t0_12 TYPE 1
-	ARC a0_15 	FROM t0_2  TO  t0_12 TYPE 17
-	ARC a0_16 	FROM t0_9  TO  t0_13 TYPE 21
-	ARC a0_17 	FROM t0_9  TO  t0_14 TYPE 36
-	ARC a0_18 	FROM t0_9  TO  t0_15 TYPE 34
-	ARC a0_19 	FROM t0_12  TO  t0_16 TYPE 12
-	ARC a0_20 	FROM t0_10  TO  t0_17 TYPE 36
-	ARC a0_21 	FROM t0_10  TO  t0_18 TYPE 41
-	ARC a0_22 	FROM t0_14  TO  t0_19 TYPE 34
+	ARC a0_0 	FROM t0_0  TO  t0_1 TYPE 32
+	ARC a0_1 	FROM t0_0  TO  t0_2 TYPE 15
+	ARC a0_2 	FROM t0_1  TO  t0_2 TYPE 6
+	ARC a0_3 	FROM t0_2  TO  t0_3 TYPE 40
+	ARC a0_4 	FROM t0_0  TO  t0_3 TYPE 44
+	ARC a0_5 	FROM t0_0  TO  t0_4 TYPE 46
+	ARC a0_6 	FROM t0_3  TO  t0_5 TYPE 39
+	ARC a0_7 	FROM t0_3  TO  t0_6 TYPE 33
+	ARC a0_8 	FROM t0_3  TO  t0_7 TYPE 8
+	ARC a0_9 	FROM t0_5  TO  t0_8 TYPE 14
+	ARC a0_10 	FROM t0_3  TO  t0_8 TYPE 20
+	ARC a0_11 	FROM t0_4  TO  t0_9 TYPE 44
+	ARC a0_12 	FROM t0_4  TO  t0_10 TYPE 9
+	ARC a0_13 	FROM t0_5  TO  t0_11 TYPE 44
+	ARC a0_14 	FROM t0_10  TO  t0_12 TYPE 28
+	ARC a0_15 	FROM t0_9  TO  t0_13 TYPE 25
+	ARC a0_16 	FROM t0_9  TO  t0_14 TYPE 34
+	ARC a0_17 	FROM t0_9  TO  t0_15 TYPE 19
+	ARC a0_18 	FROM t0_6  TO  t0_16 TYPE 9
+	ARC a0_19 	FROM t0_6  TO  t0_17 TYPE 35
+	ARC a0_20 	FROM t0_14  TO  t0_18 TYPE 33
+	ARC a0_21 	FROM t0_13  TO  t0_19 TYPE 42
 
-	HARD_DEADLINE d0_0 ON t0_6 AT 500
-	HARD_DEADLINE d0_1 ON t0_8 AT 500
-	HARD_DEADLINE d0_2 ON t0_13 AT 700
-	HARD_DEADLINE d0_3 ON t0_15 AT 700
-	HARD_DEADLINE d0_4 ON t0_16 AT 800
-	HARD_DEADLINE d0_5 ON t0_17 AT 700
-	HARD_DEADLINE d0_6 ON t0_18 AT 700
-	HARD_DEADLINE d0_7 ON t0_19 AT 800
+	HARD_DEADLINE d0_0 ON t0_7 AT 500
+	HARD_DEADLINE d0_1 ON t0_8 AT 600
+	HARD_DEADLINE d0_2 ON t0_11 AT 600
+	HARD_DEADLINE d0_3 ON t0_12 AT 400
+	HARD_DEADLINE d0_4 ON t0_15 AT 400
+	HARD_DEADLINE d0_5 ON t0_16 AT 600
+	HARD_DEADLINE d0_6 ON t0_17 AT 600
+	HARD_DEADLINE d0_7 ON t0_18 AT 500
+	HARD_DEADLINE d0_8 ON t0_19 AT 500
 }
 
 
@@ -63,59 +63,59 @@
 
 @PROCESSOR 0 {
 # price
-  12.1147
+  5.90932
 
 #------------------------------------------------------------------------------
 # type version dynamic_power   execution_time
-  0    0       7.739           0.015
-  1    0       15.124          0.03
-  2    0       9.524           0.019
-  3    0       17.75           0.036
-  4    0       8.02            0.016
-  5    0       9.922           0.02
-  6    0       8.004           0.016
-  7    0       12.536          0.025
-  8    0       17.189          0.034
-  9    0       8.761           0.018
-  10   0       14.759          0.03
-  11   0       18.685          0.037
-  12   0       11.786          0.024
-  13   0       20.57           0.041
-  14   0       20.282          0.041
-  15   0       7.432           0.015
-  16   0       6.537           0.013
-  17   0       18.413          0.037
-  18   0       14.415          0.029
-  19   0       15.376          0.031
+  0    0       5.928           0.012
+  1    0       12.73           0.025
+  2    0       13.744          0.027
+  3    0       11.216          0.022
+  4    0       11.809          0.024
+  5    0       11.667          0.023
+  6    0       14.163          0.028
+  7    0       18.542          0.037
+  8    0       6.199           0.012
+  9    0       17.653          0.035
+  10   0       15.367          0.031
+  11   0       13.459          0.027
+  12   0       11.787          0.024
+  13   0       12.983          0.026
+  14   0       13.735          0.027
+  15   0       9.381           0.019
+  16   0       13.913          0.028
+  17   0       5.87            0.012
+  18   0       12.487          0.025
+  19   0       6.42            0.013
 }
 
 
 @PROCESSOR 1 {
 # price
-  5.95774
+  6.50574
 
 #------------------------------------------------------------------------------
 # type version dynamic_power   execution_time
-  0    0       5.668           0.011
-  1    0       10.494          0.021
-  2    0       6.661           0.013
-  3    0       12.807          0.026
-  4    0       5.81            0.012
-  5    0       6.906           0.014
-  6    0       5.802           0.012
-  7    0       8.638           0.017
-  8    0       12.246          0.024
-  9    0       6.213           0.012
-  10   0       10.226          0.02
-  11   0       13.843          0.028
-  12   0       8.122           0.016
-  13   0       16.34           0.033
-  14   0       15.94           0.032
-  15   0       5.521           0.011
-  16   0       5.162           0.01
-  17   0       13.527          0.027
-  18   0       9.975           0.02
-  19   0       10.686          0.021
+  0    0       8.508           0.017
+  1    0       18.06           0.036
+  2    0       18.959          0.038
+  3    0       16.464          0.033
+  4    0       17.13           0.034
+  5    0       16.975          0.034
+  6    0       19.298          0.039
+  7    0       22.338          0.045
+  8    0       9.018           0.018
+  9    0       21.757          0.044
+  10   0       20.186          0.04
+  11   0       18.718          0.037
+  12   0       17.106          0.034
+  13   0       18.295          0.037
+  14   0       18.952          0.038
+  15   0       14.018          0.028
+  16   0       19.098          0.038
+  17   0       8.395           0.017
+  18   0       17.826          0.036
+  19   0       9.417           0.019
 }
 
 

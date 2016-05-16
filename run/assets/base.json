@@ -19,9 +19,9 @@
 		"minLevel": 1,
 		"maxLevel": 20,
 		"maxEvaluations": 100000,
-		"absoluteError": 1e-3,
+		"absoluteError": 1e-2,
 		"relativeError": 1e-2,
-		"scoreError": 1e-4
+		"scoreError": 1e-2
 	},
 
 	"assessment": {
