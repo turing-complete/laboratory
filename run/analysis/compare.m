@@ -1,7 +1,10 @@
-function compare(extended)
+function compare(extended, printing)
+  if nargin < 1; extended = false; end
+  if nargin < 2; printing = false; end
+
   use('Interaction');
 
-  filename = locate('compare');
+  [filename, base] = locate('compare');
   steps = h5read(filename, '/steps');
   oerror = h5read(filename, '/observe');
   perror = h5read(filename, '/predict');
@@ -17,18 +20,40 @@ function compare(extended)
     o = oerror(:, :, i);
     p = perror(:, :, i);
 
-    Plot.figure(600 * nm, 400);
     for j = 1:nm
-      subplot(1, nm, j);
-      semilogy(t, transpose([o(j, :); p(j, :)]), 'Marker', 'o');
-      Plot.title(sprintf('Quantity %d, Metric %d', i, j));
-      Plot.label('Evaluations', 'log(Error)');
-      Plot.legend('Observe', 'Predict');
-      if length(t) > 1; Plot.limit(t); end
+      Plot.figure(3 * 204 + 20, 3 * 132 - 10);
+      semilogy(t, transpose([o(j, :); p(j, :)]), ...
+        'LineWidth', 2, ...
+        'Marker', 'o', ...
+        'MarkerSize', 14, ...
+        'MarkerFaceColor', 'auto'...
+      );
+      if length(t) > 1
+        Plot.limit([0; t]);
+      end
+      if printing
+        set(gca, ...
+          'FontName', 'Times New Roman', ...
+          'FontSize', 28, ...
+          'YMinorTick', 'off', ...
+          'YMinorGrid', 'off');
+        set(gcf, ...
+          'PaperType', 'A4', ...
+          'PaperOrientation', 'landscape', ...
+          'PaperPositionMode', 'auto');
+        print(sprintf('%s_%d_%d', base, i, j), ...
+          '-painters', ...
+          '-dpdf', ...
+          '-r400');
+      else
+        Plot.title(sprintf('Quantity %d, Metric %d', i, j));
+        Plot.label('Evaluations', 'log(Error)');
+        Plot.legend('Observe', 'Predict');
+      end
     end
   end
 
-  if ~exist('extended', 'var'); return; end
+  if ~extended; return; end
 
   use('Statistics');
 
