@@ -18,7 +18,7 @@ import (
 )
 
 const (
-	maxSteps = 20
+	maxSteps = 10
 )
 
 var (
