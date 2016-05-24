@@ -32,7 +32,7 @@ type System struct {
 // Quantity is a configuration of the quantity of interest.
 type Quantity struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
-	// “total-energy,” and “maximal-temperature.”
+	// “total-energy,” and “maximum-temperature.”
 	Name string
 	// The refinement threshold.
 	Refinement float64

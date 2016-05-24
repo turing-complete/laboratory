@@ -27,7 +27,7 @@ func New(system *system.System, uncertainty uncertainty.Uncertainty,
 		return newDelay(system, uncertainty, config)
 	case "total-energy":
 		return newEnergy(system, uncertainty, config)
-	case "maximal-temperature":
+	case "maximum-temperature":
 		return newTemperature(system, uncertainty, config)
 	default:
 		return nil, errors.New("the quantity is unknown")
