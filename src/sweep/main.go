@@ -42,12 +42,17 @@ func function(config *config.Config) error {
 		return err
 	}
 
-	uncertainty, err := uncertainty.NewEpistemic(system, &config.Uncertainty)
+	var anuncertainty uncertainty.Uncertainty
+	if config.Solution.Aleatory {
+		anuncertainty, err = uncertainty.NewAleatory(system, &config.Uncertainty)
+	} else {
+		anuncertainty, err = uncertainty.NewEpistemic(system, &config.Uncertainty)
+	}
 	if err != nil {
 		return err
 	}
 
-	aquantity, err := quantity.New(system, uncertainty, &config.Quantity)
+	aquantity, err := quantity.New(system, anuncertainty, &config.Quantity)
 	if err != nil {
 		return err
 	}
