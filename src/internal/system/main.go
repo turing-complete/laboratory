@@ -16,10 +16,11 @@ type System struct {
 	Application *system.Application
 
 	time        *time.List
+	schedule    *time.Schedule
 	power       *dynamic.Power
-	temperature *temperature.Fluid
+	temperature *temperature.Fixed
 
-	schedule *time.Schedule
+	Δt float64
 }
 
 func New(config *config.System) (*System, error) {
@@ -29,50 +30,44 @@ func New(config *config.System) (*System, error) {
 	}
 
 	time := time.NewList(platform, application)
+	schedule := time.Compute(system.NewProfile(platform, application).Mobility)
 	power := dynamic.New(platform, application)
-	temperature, err := temperature.NewFluid(&config.Config)
+	temperature, err := temperature.NewFixed(&config.Config)
 	if err != nil {
 		return nil, err
 	}
-
-	schedule := time.Compute(system.NewProfile(platform, application).Mobility)
 
 	return &System{
 		Platform:    platform,
 		Application: application,
 
 		time:        time,
+		schedule:    schedule,
 		power:       power,
 		temperature: temperature,
 
-		schedule: schedule,
+		Δt: config.TimeStep,
 	}, nil
+}
+
+func (self *System) ComputePower(schedule *time.Schedule) []float64 {
+	return self.power.Sample(schedule, self.Δt, uint(schedule.Span/self.Δt))
 }
 
 func (self *System) ComputeSchedule(duration []float64) *time.Schedule {
 	return self.time.Update(self.schedule, duration)
 }
 
-func (self *System) ComputeTemperature(P, ΔT []float64) []float64 {
-	return self.temperature.Compute(P, ΔT)
-}
-
-func (self *System) PartitionPower(schedule *time.Schedule,
-	ε float64) ([]float64, []float64) {
-
-	return self.power.Partition(schedule, ε)
-}
-
-func (self *System) ReferencePower() []float64 {
-	return self.power.Distribute(self.schedule)
+func (self *System) ComputeTemperature(P []float64) []float64 {
+	return self.temperature.Compute(P)
 }
 
 func (self *System) ReferenceTime() []float64 {
 	return self.schedule.Duration()
 }
 
-func (self *System) Span() float64 {
-	return self.schedule.Span
+func (self *System) TimeStep() float64 {
+	return self.Δt
 }
 
 func (self *System) String() string {

@@ -9,7 +9,7 @@ import (
 type energy struct {
 	base
 
-	power []float64
+	Δt float64
 }
 
 func newEnergy(system *system.System, uncertainty uncertainty.Uncertainty,
@@ -21,16 +21,16 @@ func newEnergy(system *system.System, uncertainty uncertainty.Uncertainty,
 		return nil, err
 	}
 	return &energy{
-		base:  base,
-		power: system.ReferencePower(),
+		base: base,
+		Δt:   system.TimeStep(),
 	}, nil
 }
 
 func (self *energy) Compute(node, value []float64) {
-	time := self.Backward(node)
-
+	P := self.system.ComputePower(self.system.ComputeSchedule(self.Backward(node)))
 	value[0] = 0.0
-	for i, power := range self.power {
-		value[0] += time[i] * power
+	for _, p := range P {
+		value[0] += p
 	}
+	value[0] *= self.Δt
 }
