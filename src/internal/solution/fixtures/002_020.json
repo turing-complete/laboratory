@@ -3,7 +3,8 @@
 		"floorplan": "fixtures/002.flp",
 		"configuration": "fixtures/hotspot.config",
 		"specification": "fixtures/002_020.tgff",
-		"ambience": 318.15
+		"ambience": 45.0,
+		"timeStep": 1e-6
 	},
 
 	"uncertainty": {
