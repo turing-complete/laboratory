@@ -4,12 +4,10 @@ import (
 	"errors"
 	"fmt"
 	"math"
-	"reflect"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
-	"unsafe"
 
 	"github.com/ready-steady/sequence"
 )
@@ -133,18 +131,4 @@ func ParseRealIndex(line string, min, max float64) ([]float64, error) {
 	}
 
 	return index, nil
-}
-
-func stringify(node []float64) string {
-	const (
-		sizeOfFloat64 = 8
-	)
-
-	var bytes []byte
-	header := (*reflect.SliceHeader)(unsafe.Pointer(&bytes))
-	header.Data = ((*reflect.SliceHeader)(unsafe.Pointer(&node))).Data
-	header.Cap = sizeOfFloat64 * len(node)
-	header.Len = header.Cap
-
-	return string(bytes)
 }
