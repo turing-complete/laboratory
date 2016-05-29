@@ -10,8 +10,6 @@ import (
 
 type temperature struct {
 	base
-
-	power []float64
 }
 
 func newTemperature(system *system.System, uncertainty uncertainty.Uncertainty,
@@ -22,10 +20,7 @@ func newTemperature(system *system.System, uncertainty uncertainty.Uncertainty,
 	if err != nil {
 		return nil, err
 	}
-	return &temperature{
-		base:  base,
-		power: system.ReferencePower(),
-	}, nil
+	return &temperature{base}, nil
 }
 
 func (self *temperature) Compute(node, value []float64) {
@@ -34,7 +29,7 @@ func (self *temperature) Compute(node, value []float64) {
 	)
 
 	schedule := self.system.ComputeSchedule(self.Backward(node))
-	P, ΔT := self.system.PartitionPower(self.power, schedule, ε)
+	P, ΔT := self.system.PartitionPower(schedule, ε)
 	Q := self.system.ComputeTemperature(P, ΔT)
 
 	value[0] = Q[0]

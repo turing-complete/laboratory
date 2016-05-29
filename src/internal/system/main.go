@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/turing-complete/laboratory/src/internal/config"
-	"github.com/turing-complete/power"
+	"github.com/turing-complete/power/dynamic"
 	"github.com/turing-complete/system"
 	"github.com/turing-complete/time"
 
@@ -16,7 +16,7 @@ type System struct {
 	Application *system.Application
 
 	time        *time.List
-	power       *power.Power
+	power       *dynamic.Power
 	temperature *temperature.Fluid
 
 	schedule *time.Schedule
@@ -29,7 +29,7 @@ func New(config *config.System) (*System, error) {
 	}
 
 	time := time.NewList(platform, application)
-	power := power.New(platform, application)
+	power := dynamic.New(platform, application)
 	temperature, err := temperature.NewFluid(&config.Config)
 	if err != nil {
 		return nil, err
@@ -57,10 +57,10 @@ func (self *System) ComputeTemperature(P, ΔT []float64) []float64 {
 	return self.temperature.Compute(P, ΔT)
 }
 
-func (self *System) PartitionPower(values []float64, schedule *time.Schedule,
+func (self *System) PartitionPower(schedule *time.Schedule,
 	ε float64) ([]float64, []float64) {
 
-	return power.Partition(values, schedule, ε)
+	return self.power.Partition(schedule, ε)
 }
 
 func (self *System) ReferencePower() []float64 {
