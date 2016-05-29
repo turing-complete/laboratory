@@ -24,10 +24,7 @@
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 20,
-		"maxEvaluations": 10000,
-		"absoluteError": 1e-3,
-		"relativeError": 1e-2,
-		"scoreError": 1e-5
+		"maxEvaluations": 10000
 	},
 
 	"assessment": {
