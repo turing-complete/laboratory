@@ -18,14 +18,16 @@ function process(file, name, extended, printing)
   nk = size(oerror, 2);
   nq = size(oerror, 3);
 
+  from = 1;
+
   for i = 1:nq
-    t = active;
     o = oerror(:, :, i);
     p = perror(:, :, i);
 
     for j = 1:nm
+      t = active(from:end);
       Plot.figure(3 * 204 + 20, 3 * 132 - 10);
-      semilogy(t, transpose([o(j, :); p(j, :)]), ...
+      semilogy(t, transpose([o(j, from:end); p(j, from:end)]), ...
         'LineWidth', 2, ...
         'Marker', 'o', ...
         'MarkerSize', 14, ...
