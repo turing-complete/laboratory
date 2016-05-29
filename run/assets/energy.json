@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/base.json",
+
+	"quantity": {
+		"name": "total-energy"
+	}
+}

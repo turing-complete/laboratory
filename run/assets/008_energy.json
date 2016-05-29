@@ -1,11 +1,7 @@
 {
-	"inherit": "assets/base.json",
+	"inherit": "assets/energy.json",
 
 	"system": {
 		"floorplan": "assets/008.flp"
-	},
-
-	"quantity": {
-		"name": "total-energy"
 	}
 }

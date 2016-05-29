@@ -1,11 +1,7 @@
 {
-	"inherit": "assets/base.json",
+	"inherit": "assets/delay.json",
 
 	"system": {
 		"floorplan": "assets/004.flp"
-	},
-
-	"quantity": {
-		"name": "end-to-end-delay"
 	}
 }

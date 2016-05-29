@@ -1,0 +1,7 @@
+{
+	"inherit": "assets/base.json",
+
+	"quantity": {
+		"name": "end-to-end-delay"
+	}
+}
