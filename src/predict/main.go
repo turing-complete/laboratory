@@ -4,9 +4,9 @@ import (
 	"errors"
 	"flag"
 	"log"
-	"math"
 	"strconv"
 
+	"github.com/ready-steady/choose"
 	"github.com/turing-complete/laboratory/src/internal/command"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/database"
@@ -116,26 +116,27 @@ func function(config *config.Config) error {
 
 	nk := uint(len(surrogate.Active))
 
-	steps := make([]uint, nk)
+	cumsum := append([]uint(nil), surrogate.Active...)
+	for i := uint(1); i < nk; i++ {
+		cumsum[i] += cumsum[i-1]
+	}
+	indices := choose.UniformUint(cumsum, maxSteps)
+
+	nk = uint(len(indices))
+
+	active := make([]uint, nk)
+	for i := uint(0); i < nk; i++ {
+		active[i] = cumsum[indices[i]]
+	}
+
 	values := make([]float64, 0, ns*no)
-
-	k, Δ := uint(0), float64(nk-1)/(math.Min(maxSteps, float64(nk))-1)
-
-	for i, na := uint(0), uint(0); i < nk; i++ {
-		na += surrogate.Active[i]
-		steps[k] += surrogate.Active[i]
-
-		if i != uint(float64(k)*Δ+0.5) {
-			continue
-		}
-		k++
-
-		log.Printf("%5d %15d\n", i, na)
+	for i := uint(0); i < nk; i++ {
+		log.Printf("%5d %15d\n", i, active[i])
 
 		s := *surrogate
-		s.Nodes = na
-		s.Indices = s.Indices[:na*ni]
-		s.Surpluses = s.Surpluses[:na*no]
+		s.Nodes = active[i]
+		s.Indices = s.Indices[:active[i]*ni]
+		s.Surpluses = s.Surpluses[:active[i]*no]
 
 		if !solution.Validate(&s) {
 			panic("something went wrong")
@@ -143,8 +144,6 @@ func function(config *config.Config) error {
 
 		values = append(values, solution.Evaluate(&s, points)...)
 	}
-
-	nk, steps = k, steps[:k]
 
 	log.Println("Done.")
 
@@ -154,10 +153,10 @@ func function(config *config.Config) error {
 	if err := output.Put("points", points, ni, ns); err != nil {
 		return err
 	}
-	if err := output.Put("steps", steps); err != nil {
+	if err := output.Put("values", values, no, ns, nk); err != nil {
 		return err
 	}
-	if err := output.Put("values", values, no, ns, nk); err != nil {
+	if err := output.Put("active", active); err != nil {
 		return err
 	}
 

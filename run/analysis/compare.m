@@ -5,7 +5,7 @@ function compare(extended, printing)
   use('Interaction');
 
   [filename, base] = locate('compare');
-  steps = h5read(filename, '/steps');
+  active = h5read(filename, '/active');
   oerror = h5read(filename, '/observe');
   perror = h5read(filename, '/predict');
 
@@ -13,10 +13,8 @@ function compare(extended, printing)
   nk = size(oerror, 2);
   nq = size(oerror, 3);
 
-  count = cumsum(steps);
-
   for i = 1:nq
-    t = count;
+    t = active;
     o = oerror(:, :, i);
     p = perror(:, :, i);
 
@@ -72,7 +70,7 @@ function compare(extended, printing)
   ns = size(pvalues, 2) / nk;
 
   pvalues = pvalues(:, (end-ns+1):end);
-  ovalues = ovalues(:, 1:count(end));
+  ovalues = ovalues(:, 1:active(end));
 
   for i = 1:nq
     plotDistributions('Reference', rvalues(i, :), 'Observe', ovalues(i, :));
