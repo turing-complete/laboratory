@@ -1,9 +1,8 @@
 {
 	"system": {
+		"specification": "fixtures/002_020.tgff",
 		"floorplan": "fixtures/002.flp",
 		"configuration": "fixtures/hotspot.config",
-		"specification": "fixtures/002_020.tgff",
-		"ambience": 318.15,
-		"timeStep": 1e-6
+		"timeStep": 1e-3
 	}
 }

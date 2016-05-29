@@ -2,7 +2,7 @@
 	"system": {
 		"configuration": "assets/hotspot.config",
 		"ambience": 318.15,
-		"timeStep": 1e-6,
+		"timeStep": 1e-5,
 		"staticPower": {
 			"contribution": 0.4,
 			"temperature": [318.15, 328.15, 338.15, 348.15, 358.15, 368.15, 378.15, 388.15, 398.15],
