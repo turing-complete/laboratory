@@ -1,8 +1,14 @@
 function approximate(grid)
   use('Interaction');
+  if nargin < 1; grid = []; end
+  files = locate('approximate');
+  for i = 1:length(files)
+    process(files{i}, grid);
+  end
+end
 
-  filename = locate('approximate');
-  surrogate = h5read(filename, '/surrogate');
+function process(file, grid)
+  surrogate = h5read(file, '/surrogate');
   surrogate = surrogate.Surrogate;
 
   ni = double(surrogate.Inputs);
@@ -25,7 +31,7 @@ function approximate(grid)
     warning('found %d nonunique indices out of %d', nn-nu, nn);
   end
 
-  if nargin == 0, return; end
+  if isempty(grid), return; end
 
   nodes = zeros(nn, ni);
   nodes(:) = feval(grid, indices);

@@ -1,8 +1,13 @@
 function observe()
   use('Interaction');
+  files = locate('observe');
+  for i = 1:length(files)
+    process(files{i}, grid);
+  end
+end
 
-  filename = locate('observe');
-  values = h5read(filename, '/values');
+function process(file)
+  values = h5read(file, '/values');
   values = values(1:2:end, :);
 
   [no, ns] = size(values);

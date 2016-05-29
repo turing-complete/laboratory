@@ -1,13 +1,18 @@
 function compare(extended, printing)
+  use('Interaction');
   if nargin < 1; extended = false; end
   if nargin < 2; printing = false; end
+  set(0, 'DefaultTextInterpreter', 'none');
+  [files, names] = locate('compare');
+  for i = 1:length(files)
+    process(files{i}, names{i}, extended, printing);
+  end
+end
 
-  use('Interaction');
-
-  [filename, base] = locate('compare');
-  active = h5read(filename, '/active');
-  oerror = h5read(filename, '/observe');
-  perror = h5read(filename, '/predict');
+function process(file, name, extended, printing)
+  active = h5read(file, '/active');
+  oerror = h5read(file, '/observe');
+  perror = h5read(file, '/predict');
 
   nm = size(oerror, 1);
   nk = size(oerror, 2);
@@ -39,12 +44,12 @@ function compare(extended, printing)
           'PaperType', 'A4', ...
           'PaperOrientation', 'landscape', ...
           'PaperPositionMode', 'auto');
-        print(sprintf('%s_%d_%d', base, i, j), ...
+        print(sprintf('%s_%d_%d', name, i, j), ...
           '-painters', ...
           '-dpdf', ...
           '-r400');
       else
-        Plot.title(sprintf('Quantity %d, Metric %d', i, j));
+        Plot.title(sprintf('Case %s, Quantity %d, Metric %d', name, i, j));
         Plot.label('Evaluations', 'log(Error)');
         Plot.legend('Observe', 'Predict');
       end

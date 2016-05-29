@@ -1,8 +1,13 @@
 function sweep()
-  filename = locate('sweep');
+  files = locate('sweep');
+  for i = 1:length(files)
+    process(files{i}, grid);
+  end
+end
 
-  points = h5read(filename, '/points');
-  values = h5read(filename, '/values');
+function process(file)
+  points = h5read(file, '/points');
+  values = h5read(file, '/values');
   values = values(1:2:end, :);
 
   ni = size(points, 1);
