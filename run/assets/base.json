@@ -1,7 +1,7 @@
 {
 	"system": {
 		"configuration": "assets/hotspot.config",
-		"ambience": 45.0,
+		"ambience": 318.15,
 		"timeStep": 1e-6
 	},
 
