@@ -24,8 +24,8 @@ func newTemperature(system *system.System, uncertainty uncertainty.Uncertainty,
 }
 
 func (self *temperature) Compute(node, value []float64) {
-	P := self.system.ComputePower(self.system.ComputeSchedule(self.Backward(node)))
-	Q := self.system.ComputeTemperature(P)
+	P := self.system.ComputeDynamicPower(self.system.ComputeSchedule(self.Backward(node)))
+	Q := self.system.ComputeTemperatureUpdatePower(P)
 	value[0] = 0.0
 	for _, q := range Q {
 		value[0] = math.Max(value[0], q)

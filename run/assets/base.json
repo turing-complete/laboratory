@@ -2,7 +2,12 @@
 	"system": {
 		"configuration": "assets/hotspot.config",
 		"ambience": 318.15,
-		"timeStep": 1e-6
+		"timeStep": 1e-6,
+		"staticPower": {
+			"contribution": 0.4,
+			"temperature": [318.15, 328.15, 338.15, 348.15, 358.15, 368.15, 378.15, 388.15, 398.15],
+			"coefficient": [0.5460, 0.6304, 0.7326, 0.8550, 1.0000, 1.1711, 1.3734, 1.6067, 1.8737]
+		}
 	},
 
 	"uncertainty": {
@@ -19,7 +24,7 @@
 		"power": 1,
 		"minLevel": 1,
 		"maxLevel": 20,
-		"maxEvaluations": 100000,
+		"maxEvaluations": 10000,
 		"absoluteError": 1e-3,
 		"relativeError": 1e-2,
 		"scoreError": 1e-5

@@ -12,6 +12,20 @@ import (
 	"github.com/ready-steady/sequence"
 )
 
+var (
+	emptyPattern = regexp.MustCompile(`^\[\s*]$`)
+
+	arrayPattern = regexp.MustCompile(`^\[([^:]*)]$`)
+	commaPattern = regexp.MustCompile(`\s*,\s*`)
+
+	rangePattern = regexp.MustCompile(`^\[(.*)\]$`)
+	colonPattern = regexp.MustCompile(`\s*:\s*`)
+)
+
+func Average(data []float64) float64 {
+	return Sum(data) / float64(len(data))
+}
+
 func Generate(ni, ns uint, seed int64) []float64 {
 	return sequence.NewSobol(ni, NewSeed(seed)).Next(ns)
 }
@@ -36,16 +50,6 @@ func ParseNaturalIndex(line string, min, max uint) ([]uint, error) {
 
 	return index, nil
 }
-
-var (
-	emptyPattern = regexp.MustCompile(`^\[\s*]$`)
-
-	arrayPattern = regexp.MustCompile(`^\[([^:]*)]$`)
-	commaPattern = regexp.MustCompile(`\s*,\s*`)
-
-	rangePattern = regexp.MustCompile(`^\[(.*)\]$`)
-	colonPattern = regexp.MustCompile(`\s*:\s*`)
-)
 
 func ParseRealIndex(line string, min, max float64) ([]float64, error) {
 	const (
@@ -131,4 +135,11 @@ func ParseRealIndex(line string, min, max float64) ([]float64, error) {
 	}
 
 	return index, nil
+}
+
+func Sum(data []float64) (Σ float64) {
+	for _, x := range data {
+		Σ += x
+	}
+	return
 }

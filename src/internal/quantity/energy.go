@@ -2,14 +2,13 @@ package quantity
 
 import (
 	"github.com/turing-complete/laboratory/src/internal/config"
+	"github.com/turing-complete/laboratory/src/internal/support"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 )
 
 type energy struct {
 	base
-
-	Δt float64
 }
 
 func newEnergy(system *system.System, uncertainty uncertainty.Uncertainty,
@@ -20,17 +19,11 @@ func newEnergy(system *system.System, uncertainty uncertainty.Uncertainty,
 	if err != nil {
 		return nil, err
 	}
-	return &energy{
-		base: base,
-		Δt:   system.TimeStep(),
-	}, nil
+	return &energy{base}, nil
 }
 
 func (self *energy) Compute(node, value []float64) {
-	P := self.system.ComputePower(self.system.ComputeSchedule(self.Backward(node)))
-	value[0] = 0.0
-	for _, p := range P {
-		value[0] += p
-	}
-	value[0] *= self.Δt
+	P := self.system.ComputeDynamicPower(self.system.ComputeSchedule(self.Backward(node)))
+	self.system.ComputeTemperatureUpdatePower(P)
+	value[0] = support.Sum(P) * self.system.TimeStep()
 }

@@ -13,16 +13,16 @@
 	},
 
 	"quantity": {
-		"name": "maximum-temperature"
+		"name": "end-to-end-delay"
 	},
 
 	"solution": {
 		"rule": "closed",
 		"power": 1,
-		"minLevel": 3,
-		"maxLevel": 3,
-		"maxEvaluations": 1000,
-		"absolutejError": 1e-2,
+		"minLevel": 2,
+		"maxLevel": 2,
+		"maxEvaluations": 10000,
+		"absoluteError": 1e-2,
 		"relativeError": 1e-2,
 		"scoreError": 1e-2
 	}

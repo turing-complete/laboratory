@@ -29,8 +29,20 @@ type Config struct {
 type System struct {
 	// The TGFF file describing the platform and application.
 	Specification string
+	// The static-power model.
+	StaticPower StaticPower
 
 	temperature.Config
+}
+
+// StaticPower is a configuration of the static-power model.
+type StaticPower struct {
+	// The portion of the total power ascribed to the static power.
+	Contribution float64 // ∈ [0, 1)
+	// The temperature values for fitting.
+	Temperature []float64
+	// The coefficient of proportionality for fitting.
+	Coefficient []float64
 }
 
 // Quantity is a configuration of the quantity of interest.
