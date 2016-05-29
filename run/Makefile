@@ -1,12 +1,29 @@
 root := $(dir $(shell pwd))
 
+cases := 002_010_delay 002_020_delay
+cases += 004_010_delay 004_020_delay
+cases += 008_010_delay 008_020_delay
+
+cases += 002_010_energy 002_020_energy
+cases += 004_010_energy 004_020_energy
+cases += 008_010_energy 008_020_energy
+
+cases += 002_010_temperature 002_020_temperature
+cases += 004_010_temperature 004_020_temperature
+cases += 008_010_temperature 008_020_temperature
+
 commands := sweep observe
 commands += approximate predict
 commands += compare
 
 dependencies := $(shell find $(root)/src/internal -name '*.go')
 
-all: $(commands)
+build: $(commands)
+
+solve: $(cases)
+
+test:
+	cd $(root) && go test ./src/...
 
 define define_command
 $(1): $(dependencies) $(shell find $(root)src/$(1) -name '*.go')
@@ -15,15 +32,6 @@ $(1): $(dependencies) $(shell find $(root)src/$(1) -name '*.go')
 endef
 
 $(foreach command,$(commands),$(eval $(call define_command,$(command))))
-
-cases := 002_010_delay 002_010_energy 002_010_temperature
-cases += 002_020_delay 002_020_energy 002_020_temperature
-
-cases += 004_010_delay 004_010_energy 004_010_temperature
-cases += 004_020_delay 004_020_energy 004_020_temperature
-
-cases += 008_010_delay 008_010_energy 008_010_temperature
-cases += 008_020_delay 008_020_energy 008_020_temperature
 
 define hash
 $(1) := $$(shell hash md5sum 2> /dev/null && \
@@ -98,4 +106,4 @@ flush:
 
 .DELETE_ON_ERROR:
 
-.PHONY: all clean flush
+.PHONY: build clean flush solve test
