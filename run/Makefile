@@ -76,6 +76,12 @@ $$($(1)_compare): $$($(1)_reference) $$($(1)_observe) $$($(1)_predict) compare
 	@./compare -c $$($(1)_config) -reference $$($(1)_reference) \
 		-observe $$($(1)_observe) -predict $$($(1)_predict) -o $$@
 
+$(1)_header:
+	@echo "----/--/-- --:--:-- Case: $(1)"
+
+$(1)_footer:
+	@echo "----/--/-- --:--:-- Done: $(1)"
+
 $(1)_reference: $$($(1)_reference)
 
 $(1)_observe: $$($(1)_observe)
@@ -90,7 +96,7 @@ $(1)_predict: $$($(1)_predict)
 
 $(1)_compare: $$($(1)_compare)
 
-$(1): $$($(1)_compare)
+$(1): $(1)_header $$($(1)_compare) $(1)_footer
 endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))

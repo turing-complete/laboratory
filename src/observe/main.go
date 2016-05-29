@@ -76,7 +76,6 @@ func function(config *config.Config) error {
 
 	log.Printf("Evaluating the original model at %d points...\n", ns)
 	values := quantity.Invoke(aquantity, points)
-	log.Println("Done.")
 
 	if err := output.Put("points", points, ni, ns); err != nil {
 		return err

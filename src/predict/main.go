@@ -145,8 +145,6 @@ func function(config *config.Config) error {
 		values = append(values, solution.Evaluate(&s, points)...)
 	}
 
-	log.Println("Done.")
-
 	if err := output.Put("surrogate", *surrogate); err != nil {
 		return err
 	}

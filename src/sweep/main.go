@@ -99,8 +99,6 @@ func function(config *config.Config) error {
 		values = quantity.Invoke(aquantity, points)
 	}
 
-	log.Println("Done.")
-
 	if err := output.Put("values", values, no, np); err != nil {
 		return err
 	}
