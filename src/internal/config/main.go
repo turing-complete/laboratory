@@ -7,23 +7,27 @@ import (
 	temperature "github.com/turing-complete/temperature/analytic"
 )
 
-// Config is a configuration of the problem.
+// Config is a configuration of a problem.
 type Config struct {
 	Inherit string
 
-	System      System      // Platform and application
-	Quantity    Quantity    // Quantity of interest
-	Uncertainty Uncertainty // Probability model
-	Solution    Solution    // Approximation algorithm
-	Assessment  Assessment  // Assessment
-
-	// A flag to display diagnostic information.
+	// The system
+	System System
+	// The quantity of interest
+	Quantity Quantity
+	// The probability model
+	Uncertainty Uncertainty
+	// The approximation algorithm
+	Solution Solution
+	// The assessment procedure
+	Assessment Assessment
+	// The flag for displaying diagnostic information.
 	Verbose bool
 }
 
 // System is a configuration of the system.
 type System struct {
-	// A TGFF file describing the platform and application to analyze.
+	// The TGFF file describing the platform and application.
 	Specification string
 
 	temperature.Config
@@ -34,8 +38,6 @@ type Quantity struct {
 	// The name of the quantity. The options are “end-to-end-delay,”
 	// “total-energy,” and “maximum-temperature.”
 	Name string
-	// The refinement threshold.
-	Refinement float64
 }
 
 // Uncertainty is a configuration of the probability model.
@@ -54,8 +56,8 @@ type Uncertainty struct {
 
 // Solution is a configuration of the approximation algorithm.
 type Solution struct {
-	// A flag to interpolate with the probability distribution of the uncertain
-	// parameters embedded into the surrogate.
+	// The flag for interpolating with the probability distribution of the
+	// uncertain parameters embedded into the surrogate.
 	Aleatory bool
 	// The quadrature rule, which is either “closed” or “open.”
 	Rule string
