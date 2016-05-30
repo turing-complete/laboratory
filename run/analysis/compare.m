@@ -62,16 +62,16 @@ function process(file, name, extended, printing)
 
   use('Statistics');
 
-  filename = locate('reference');
-  rvalues = h5read(filename, '/values');
+  file = locate('reference', name);
+  rvalues = h5read(file{1}, '/values');
   rvalues = rvalues(1:2:end, :);
 
-  filename = locate('observe');
-  ovalues = h5read(filename, '/values');
+  file = locate('observe', name);
+  ovalues = h5read(file{1}, '/values');
   ovalues = ovalues(1:2:end, :);
 
-  filename = locate('predict');
-  pvalues = h5read(filename, '/values');
+  file = locate('predict', name);
+  pvalues = h5read(file{1}, '/values');
   pvalues = pvalues(1:2:end, :);
 
   ns = size(pvalues, 2) / nk;
