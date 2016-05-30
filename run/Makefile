@@ -14,7 +14,7 @@ temperature += 008_010_temperature 008_020_temperature
 
 cases := $(delay) $(energy) $(temperature)
 
-commands := sweep observe
+commands := observe sweep
 commands += approximate predict
 commands += compare
 
@@ -47,11 +47,17 @@ $(1) := $$(shell hash md5sum 2> /dev/null && \
 endef
 
 define define_case
-$(1)_config_base := assets/$(1).json
-$(call hash,$(1)_hash_base,assets/base.json $$($(1)_config_base))
+$(1)_parts := $(subst _, ,$(1))
+$(1)_cores := $$(word 1,$$($(1)_parts))
+$(1)_quantity := $$(word 3,$$($(1)_parts))
 
-$(1)_config := assets/$(1).json
-$(call hash,$(1)_hash,$$($(1)_config) $$($(1)_config_base))
+$(1)_configs := assets/base.json
+$(call hash,$(1)_hash_base,$$($(1)_configs))
+
+$(1)_configs += assets/$$($(1)_quantity).json
+$(1)_configs += assets/$$($(1)_cores)_$$($(1)_quantity).json
+$(1)_configs += assets/$(1).json
+$(call hash,$(1)_hash,$$($(1)_configs))
 
 $(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
 $(1)_observe := data/$(1)_$$($(1)_hash_base)_observe.h5
@@ -61,6 +67,8 @@ $(1)_approximate := data/$(1)_$$($(1)_hash)_approximate.h5
 $(1)_approximate_sweep := data/$(1)_$$($(1)_hash)_approximate_sweep.h5
 $(1)_predict := data/$(1)_$$($(1)_hash)_predict.h5
 $(1)_compare := data/$(1)_$$($(1)_hash)_compare.h5
+
+$(1)_config := assets/$(1).json
 
 $$($(1)_reference): observe
 	@./observe -c $$($(1)_config) -s 0x42424242 -o $$@
