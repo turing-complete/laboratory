@@ -3,12 +3,21 @@ package quantity
 import (
 	"errors"
 
+	"github.com/ready-steady/lapack"
 	"github.com/turing-complete/laboratory/src/internal/config"
 	"github.com/turing-complete/laboratory/src/internal/system"
 	"github.com/turing-complete/laboratory/src/internal/uncertainty"
 
 	interpolation "github.com/ready-steady/adapt/algorithm"
 )
+
+func init() {
+	// The quantities of interest involve linear algebra, which is powered by
+	// OpenBLAS via the lapack package. They are evaluated in multiple threads;
+	// however, OpenBLAS is multithreaded by itself. The two multithreading
+	// implementations might collide. Hence, the OpenBLAS one must be disabled.
+	lapack.SetNumberOfThreads(1)
+}
 
 type Quantity interface {
 	Dimensions() (uint, uint)
