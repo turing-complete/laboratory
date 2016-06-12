@@ -15,7 +15,7 @@
 		"deviation": 0.2,
 		"distribution": "Beta(2, 5)",
 		"correlation": 5.0,
-		"variance": 0.95
+		"variance": 0.9
 	},
 
 	"solution": {
