@@ -28,7 +28,7 @@ class Application
 
     puts("Generating #{@base}...")
 
-    seed = 42
+    seed = @cores * @tasks
     loop do
       File.open(output, 'w') do |file|
         template.complete(seed: seed, cores: @cores, tasks: @tasks) do |line|
