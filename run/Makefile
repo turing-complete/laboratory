@@ -1,3 +1,5 @@
+OUTPUT_DIR ?= data
+
 root := $(dir $(shell pwd))
 
 delay := 002_010_delay 002_020_delay
@@ -59,14 +61,14 @@ $(1)_configs += assets/$$($(1)_cores)_$$($(1)_quantity).json
 $(1)_configs += assets/$(1).json
 $(call hash,$(1)_hash,$$($(1)_configs))
 
-$(1)_reference := data/$(1)_$$($(1)_hash_base)_reference.h5
-$(1)_observe := data/$(1)_$$($(1)_hash_base)_observe.h5
-$(1)_observe_sweep := data/$(1)_$$($(1)_hash_base)_observe_sweep.h5
+$(1)_reference := $(OUTPUT_DIR)/$(1)_$$($(1)_hash_base)_reference.h5
+$(1)_observe := $(OUTPUT_DIR)/$(1)_$$($(1)_hash_base)_observe.h5
+$(1)_observe_sweep := $(OUTPUT_DIR)/$(1)_$$($(1)_hash_base)_observe_sweep.h5
 
-$(1)_approximate := data/$(1)_$$($(1)_hash)_approximate.h5
-$(1)_approximate_sweep := data/$(1)_$$($(1)_hash)_approximate_sweep.h5
-$(1)_predict := data/$(1)_$$($(1)_hash)_predict.h5
-$(1)_compare := data/$(1)_$$($(1)_hash)_compare.h5
+$(1)_approximate := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_approximate.h5
+$(1)_approximate_sweep := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_approximate_sweep.h5
+$(1)_predict := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_predict.h5
+$(1)_compare := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_compare.h5
 
 $(1)_config := assets/$(1).json
 
@@ -124,7 +126,7 @@ clean: flush
 	@rm -f $(commands)
 
 flush:
-	@rm -f data/*.h5
+	@rm -f $(OUTPUT_DIR)/*.h5
 
 .DELETE_ON_ERROR:
 
