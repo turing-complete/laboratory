@@ -1,7 +1,7 @@
 function sweep()
   files = locate('sweep');
   for i = 1:length(files)
-    process(files{i}, grid);
+    process(files{i});
   end
 end
 
