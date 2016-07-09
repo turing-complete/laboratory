@@ -5,6 +5,7 @@ root := $(dir $(shell pwd))
 delay := 002_010_delay 002_020_delay
 delay += 004_010_delay 004_020_delay
 delay += 008_010_delay 008_020_delay
+delay += 002_004_delay
 
 energy := 002_010_energy 002_020_energy
 energy += 004_010_energy 004_020_energy

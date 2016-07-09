@@ -1,0 +1,39 @@
+@HYPERPERIOD 0
+
+@APPLICATION 0 {
+  PERIOD 0
+
+  TASK t0_0 TYPE 0
+  TASK t0_1 TYPE 1
+  TASK t0_2 TYPE 2
+  TASK t0_3 TYPE 3
+
+  ARC a0_0 FROM t0_0 TO t0_1 TYPE 0
+  ARC a0_1 FROM t0_0 TO t0_2 TYPE 1
+  ARC a0_2 FROM t0_1 TO t0_3 TYPE 2
+  ARC a0_3 FROM t0_2 TO t0_3 TYPE 3
+}
+
+@PROCESSOR 0 {
+# price
+  0
+
+#------------------------------------------------------------------------------
+# type version dynamic_power execution_time
+  0    0       10.0          0.010
+  1    0       20.0          0.035
+  2    0       15.0          0.033
+  3    0       10.0          0.010
+}
+
+@PROCESSOR 1 {
+# price
+  0
+
+#------------------------------------------------------------------------------
+# type version dynamic_power execution_time
+  0    0       10.0          0.010
+  1    0       20.0          0.035
+  2    0       15.0          0.033
+  3    0       10.0          0.010
+}
