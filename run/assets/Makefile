@@ -9,6 +9,6 @@ all:
 	@./generate 8 20
 
 clean:
-	rm -f *_*_*.json *_*.tgffopt *.tgff *.eps *.vcg
+	rm -f *_*_*.json *_*.tgffopt *_*.tgff *.eps *.vcg
 
 .PHONY: all clean
