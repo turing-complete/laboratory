@@ -88,8 +88,7 @@ end
 function plotDistributions(name1, data1, name2, data2)
   bins = 100;
 
-  [F1, F2] = distribute(data1, data2);
-  error = Error.computeNRMSE(F1, F2);
+  [~, ~, error] = kstest2(data1, data2);
 
   Plot.figure(800, 400);
   title(sprintf('Histogram (samples %d, error %.4e)', length(data2), error));
@@ -107,19 +106,4 @@ function plotDistributions(name1, data1, name2, data2)
   ecdf(data2);
   hold off;
   legend(name1, name2);
-end
-
-function [cdf1, cdf2] = distribute(data1, data2)
-  bins = 100;
-
-  edges = linspace(min(min(data1), min(data2)), max(max(data1), max(data2)), bins + 1);
-  edges(end) = Inf;
-
-  cdf1 = histc(data1, edges);
-  cdf1 = cdf1(1:end-1);
-  cdf1 = cumsum(cdf1) / sum(cdf1);
-
-  cdf2 = histc(data2, edges);
-  cdf2 = cdf2(1:end-1);
-  cdf2 = cumsum(cdf2) / sum(cdf2);
 end
