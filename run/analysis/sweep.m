@@ -1,11 +1,13 @@
-function sweep()
+function sweep(printing)
+  use('Interaction');
+  if nargin < 1; printing = false; end
   files = locate('sweep');
   for i = 1:length(files)
-    process(files{i});
+    process(files{i}, printing);
   end
 end
 
-function process(file)
+function process(file, printing)
   points = h5read(file, '/points');
   values = h5read(file, '/values');
   values = values(1:2:end, :);
@@ -35,19 +37,14 @@ function process(file)
   if x < 0
     error('Cannot find any sweep dimension.')
   elseif y < 0
-    mn = min(values(:));
-    mx = max(values(:));
-
     figure;
     line(points(x, :), values);
-    title(sprintf('Outputs(Input %d), Range %f (%.2f%%)', x-1, ...
-      mx-mn, 100*(mx/mn-1)));
+    if ~printing
+      Plot.title('Outputs(Input %d)', x-1);
+    end
   else
     X = reshape(points(x, :), nn, nn);
     Y = reshape(points(y, :), nn, nn);
-
-    MN = min(values(:));
-    MX = max(values(:));
 
     for z = 1:no
       Z = reshape(values(z, :), nn, nn);
@@ -55,11 +52,27 @@ function process(file)
       mn = min(Z(:));
       mx = max(Z(:));
 
-      figure;
-      surf(X, Y, Z);
-      zlim([MN, MX]);
-      title(sprintf('Output %d(Input %d, Input %d), Range %f (%.2f%%)', ...
-          z-1, x-1, y-1, mx-mn, 100*(mx/mn-1)));
+      if printing
+        Z = (Z - mn) / (mx - mn);
+        mn = 0;
+        mx = 1;
+      end
+
+      if printing
+        Plot.figure(400, 300);
+      else
+        Plot.figure;
+      end
+
+      mesh(X, Y, Z);
+      zlim([mn, mx]);
+      if printing
+        set(gca, ...
+          'FontName', 'Times New Roman', ...
+          'FontSize', 30);
+      else
+        Plot.title('Output %d(Input %d, Input %d)', z-1, x-1, y-1);
+      end
     end
   end
 end
