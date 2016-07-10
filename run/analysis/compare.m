@@ -102,7 +102,7 @@ function plotDistributions(sets, ~)
   Plot.title('Histogram');
   for i = 1:count
     subplot(1, count, i);
-    hist(data{i}, bins);
+    histogram(data{i}, bins, 'Normalization', 'pdf');
     Plot.title(names{i});
   end
 
