@@ -80,30 +80,63 @@ function process(file, name, extended, printing)
   ovalues = ovalues(:, 1:active(end));
 
   for i = 1:nq
-    plotDistributions('Reference', rvalues(i, :), 'Observe', ovalues(i, :));
-    plotDistributions('Reference', rvalues(i, :), 'Predict', pvalues(i, :));
+    plotDistributions({ ...
+      'Reference', rvalues(i, :); ...
+      'Observe', ovalues(i, :); ...
+      'Predict', pvalues(i, :)}, printing);
+    plotDensities({ ...
+      'Reference', rvalues(i, :); ...
+      'Observe', ovalues(i, :); ...
+      'Predict', pvalues(i, :)}, printing);
   end
 end
 
-function plotDistributions(name1, data1, name2, data2)
+function plotDistributions(sets, ~)
   bins = 100;
 
-  [~, ~, error] = kstest2(data1, data2);
+  names = sets(:, 1);
+  data = sets(:, 2);
+  count = length(names);
+
+  Plot.figure(count * 400, 400);
+  Plot.title('Histogram');
+  for i = 1:count
+    subplot(1, count, i);
+    hist(data{i}, bins);
+    Plot.title(names{i});
+  end
 
   Plot.figure(800, 400);
-  title(sprintf('Histogram (samples %d, error %.4e)', length(data2), error));
-  subplot(1, 2, 1);
-  hist(data1, bins);
-  title(name1);
-  subplot(1, 2, 2);
-  hist(data2, bins);
-  title(name2);
-
-  Plot.figure(800, 400);
-  title(sprintf('Empirical CDF (samples %d, error %.4e)', length(data2), error));
+  Plot.title('CDF');
   hold on;
-  ecdf(data1);
-  ecdf(data2);
+  for i = 1:count
+    ecdf(data{i});
+  end
   hold off;
-  legend(name1, name2);
+  Plot.legend(names{:});
+end
+
+function plotDensities(sets, printing)
+  names = sets(:, 1);
+  data = sets(:, 2);
+  count = length(names);
+
+  Plot.figure(800, 400);
+  X = [];
+  Y = [];
+  hold on;
+  for i = 1:count
+    ksdensity(data{i});
+    line = get(get(gcf, 'Children'), 'Children');
+    X = [X, line.XData];
+    Y = [Y, line.YData];
+  end
+  hold off;
+  Plot.limit(X, 1.05 * Y);
+  if printing
+    set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
+  else
+    Plot.title('PDF');
+  end
+  Plot.legend(names{:});
 end
