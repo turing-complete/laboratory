@@ -121,18 +121,22 @@ function plotDensities(sets, printing)
   data = sets(:, 2);
   count = length(names);
 
-  Plot.figure(800, 400);
+  if printing
+    Plot.figure(400, 300);
+  else
+    Plot.figure(800, 400);
+  end
   X = [];
-  Y = [];
+  F = [];
   hold on;
   for i = 1:count
-    ksdensity(data{i});
-    line = get(get(gcf, 'Children'), 'Children');
-    X = [X, line.XData];
-    Y = [Y, line.YData];
+    [f, x] = ksdensity(data{i});
+    plot(x, f);
+    X = [X, x];
+    F = [F, f];
   end
   hold off;
-  Plot.limit(X, 1.05 * Y);
+  Plot.limit(X, 1.05 * F);
   if printing
     set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
   else
