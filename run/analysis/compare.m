@@ -91,26 +91,30 @@ function process(file, name, extended, printing)
   end
 end
 
-function plotDistributions(sets, ~)
+function plotDistributions(sets, printing)
   bins = 100;
 
   names = sets(:, 1);
   data = sets(:, 2);
   count = length(names);
 
-  Plot.figure(count * 400, 400);
-  Plot.title('Histogram');
-  for i = 1:count
-    subplot(1, count, i);
-    histogram(data{i}, bins, 'Normalization', 'pdf');
-    Plot.title(names{i});
-  end
-
-  Plot.figure(800, 400);
-  Plot.title('CDF');
+  Plot.figure(600, 400);
+  if ~printing; Plot.title('Histogram'); end
+  makeLegible();
   hold on;
   for i = 1:count
-    ecdf(data{i});
+    histogram(data{i}, bins, 'Normalization', 'pdf');
+  end
+  hold off;
+  Plot.legend(names{:});
+
+  Plot.figure(600, 400);
+  if ~printing; Plot.title('CDF'); end
+  makeLegible();
+  hold on;
+  for i = 1:count
+    [f, x] = ecdf(data{i});
+    plot(x, f);
   end
   hold off;
   Plot.legend(names{:});
@@ -121,11 +125,9 @@ function plotDensities(sets, printing)
   data = sets(:, 2);
   count = length(names);
 
-  if printing
-    Plot.figure(400, 300);
-  else
-    Plot.figure(800, 400);
-  end
+  Plot.figure(600, 400);
+  if ~printing; Plot.title('PDF'); end
+  makeLegible();
   X = [];
   F = [];
   hold on;
@@ -137,10 +139,9 @@ function plotDensities(sets, printing)
   end
   hold off;
   Plot.limit(X, 1.05 * F);
-  if printing
-    set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
-  else
-    Plot.title('PDF');
-  end
   Plot.legend(names{:});
+end
+
+function makeLegible()
+  set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
 end
