@@ -33,28 +33,14 @@ function process(file, name, extended, printing)
         'MarkerSize', 14, ...
         'MarkerFaceColor', 'auto'...
       );
-      if length(t) > 1
-        Plot.limit([0; t]);
-      end
-      if printing
-        set(gca, ...
-          'FontName', 'Times New Roman', ...
-          'FontSize', 30, ...
-          'YMinorTick', 'off', ...
-          'YMinorGrid', 'off');
-        set(gcf, ...
-          'PaperType', 'A4', ...
-          'PaperOrientation', 'landscape', ...
-          'PaperPositionMode', 'auto');
-        print(sprintf('%s_%d_%d', name, i, j), ...
-          '-painters', ...
-          '-dpdf', ...
-          '-r400');
-      else
-        Plot.title(sprintf('Case %s, Quantity %d, Metric %d', name, i, j));
+      if length(t) > 1; Plot.limit([0; t]); end
+      if ~printing
+        Plot.title(name);
         Plot.label('Evaluations', 'log(Error)');
         Plot.legend('Observe', 'Predict');
       end
+      makeLegible;
+      if printing, printOut('%s_%d_%d', name, i, j); end
     end
   end
 
@@ -100,17 +86,16 @@ function plotDistributions(sets, printing)
 
   Plot.figure(600, 400);
   if ~printing; Plot.title('Histogram'); end
-  makeLegible();
   hold on;
   for i = 1:count
     histogram(data{i}, bins, 'Normalization', 'pdf');
   end
   hold off;
   Plot.legend(names{:});
+  makeLegible;
 
   Plot.figure(600, 400);
   if ~printing; Plot.title('CDF'); end
-  makeLegible();
   hold on;
   for i = 1:count
     [f, x] = ecdf(data{i});
@@ -118,6 +103,7 @@ function plotDistributions(sets, printing)
   end
   hold off;
   Plot.legend(names{:});
+  makeLegible;
 end
 
 function plotDensities(sets, printing)
@@ -127,7 +113,6 @@ function plotDensities(sets, printing)
 
   Plot.figure(600, 400);
   if ~printing; Plot.title('PDF'); end
-  makeLegible();
   X = [];
   F = [];
   hold on;
@@ -140,8 +125,23 @@ function plotDensities(sets, printing)
   hold off;
   Plot.limit(X, 1.05 * F);
   Plot.legend(names{:});
+  makeLegible;
 end
 
 function makeLegible()
   set(gca, 'FontName', 'Times New Roman', 'FontSize', 30);
+end
+
+function printOut(varargin)
+    set(gca, ...
+      'YMinorTick', 'off', ...
+      'YMinorGrid', 'off');
+    set(gcf, ...
+      'PaperType', 'A4', ...
+      'PaperOrientation', 'landscape', ...
+      'PaperPositionMode', 'auto');
+    print(sprintf(varargin{:}), ...
+      '-painters', ...
+      '-dpdf', ...
+      '-r400');
 end
