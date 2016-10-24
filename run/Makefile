@@ -1,6 +1,6 @@
-OUTPUT_DIR ?= results
-
 root := $(dir $(shell pwd))
+input := assets
+output := results
 
 delay := 002_010_delay 002_020_delay
 delay += 004_010_delay 004_020_delay
@@ -54,24 +54,24 @@ $(1)_parts := $(subst _, ,$(1))
 $(1)_cores := $$(word 1,$$($(1)_parts))
 $(1)_quantity := $$(word 3,$$($(1)_parts))
 
-$(1)_configs := assets/base.json
+$(1)_configs := $(input)/base.json
 $(call hash,$(1)_hash_base,$$($(1)_configs))
 
-$(1)_configs += assets/$$($(1)_quantity).json
-$(1)_configs += assets/$$($(1)_cores)_$$($(1)_quantity).json
-$(1)_configs += assets/$(1).json
+$(1)_configs += $(input)/$$($(1)_quantity).json
+$(1)_configs += $(input)/$$($(1)_cores)_$$($(1)_quantity).json
+$(1)_configs += $(input)/$(1).json
 $(call hash,$(1)_hash,$$($(1)_configs))
 
-$(1)_reference := $(OUTPUT_DIR)/$(1)_$$($(1)_hash_base)_reference.h5
-$(1)_observe := $(OUTPUT_DIR)/$(1)_$$($(1)_hash_base)_observe.h5
-$(1)_observe_sweep := $(OUTPUT_DIR)/$(1)_$$($(1)_hash_base)_observe_sweep.h5
+$(1)_reference := $(output)/$(1)_$$($(1)_hash_base)_reference.h5
+$(1)_observe := $(output)/$(1)_$$($(1)_hash_base)_observe.h5
+$(1)_observe_sweep := $(output)/$(1)_$$($(1)_hash_base)_observe_sweep.h5
 
-$(1)_approximate := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_approximate.h5
-$(1)_approximate_sweep := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_approximate_sweep.h5
-$(1)_predict := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_predict.h5
-$(1)_compare := $(OUTPUT_DIR)/$(1)_$$($(1)_hash)_compare.h5
+$(1)_approximate := $(output)/$(1)_$$($(1)_hash)_approximate.h5
+$(1)_approximate_sweep := $(output)/$(1)_$$($(1)_hash)_approximate_sweep.h5
+$(1)_predict := $(output)/$(1)_$$($(1)_hash)_predict.h5
+$(1)_compare := $(output)/$(1)_$$($(1)_hash)_compare.h5
 
-$(1)_config := assets/$(1).json
+$(1)_config := $(input)/$(1).json
 
 $$($(1)_reference): observe
 	@./observe -c $$($(1)_config) -s 0x42424242 -o $$@
@@ -120,14 +120,14 @@ endef
 
 $(foreach case,$(cases),$(eval $(call define_case,$(case))))
 
-assets/%:
-	$(MAKE) -C assets $*
+$(input)/%:
+	$(MAKE) -C $(input) $*
 
 clean: flush
 	@rm -f $(commands)
 
 flush:
-	@rm -f $(OUTPUT_DIR)/*.h5
+	@rm -f $(output)/*.h5
 
 .DELETE_ON_ERROR:
 
