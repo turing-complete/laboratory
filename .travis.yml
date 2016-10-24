@@ -4,6 +4,10 @@ sudo: false
 go:
   - 1.7
 
+cache:
+  directories:
+    - $GOPATH/src/github.com/ready-steady
+
 install:
   - go get -d -t ./...
   - (cd $GOPATH/src/github.com/ready-steady/hdf5 && make install)
