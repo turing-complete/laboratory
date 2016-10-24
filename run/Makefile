@@ -1,4 +1,4 @@
-OUTPUT_DIR ?= data
+OUTPUT_DIR ?= results
 
 root := $(dir $(shell pwd))
 
