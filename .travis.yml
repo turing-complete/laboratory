@@ -6,9 +6,7 @@ go:
 
 cache:
   directories:
-    - $GOPATH/src/github.com/ready-steady/hdf5
-    - $GOPATH/src/github.com/ready-steady/lapack
-    - $GOPATH/src/github.com/turing-complete/hotspot
+    - $GOPATH/src/github.com/ready-steady
 
 install:
   - go get -d -t ./...
