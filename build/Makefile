@@ -1,6 +1,6 @@
 root := $(shell dirname "$(shell pwd)")
 source := ${root}/src
-build := ${root}/run
+build := ${root}/build
 input := ${build}/assets
 output := ${build}/results
 

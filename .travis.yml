@@ -16,7 +16,7 @@ install:
 
 script:
   - go test ./...
-  - make -C run
+  - make -C build
 
 notifications:
   email: false
