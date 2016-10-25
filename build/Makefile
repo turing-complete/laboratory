@@ -40,7 +40,7 @@ test:
 
 define define_command
 ${1}: ${dependencies} $(shell find ${source}/${1} -name '*.go')
-	@cd ${source}/${1} && go build -o ${build}/${1}
+	@cd "${source}/${1}" && go build -o "${build}/${1}"
 endef
 
 $(foreach command,${commands},$(eval $(call define_command,${command})))
@@ -75,26 +75,26 @@ ${1}_compare := ${output}/${1}_$${${1}_hash}_compare.h5
 ${1}_config := ${input}/${1}.json
 
 $${${1}_reference}: observe
-	@./observe -c $${${1}_config} -s 0x42424242 -o $$@
+	@./observe -c "$${${1}_config}" -s 0x42424242 -o "$$@"
 
 $${${1}_observe}: observe
-	@./observe -c $${${1}_config} -n 10000 -o $$@
+	@./observe -c "$${${1}_config}" -n 10000 -o "$$@"
 
 $${${1}_observe_sweep}: sweep
-	@./sweep -c $${${1}_config} -n 100 -s "[0, 1]" -o $$@
+	@./sweep -c "$${${1}_config}" -n 100 -s "[0, 1]" -o "$$@"
 
 $${${1}_approximate}: approximate
-	@./approximate -c $${${1}_config} -o $$@
+	@./approximate -c "$${${1}_config}" -o "$$@"
 
 $${${1}_approximate_sweep}: $${${1}_approximate} sweep
-	@./sweep -c $${${1}_config} -approximate $$< -n 100 -s "[0, 1]" -o $$@
+	@./sweep -c "$${${1}_config}" -approximate "$$<" -n 100 -s "[0, 1]" -o "$$@"
 
 $${${1}_predict}: $${${1}_approximate} predict
-	@./predict -c $${${1}_config} -approximate $$< -o $$@
+	@./predict -c "$${${1}_config}" -approximate "$$<" -o "$$@"
 
 $${${1}_compare}: $${${1}_reference} $${${1}_observe} $${${1}_predict} compare
-	@./compare -c $${${1}_config} -reference $${${1}_reference} \
-		-observe $${${1}_observe} -predict $${${1}_predict} -o $$@
+	@./compare -c "$${${1}_config}" -reference "$${${1}_reference}" \
+		-observe "$${${1}_observe}" -predict "$${${1}_predict}" -o "$$@"
 
 ${1}_header:
 	@echo "----/--/-- --:--:-- Case: ${1}"
