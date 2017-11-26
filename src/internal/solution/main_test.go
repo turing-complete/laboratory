@@ -35,5 +35,5 @@ func TestSolutionCompute(t *testing.T) {
 		quantity.Compute(nodes[i*ni:(i+1)*ni], values[i*no:(i+1)*no])
 	}
 
-	assert.EqualWithin(values, solution.Evaluate(surrogate, nodes), 1e-15, t)
+	assert.Close(values, solution.Evaluate(surrogate, nodes), 1e-15, t)
 }

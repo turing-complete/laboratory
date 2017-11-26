@@ -23,7 +23,7 @@ func TestNewAleatory(t *testing.T) {
 		point[i] = 0.5
 	}
 
-	assert.EqualWithin(uncertainty.Backward(point), []float64{
+	assert.Close(uncertainty.Backward(point), []float64{
 		3.1402438661763954e-02, 1.7325483399593899e-02,
 		2.7071067811865485e-02, 3.1402438661763954e-02,
 		4.0065180361560912e-02, 3.2485281374238568e-02,
@@ -51,5 +51,5 @@ func TestNewEpistemic(t *testing.T) {
 		value[i] = (1.0 - σ + 2.0*σ*α) * reference[i]
 	}
 
-	assert.EqualWithin(uncertainty.Backward(point), value, 1e-15, t)
+	assert.Close(uncertainty.Backward(point), value, 1e-15, t)
 }

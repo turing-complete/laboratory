@@ -36,13 +36,13 @@ func TestBaseForwardInvert(t *testing.T) {
 	}
 
 	forward := uncertainty.Forward([]float64{18.0, 21.0, 36.0})
-	assert.EqualWithin(forward, []float64{
+	assert.Close(forward, []float64{
 		6.664804998759882e-01,
 		7.313162037785672e-01,
 	}, 1e-14, t)
 
 	backward := uncertainty.Backward([]float64{0.45, 0.65})
-	assert.EqualWithin(backward, []float64{
+	assert.Close(backward, []float64{
 		1.921556679782504e+01,
 		2.953060310728164e+01,
 		3.973501094321997e+01,

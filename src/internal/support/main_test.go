@@ -60,6 +60,6 @@ func TestParseRealIndex(t *testing.T) {
 		if c.result != nil {
 			assert.Success(err, t)
 		}
-		assert.EqualWithin(result, c.result, 1e-15, t)
+		assert.Close(result, c.result, 1e-15, t)
 	}
 }

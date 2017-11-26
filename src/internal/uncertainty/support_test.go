@@ -27,5 +27,5 @@ func TestInverse(t *testing.T) {
 
 	I, err := invert(U, Λ, m)
 	assert.Equal(err, nil, t)
-	assert.EqualWithin(A, I, 1e-14, t)
+	assert.Close(A, I, 1e-14, t)
 }
